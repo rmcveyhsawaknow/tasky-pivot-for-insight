@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tasky-admin
+  namespace: tasky
+  labels:
+    app.kubernetes.io/name: tasky
+    app.kubernetes.io/part-of: tasky-app
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tasky-admin-binding
+  labels:
+    app.kubernetes.io/name: tasky
+    app.kubernetes.io/part-of: tasky-app
+subjects:
+- kind: ServiceAccount
+  name: tasky-admin
+  namespace: tasky
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io

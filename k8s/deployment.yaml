@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasky-app
+  namespace: tasky
+  labels:
+    app.kubernetes.io/name: tasky
+    app.kubernetes.io/component: web
+    app.kubernetes.io/part-of: tasky-app
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tasky
+      app.kubernetes.io/component: web
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: tasky
+        app.kubernetes.io/component: web
+        app.kubernetes.io/part-of: tasky-app
+    spec:
+      serviceAccountName: tasky-admin
+      containers:
+      - name: tasky
+        image: ghcr.io/jeffthorne/tasky-pivot-for-insight:main
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        env:
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: tasky-secrets
+              key: mongodb-uri
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: tasky-secrets
+              key: jwt-secret
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: tasky-config
+              key: PORT
+        - name: GIN_MODE
+          valueFrom:
+            configMapKeyRef:
+              name: tasky-config
+              key: GIN_MODE
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 65534
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
+      securityContext:
+        fsGroup: 65534

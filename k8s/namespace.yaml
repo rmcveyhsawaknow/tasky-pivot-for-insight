@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tasky
+  labels:
+    name: tasky
+    app.kubernetes.io/name: tasky
+    app.kubernetes.io/part-of: tasky-app

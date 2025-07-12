@@ -1,0 +1,16 @@
+Insight Technical Exercise - AWS Three-Tier Architecture
+
+This container represents the Web Tier of a three-tier application architecture deployed on AWS using:
+- Amazon EKS for container orchestration
+- MongoDB 4.0.x on Amazon Linux 2 EC2 instance for data persistence
+- S3 bucket with public read access for backup storage
+- Full Infrastructure-as-Code deployment via Terraform
+
+Technical Requirements Met:
+✅ Container deployed with cluster-admin RBAC permissions
+✅ MongoDB authentication via connection string
+✅ EC2 instance with AWS Administrator permissions
+✅ Public S3 bucket for MongoDB backups
+✅ Legacy OS and MongoDB versions as specified
+
+Demonstration ready for 45-minute technical presentation panel.

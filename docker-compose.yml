@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  tasky:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/tasky
+      - SECRET_KEY=local-development-secret
+    depends_on:
+      - mongo
+    networks:
+      - tasky-network
+
+  mongo:
+    image: mongo:4.0.28
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - tasky-network
+
+volumes:
+  mongo-data:
+
+networks:
+  tasky-network:
+    driver: bridge

@@ -1,0 +1,21 @@
+# Copy this file to terraform.tfvars and customize values
+aws_region     = "us-west-2"
+environment    = "dev"
+project_name   = "tasky"
+
+# VPC Configuration
+vpc_cidr = "10.0.0.0/16"
+
+# MongoDB Configuration
+mongodb_instance_type = "t3.medium"
+mongodb_username     = "taskyadmin"
+mongodb_password     = "TaskySecure123!"
+
+# JWT Configuration
+jwt_secret = "tasky-jwt-secret-key-for-insight-exercise"
+
+# EKS Configuration
+eks_node_instance_types = ["t3.medium"]
+eks_node_desired_size   = 2
+eks_node_max_size       = 3
+eks_node_min_size       = 1

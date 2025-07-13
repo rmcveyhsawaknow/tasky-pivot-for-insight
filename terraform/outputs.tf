@@ -64,32 +64,32 @@ output "application_url" {
   value       = "http://${module.eks.load_balancer_hostname}"
 }
 
-# Deployment Instructions
-output "deployment_instructions" {
-  description = "Step-by-step deployment instructions"
-  value = <<-EOT
-    Tasky Application Deployment Instructions:
-    ==========================================
+# # Deployment Instructions
+# output "deployment_instructions" {
+#   description = "Step-by-step deployment instructions"
+#   value       = <<-EOT
+#     Tasky Application Deployment Instructions:
+#     ==========================================
     
-    1. Configure kubectl access:
-       ${output.kubectl_config_command.value}
+#     1. Configure kubectl access:
+#        ${output.kubectl_config_command.value}
     
-    2. Verify cluster connectivity:
-       kubectl get nodes
+#     2. Verify cluster connectivity:
+#        kubectl get nodes
     
-    3. Deploy the application:
-       kubectl apply -f ../k8s/
+#     3. Deploy the application:
+#        kubectl apply -f ../k8s/
     
-    4. Monitor deployment:
-       kubectl get pods -n tasky --watch
+#     4. Monitor deployment:
+#        kubectl get pods -n tasky --watch
     
-    5. Get load balancer URL:
-       kubectl get svc -n tasky
+#     5. Get load balancer URL:
+#        kubectl get svc -n tasky
     
-    6. Access application:
-       ${output.application_url.value}
+#     6. Access application:
+#        ${output.application_url.value}
     
-    7. Verify MongoDB backup:
-       ${output.s3_backup_public_url.value}
-  EOT
-}
+#     7. Verify MongoDB backup:
+#        ${output.s3_backup_public_url.value}
+#   EOT
+# }

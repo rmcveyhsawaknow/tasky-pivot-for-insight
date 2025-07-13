@@ -1,11 +1,7 @@
 # VPC
 resource "aws_vpc" "main" {
   cidr_block           = var.vpc_cidr
-  enable_dns_hostnames = tr  tags = merge(var.tags, {
-    Name = "${var.project_name}-${var.environment}-${var.stack_version}-public-subnet-${count.index + 1}"
-    Type = "public"
-    "kubernetes.io/role/elb" = "1"
-  })
+  enable_dns_hostnames = true
   enable_dns_support   = true
 
   tags = merge(var.tags, {
@@ -32,8 +28,8 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = merge(var.tags, {
-    Name = "${var.project_name}-${var.environment}-public-subnet-${count.index + 1}"
-    Type = "public"
+    Name                     = "${var.project_name}-${var.environment}-${var.stack_version}-public-subnet-${count.index + 1}"
+    Type                     = "public"
     "kubernetes.io/role/elb" = "1"
   })
 }
@@ -47,8 +43,8 @@ resource "aws_subnet" "private" {
   availability_zone = var.availability_zones[count.index]
 
   tags = merge(var.tags, {
-    Name = "${var.project_name}-${var.environment}-${var.stack_version}-private-subnet-${count.index + 1}"
-    Type = "private"
+    Name                              = "${var.project_name}-${var.environment}-${var.stack_version}-private-subnet-${count.index + 1}"
+    Type                              = "private"
     "kubernetes.io/role/internal-elb" = "1"
   })
 }
@@ -57,7 +53,7 @@ resource "aws_subnet" "private" {
 resource "aws_eip" "nat" {
   count = length(var.availability_zones)
 
-  domain = "vpc"
+  domain     = "vpc"
   depends_on = [aws_internet_gateway.main]
 
   tags = merge(var.tags, {

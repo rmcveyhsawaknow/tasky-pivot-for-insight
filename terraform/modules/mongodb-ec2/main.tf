@@ -105,8 +105,8 @@ locals {
 # EC2 Instance for MongoDB
 resource "aws_instance" "mongodb" {
   ami                    = data.aws_ami.amazon_linux_2.id
-  instance_type         = var.instance_type
-  subnet_id             = var.private_subnet_ids[0]
+  instance_type          = var.instance_type
+  subnet_id              = var.private_subnet_ids[0]
   vpc_security_group_ids = [aws_security_group.mongodb.id]
   iam_instance_profile   = aws_iam_instance_profile.mongodb.name
 

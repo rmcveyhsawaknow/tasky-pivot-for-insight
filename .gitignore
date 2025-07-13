@@ -6,6 +6,10 @@
 *.dylib
 *.env
 
+# Go Build artifacts
+tasky
+oryxBuildBinary
+
 # Test binary, built with `go test -c`
 *.test
 
@@ -22,3 +26,15 @@ Makefile
 deploy
 test
 tmp
+
+# The terraform/.terraform directory should NOT be committed.
+# This directory contains local state, provider plugins, and other environment-specific files.
+# It should always be in your .gitignore.
+terraform/.terraform
+
+# DO commit .terraform.lock.hcl
+# This file locks Terraform provider versions for reproducible builds across your team and CI/CD.
+# Committing it ensures everyone uses the same provider versions, improving reliability and reducing "works on my
+
+# Ignore downloaded utilities, such as kubeval and other tools used for validation or testing
+scripts/utils/*

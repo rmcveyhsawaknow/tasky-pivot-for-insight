@@ -11,7 +11,7 @@
 locals {
   # Consistent naming pattern: project-environment-stackversion
   name_prefix = "${var.project_name}-${var.environment}-${var.stack_version}"
-  
+
   common_tags = {
     Project      = "tasky"
     Environment  = var.environment
@@ -37,9 +37,9 @@ module "vpc" {
   project_name       = var.project_name
   environment        = var.environment
   stack_version      = var.stack_version
-  vpc_cidr          = var.vpc_cidr
+  vpc_cidr           = var.vpc_cidr
   availability_zones = slice(data.aws_availability_zones.available.names, 0, 3)
-  
+
   tags = local.common_tags
 }
 
@@ -51,7 +51,7 @@ module "s3_backup" {
   project_name  = var.project_name
   environment   = var.environment
   stack_version = var.stack_version
-  
+
   tags = local.common_tags
 }
 
@@ -63,13 +63,13 @@ module "mongodb_ec2" {
   project_name       = var.project_name
   environment        = var.environment
   stack_version      = var.stack_version
-  vpc_id            = module.vpc.vpc_id
+  vpc_id             = module.vpc.vpc_id
   private_subnet_ids = module.vpc.private_subnet_ids
-  instance_type     = var.mongodb_instance_type
-  mongodb_username  = var.mongodb_username
-  mongodb_password  = var.mongodb_password
+  instance_type      = var.mongodb_instance_type
+  mongodb_username   = var.mongodb_username
+  mongodb_password   = var.mongodb_password
   backup_bucket_name = module.s3_backup.bucket_name
-  
+
   tags = local.common_tags
 }
 
@@ -78,17 +78,17 @@ module "mongodb_ec2" {
 module "eks" {
   source = "./modules/eks"
 
-  project_name             = var.project_name
-  environment              = var.environment
-  stack_version            = var.stack_version
-  vpc_id                   = module.vpc.vpc_id
-  private_subnet_ids       = module.vpc.private_subnet_ids
-  public_subnet_ids        = module.vpc.public_subnet_ids
-  node_instance_types      = var.eks_node_instance_types
-  node_desired_size        = var.eks_node_desired_size
-  node_max_size           = var.eks_node_max_size
-  node_min_size           = var.eks_node_min_size
+  project_name              = var.project_name
+  environment               = var.environment
+  stack_version             = var.stack_version
+  vpc_id                    = module.vpc.vpc_id
+  private_subnet_ids        = module.vpc.private_subnet_ids
+  public_subnet_ids         = module.vpc.public_subnet_ids
+  node_instance_types       = var.eks_node_instance_types
+  node_desired_size         = var.eks_node_desired_size
+  node_max_size             = var.eks_node_max_size
+  node_min_size             = var.eks_node_min_size
   mongodb_security_group_id = module.mongodb_ec2.security_group_id
-  
+
   tags = local.common_tags
 }

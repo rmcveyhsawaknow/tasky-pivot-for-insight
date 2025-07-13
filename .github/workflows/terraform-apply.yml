@@ -2,11 +2,11 @@ name: Terraform Apply
 
 on:
   push:
-    branches: [main]
-    paths:
-      - 'terraform/**'
-      - '.github/workflows/terraform-apply.yml'
-  workflow_dispatch:
+    branches: ['deploy/*']
+      paths:
+        - 'terraform/**'
+        - '.github/workflows/terraform-apply.yml'
+      workflow_dispatch:
     inputs:
       action:
         description: 'Terraform action'

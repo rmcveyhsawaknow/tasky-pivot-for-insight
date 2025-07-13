@@ -111,7 +111,9 @@ tasky-pivot-for-insight/
 ├── diagrams/                 # Architecture documentation
 │   └── aws_architecture_diagram1.png
 ├── docs/                     # Additional documentation
-│   └── technical-specs.md
+│   ├── technical-specs.md
+│   ├── deployment-guide.md
+│   └── ops_git_flow.md      # GitOps workflow & deployment strategy
 ├── .github/workflows/        # CI/CD pipelines
 │   ├── terraform-plan.yml
 │   ├── terraform-apply.yml
@@ -181,6 +183,18 @@ The application will be available at `http://localhost:8080`
 - **Container Admin Configuration**: Cluster-admin RBAC permissions configured
 - **exercise.txt File**: Container includes required exercise.txt content file
 - **Outdated OS/MongoDB**: Amazon Linux 2 with MongoDB v4.0.x (legacy versions)
+
+---
+
+## 🔄 GitOps Deployment Strategy
+
+This project implements a sophisticated GitOps workflow using GitHub Actions and branch-specific deployments:
+
+- **Development Flow**: `develop` branch → container builds and testing
+- **Infrastructure Flow**: `deploy/*` branches → Terraform plan/apply workflows
+- **Production Flow**: `main` branch → production-ready container images
+
+For detailed deployment procedures, environment promotion strategies, and troubleshooting guides, see: **[docs/ops_git_flow.md](docs/ops_git_flow.md)**
 
 ---
 

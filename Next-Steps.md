@@ -4,6 +4,8 @@
 
 This document outlines a systematic post-it note approach for validating the Tasky AWS three-tier architecture deployment. Each item represents a validation checkpoint that should be completed and checked off before proceeding to the next phase.
 
+**For detailed GitOps workflow and deployment strategy, see**: [`docs/ops_git_flow.md`](docs/ops_git_flow.md)
+
 ## 📋 Phase 1: Pre-flight Validation (Items 1-5)
 
 ### 1. **Terraform Syntax & Module Validation**
@@ -244,12 +246,14 @@ git add . && git commit -m "test: validate GitHub Actions workflows"
 
 ## 📋 Phase 5: GitHub Actions Deployment Branch (Items 21-25)
 
+**Note**: Detailed implementation procedures for this phase are documented in [`docs/ops_git_flow.md`](docs/ops_git_flow.md)
+
 ### 21. **Deployment Branch Creation & Configuration**
 ```bash
 # Location: Repo Root Directory -\
-git checkout -b deploy/stack-version-1
-cp terraform/terraform.tfvars terraform/deploy-stack-v1.tfvars
-# Edit deploy-stack-v1.tfvars for production settings
+git checkout -b deploy/dev-v1
+cp terraform/terraform.tfvars.example terraform/terraform-dev.tfvars
+# Edit terraform-dev.tfvars for development settings (see docs/ops_git_flow.md)
 ```
 **Expected Result**: Deployment branch created with environment-specific variables  
 **Post-it Status**: [ ] ✅ PASS [ ] ❌ FAIL [ ] 🔄 IN PROGRESS
@@ -258,7 +262,7 @@ cp terraform/terraform.tfvars terraform/deploy-stack-v1.tfvars
 ```bash
 # Manual step in GitHub repository settings
 # Add secrets: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
-# Add TERRAFORM_VARS_BASE64 with base64-encoded terraform.tfvars content
+# See docs/ops_git_flow.md for complete secrets configuration guide
 echo "Configure GitHub secrets in repository settings"
 ```
 **Expected Result**: All required secrets configured in GitHub repository  
@@ -267,13 +271,14 @@ echo "Configure GitHub secrets in repository settings"
 ### 23. **GitHub Actions Terraform Workflow Testing**
 ```bash
 # Location: Repo Root Directory -\
-git add .
-git commit -m "deploy: stack version 1 with branch-specific variables
+git add terraform/terraform-dev.tfvars
+git commit -m "deploy: configure development environment v1
 
-- Add terraform variables for deploy/stack-version-1 branch
-- Configure GitHub Actions for automated deployment
-- Enable infrastructure deployment via CI/CD pipeline"
-git push origin deploy/stack-version-1
+- Add development-specific Terraform variables
+- Configure cost-optimized EKS and MongoDB instances
+- Set up development environment secrets
+- Enable automated deployment via GitHub Actions"
+git push origin deploy/dev-v1
 ```
 **Expected Result**: GitHub Actions workflow triggers and completes successfully  
 **Post-it Status**: [ ] ✅ PASS [ ] ❌ FAIL [ ] 🔄 IN PROGRESS
@@ -400,3 +405,13 @@ aws s3api head-bucket --bucket $(terraform output -raw s3_backup_bucket_name)
 - **Scalability Considerations**: Discuss production-ready improvements
 
 **Status**: 🎯 **Ready for Systematic Validation and Deployment Testing**
+
+---
+
+## 📚 Related Documentation
+
+- **[GitOps Workflow & Deployment Strategy](docs/ops_git_flow.md)**: Complete branch strategy, environment promotion, and troubleshooting guide
+- **[Technical Specifications](docs/technical-specs.md)**: Detailed technical specifications and architecture decisions  
+- **[Deployment Guide](docs/deployment-guide.md)**: Step-by-step infrastructure and application deployment procedures
+- **[Workspace Summary](WORKSPACE_SUMMARY.md)**: Complete project overview and repository structure
+- **[Main README](README.md)**: Project overview, quick start, and requirements compliance

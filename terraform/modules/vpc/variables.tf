@@ -8,6 +8,11 @@ variable "environment" {
   type        = string
 }
 
+variable "stack_version" {
+  description = "Stack version identifier for unique resource naming"
+  type        = string
+}
+
 variable "vpc_cidr" {
   description = "CIDR block for VPC"
   type        = string

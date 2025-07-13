@@ -1,11 +1,15 @@
 # VPC
 resource "aws_vpc" "main" {
   cidr_block           = var.vpc_cidr
-  enable_dns_hostnames = true
+  enable_dns_hostnames = tr  tags = merge(var.tags, {
+    Name = "${var.project_name}-${var.environment}-${var.stack_version}-public-subnet-${count.index + 1}"
+    Type = "public"
+    "kubernetes.io/role/elb" = "1"
+  })
   enable_dns_support   = true
 
   tags = merge(var.tags, {
-    Name = "${var.project_name}-${var.environment}-vpc"
+    Name = "${var.project_name}-${var.environment}-${var.stack_version}-vpc"
   })
 }
 
@@ -14,7 +18,7 @@ resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
   tags = merge(var.tags, {
-    Name = "${var.project_name}-${var.environment}-igw"
+    Name = "${var.project_name}-${var.environment}-${var.stack_version}-igw"
   })
 }
 
@@ -43,7 +47,7 @@ resource "aws_subnet" "private" {
   availability_zone = var.availability_zones[count.index]
 
   tags = merge(var.tags, {
-    Name = "${var.project_name}-${var.environment}-private-subnet-${count.index + 1}"
+    Name = "${var.project_name}-${var.environment}-${var.stack_version}-private-subnet-${count.index + 1}"
     Type = "private"
     "kubernetes.io/role/internal-elb" = "1"
   })
@@ -57,7 +61,7 @@ resource "aws_eip" "nat" {
   depends_on = [aws_internet_gateway.main]
 
   tags = merge(var.tags, {
-    Name = "${var.project_name}-${var.environment}-nat-eip-${count.index + 1}"
+    Name = "${var.project_name}-${var.environment}-${var.stack_version}-nat-eip-${count.index + 1}"
   })
 }
 
@@ -69,7 +73,7 @@ resource "aws_nat_gateway" "main" {
   subnet_id     = aws_subnet.public[count.index].id
 
   tags = merge(var.tags, {
-    Name = "${var.project_name}-${var.environment}-nat-gw-${count.index + 1}"
+    Name = "${var.project_name}-${var.environment}-${var.stack_version}-nat-gw-${count.index + 1}"
   })
 
   depends_on = [aws_internet_gateway.main]
@@ -85,7 +89,7 @@ resource "aws_route_table" "public" {
   }
 
   tags = merge(var.tags, {
-    Name = "${var.project_name}-${var.environment}-public-rt"
+    Name = "${var.project_name}-${var.environment}-${var.stack_version}-public-rt"
   })
 }
 
@@ -101,7 +105,7 @@ resource "aws_route_table" "private" {
   }
 
   tags = merge(var.tags, {
-    Name = "${var.project_name}-${var.environment}-private-rt-${count.index + 1}"
+    Name = "${var.project_name}-${var.environment}-${var.stack_version}-private-rt-${count.index + 1}"
   })
 }
 

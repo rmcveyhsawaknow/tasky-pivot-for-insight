@@ -184,6 +184,7 @@ aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
 
 # Verify connectivity
 kubectl cluster-info
+kubectl get nodes
 ```
 
 ### Step 2.5: Deploy Application

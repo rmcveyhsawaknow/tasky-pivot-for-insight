@@ -5,228 +5,225 @@
 [![EKS](https://img.shields.io/badge/Kubernetes-EKS-326ce5)](https://aws.amazon.com/eks/)
 [![CI/CD](https://img.shields.io/badge/CI/CD-GitHub%20Actions-blue)](https://github.com/features/actions)
 
----
-
 ## 📖 Overview
-This repo delivers a **three-tier web application architecture** as part of the Insight Technical Architect evaluation. It takes the original Azure exercise and gives it a humorous AWS pivot, using Terraform for full Infrastructure-as-Code (IaC) deployment.
 
----
+This repository delivers a **three-tier web application architecture** as part of the Insight Technical Architect evaluation. It implements an AWS-native deployment of the Tasky application using complete Infrastructure-as-Code (IaC) with Terraform.
 
-## 🌐 Architecture Summary
-- **Web Tier:** tasky app containerized and deployed on Amazon EKS with public-facing ALB.
-- **Data Tier:** MongoDB v4.0.x running on Amazon Linux 2 EC2 instance with authentication.
-- **Storage Tier:** S3 bucket for MongoDB backups with public-read enabled.
-- **CI/CD:** AWS CLI deploy from GitHub Gitflow repo, promoting changes via GitHub Actions workflows.
+## 🌐 Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     AWS Three-Tier Architecture                 │
+├─────────────────────────────────────────────────────────────────┤
+│ Web Tier:     EKS + ALB + Tasky Container                      │
+│               ↓                                                │
+│ Data Tier:    MongoDB 4.0.x on Amazon Linux 2 EC2             │
+│               ↓                                                │
+│ Storage Tier: S3 Bucket (Public) + Automated Backups          │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Components
+- **Web Tier**: Containerized Tasky app on Amazon EKS with public Application Load Balancer
+- **Data Tier**: MongoDB v4.0.x on Amazon Linux 2 EC2 instance with authentication  
+- **Storage Tier**: S3 bucket with public read access for MongoDB backups
+- **Infrastructure**: Complete Terraform automation with ~50+ AWS resources
 
 ### 🗺️ Architecture Diagram
 ![AWS Architecture Diagram](diagrams/aws_architecture_diagram1.png)
 
----
-
-## 🚀 Features
-- ☁️ Azure-native → AWS-native service mapping
-- ⚙️ Fully automated Terraform provisioning
-- 🔁 GitHub Actions CI/CD pipeline integration
-- 📝 MongoDB backup scripts with S3 public URLs
-- ⏱️ Demo-ready for 45-minute panel presentation
-
----
-
-## 🏃‍♂️ Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
-- AWS CLI configured with appropriate credentials
-- Terraform v1.0+ installed
-- kubectl installed
-- Docker installed (for local container builds)
+- **AWS Account** with billing enabled and appropriate permissions
+- **AWS CLI v2** installed and configured (`aws configure`)
+- **Terraform v1.0+** installed  
+- **kubectl** installed
+- **Docker** installed
 
-### 1. Fork tasky and Pull Full Git History
+### 1. Configure AWS Credentials
 ```bash
-git clone --mirror https://github.com/jeffthorne/tasky.git
-cd tasky.git
-git remote set-url --push origin https://github.com/<your-username>/tasky-pivot-for-insight.git
-git push --mirror
-```
-This preserves full commit history and makes your repo track upstream for future updates.
+# Configure AWS credentials (required)
+aws configure
 
-### 2. Pull Updates from Upstream
-```bash
-git remote add upstream https://github.com/jeffthorne/tasky.git
-git fetch upstream
-git merge upstream/main
-```
-
-### 3. Configure AWS Environment
-```bash
-# Set your AWS region
-export AWS_REGION=us-west-2
-export AWS_PROFILE=your-aws-profile
-
-# Verify AWS credentials
+# Verify configuration  
 aws sts get-caller-identity
 ```
 
-### 4. Deploy Infrastructure with Terraform
+**Required AWS IAM Permissions**:
+- EC2 full access
+- EKS full access  
+- S3 full access
+- IAM full access
+- VPC full access
+- CloudWatch logs access
+
+### 2. Deploy Infrastructure
 ```bash
+# Clone repository
+git clone https://github.com/rmcveyhsawaknow/tasky-pivot-for-insight.git
+cd tasky-pivot-for-insight
+
+# Configure Terraform variables
 cd terraform/
+cp terraform.tfvars.example terraform.tfvars
+nano terraform.tfvars  # Edit with your AWS settings
+
+# Deploy infrastructure (~15-20 minutes)
 terraform init
 terraform plan
-terraform apply -auto-approve
+terraform apply
 ```
 
-### 5. Configure kubectl for EKS
+### 3. Configure kubectl and Deploy Application
 ```bash
-aws eks update-kubeconfig --region $AWS_REGION --name tasky-eks-cluster
-kubectl get nodes
-```
+# Configure kubectl for EKS
+CLUSTER_NAME=$(terraform output -raw eks_cluster_name)
+AWS_REGION=$(terraform output -raw aws_region)
+aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
 
-### 6. Deploy Application
-```bash
+# Deploy application
 cd ../k8s/
 kubectl apply -f .
-kubectl get pods -n tasky
+
+# Get application URL
+kubectl get svc tasky-service -n tasky
 ```
 
-### 7. Destroy Resources
+### 4. Verify Deployment
 ```bash
-terraform destroy -auto-approve
+# Check application status
+kubectl get pods -n tasky
+
+# Test application access
+LB_URL=$(kubectl get svc tasky-service -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+curl -I http://$LB_URL
+
+# Verify exercise requirements
+kubectl exec -it deployment/tasky-app -n tasky -- cat /app/exercise.txt
 ```
 
----
+**📖 For detailed step-by-step instructions, troubleshooting, and validation procedures, see: [docs/deployment-guide.md](docs/deployment-guide.md)**
 
 ## 📂 Repository Structure
 ```
 tasky-pivot-for-insight/
 ├── terraform/                 # Infrastructure-as-Code
-│   ├── main.tf
-│   ├── variables.tf
-│   ├── outputs.tf
-│   └── modules/
-├── k8s/                      # Kubernetes manifests
-│   ├── deployment.yaml
-│   ├── service.yaml
-│   └── rbac.yaml
-├── scripts/                  # MongoDB backup scripts
-│   └── mongodb-backup.sh
-├── diagrams/                 # Architecture documentation
-│   └── aws_architecture_diagram1.png
-├── docs/                     # Additional documentation
-│   ├── technical-specs.md
-│   ├── deployment-guide.md
-│   └── ops_git_flow.md      # GitOps workflow & deployment strategy
-├── .github/workflows/        # CI/CD pipelines
-│   ├── terraform-plan.yml
-│   ├── terraform-apply.yml
-│   └── build-and-publish.yml
-├── main.go                   # Application entry point
-├── go.mod                    # Go dependencies
-├── go.sum                    # Go checksums
-├── Dockerfile               # Container image definition
-├── docker-compose.yml       # Local development
-├── .env.example             # Environment variables template
-└── README.md
+│   ├── main.tf                # Main Terraform configuration
+│   ├── variables.tf           # Input variables
+│   ├── outputs.tf             # Output values
+│   └── modules/               # Terraform modules
+│       ├── eks/               # EKS cluster module
+│       ├── mongodb-ec2/       # MongoDB EC2 module
+│       ├── s3-backup/         # S3 backup bucket module
+│       └── vpc/               # VPC networking module
+├── k8s/                       # Kubernetes manifests
+│   ├── deployment.yaml        # Tasky application deployment
+│   ├── service.yaml           # LoadBalancer service
+│   ├── rbac.yaml              # Service account & permissions
+│   ├── configmap.yaml         # Application configuration
+│   ├── secret.yaml            # MongoDB connection secrets
+│   └── namespace.yaml         # Namespace definition
+├── scripts/                   # Automation scripts
+│   ├── deploy.sh              # Application deployment script
+│   └── mongodb-backup.sh      # MongoDB backup script
+├── docs/                      # Documentation
+│   ├── deployment-guide.md    # Detailed deployment procedures
+│   ├── technical-specs.md     # Architecture specifications
+│   └── ops_git_flow.md        # GitOps workflow guide
+├── .github/workflows/         # CI/CD pipelines
+├── main.go                    # Go application entry point
+├── Dockerfile                 # Container image definition
+├── docker-compose.yml         # Local development environment
+└── exercise.txt               # Technical exercise requirements
 ```
 
----
-
-## 🐳 Docker & Local Development
+## 🐳 Local Development
 
 ### Environment Variables
-The following environment variables are needed:
-
 |Variable|Purpose|Example|
 |---|---|---|
-|`MONGODB_URI`|Address to mongo server|`mongodb://servername:27017` or `mongodb://username:password@hostname:port` or `mongodb+srv://` schema|
-|`SECRET_KEY`|Secret key for JWT tokens|`secret123`|
+|`MONGODB_URI`|MongoDB connection string|`mongodb://username:password@hostname:27017/tasky`|
+|`SECRET_KEY`|JWT token secret|`your-secret-key`|
 
-### Running with Docker
+### Running Locally with Docker Compose
 ```bash
-# Build the image
-docker build -t tasky:latest .
+# Start local development environment
+docker-compose up --build -d
 
-# Run with environment variables
-docker run -p 8080:8080 \
-  -e MONGODB_URI="mongodb://username:password@hostname:27017/tasky" \
-  -e SECRET_KEY="your-secret-key" \
-  tasky:latest
+# Test application
+curl http://localhost:8080
+
+# View logs
+docker-compose logs tasky
+
+# Clean up
+docker-compose down
 ```
 
 ### Running with Go
 ```bash
-# Download dependencies
+# Install dependencies
 go mod tidy
 
-# Create .env file with required variables
+# Configure environment
 cp .env.example .env
 # Edit .env with your MongoDB URI and Secret Key
 
-# Run the application
+# Run application
 go run main.go
 ```
 
-The application will be available at `http://localhost:8080`
+## 🎯 Technical Exercise Compliance
 
----
+### ✅ Architecture Requirements
+- **Three-tier architecture**: Web (EKS) + Data (MongoDB EC2) + Storage (S3)
+- **Public access**: Web application via Application Load Balancer
+- **Database**: MongoDB with authentication enabled
+- **Storage**: S3 bucket with public read access for backups
 
-## 🎯 Technical Exercise Requirements Compliance
+### ✅ Security & Configuration
+- **MongoDB Authentication**: Connection string-based auth implemented
+- **Highly Privileged MongoDB VM**: EC2 with AdministratorAccess IAM role
+- **Container Admin Configuration**: cluster-admin RBAC permissions
+- **exercise.txt File**: Present in container at `/app/exercise.txt`
+- **Legacy Requirements**: Amazon Linux 2 + MongoDB v4.0.x
 
-### Environment Components ✅
-- **Web Application Tier**: Containerized tasky app deployed on Amazon EKS cluster
-- **Database Tier**: MongoDB server on EC2 VM configured for Kubernetes access  
-- **Storage Tier**: S3 bucket with public read permissions for MongoDB backups
-- **Public Access**: Application publicly accessible via AWS Application Load Balancer
-- **Infrastructure-as-Code**: Complete Terraform deployment automation
+### ✅ Infrastructure-as-Code
+- **Complete Terraform automation**: ~50+ AWS resources
+- **Modular design**: Reusable Terraform modules
+- **State management**: Remote state with S3 backend support
+- **Variable configuration**: Customizable deployment parameters
 
-### Security & Configuration Requirements ✅
-- **MongoDB Authentication**: Connection string-based authentication implemented
-- **Highly Privileged MongoDB VM**: EC2 instance with Admin AWS permissions via IAM role
-- **Container Admin Configuration**: Cluster-admin RBAC permissions configured
-- **exercise.txt File**: Container includes required exercise.txt content file
-- **Outdated OS/MongoDB**: Amazon Linux 2 with MongoDB v4.0.x (legacy versions)
+## 🔄 CI/CD & GitOps
 
----
+This project implements GitOps workflows using GitHub Actions:
 
-## 🔄 GitOps Deployment Strategy
+- **Infrastructure**: Terraform plan/apply on `deploy/*` branches
+- **Application**: Container builds and testing on `develop` branch  
+- **Production**: Automated deployments from `main` branch
 
-This project implements a sophisticated GitOps workflow using GitHub Actions and branch-specific deployments:
-
-- **Development Flow**: `develop` branch → container builds and testing
-- **Infrastructure Flow**: `deploy/*` branches → Terraform plan/apply workflows
-- **Production Flow**: `main` branch → production-ready container images
-
-For detailed deployment procedures, environment promotion strategies, and troubleshooting guides, see: **[docs/ops_git_flow.md](docs/ops_git_flow.md)**
-
----
-
-## 🔧 Four Anticipated Challenges & Solutions
-
-### 1. **Challenge: MongoDB Legacy Version Compatibility with Modern EKS**
-**Solution**: Custom user data scripts and version pinning
-- Use Amazon Linux 2 AMI with MongoDB 4.0.x installation scripts
-- Pin specific MongoDB version in EC2 user data
-- Configure security groups for EKS-to-EC2 communication on port 27017
-
-### 2. **Challenge: Public S3 Access Security Considerations**
-**Solution**: Least-privilege IAM with specific bucket policies
-- Create dedicated S3 bucket with public-read-only bucket policy
-- Use IAM roles for EC2 instances rather than access keys
-- Implement backup rotation and lifecycle policies
-
-### 3. **Challenge: EKS to EC2 Network Connectivity**
-**Solution**: Security group rules and VPC routing configuration
-- Configure VPC with public/private subnet architecture
-- Set up security groups allowing EKS pods to reach MongoDB on port 27017
-- Use VPC endpoints for secure AWS service communication
-
-### 4. **Challenge: Container Cluster-Admin RBAC Requirements**
-**Solution**: Kubernetes service accounts and role bindings
-- Create service account with cluster-admin permissions
-- Configure pod security context for required access
-- Implement namespace isolation with appropriate RBAC
-
----
+For detailed GitOps procedures and branch strategies, see: [docs/ops_git_flow.md](docs/ops_git_flow.md)
 
 ## 🧪 Validation & Testing
+
+### Quick Validation Commands
+```bash
+# Verify infrastructure
+terraform show | grep -E "(vpc|eks|ec2|s3)"
+
+# Check application health
+kubectl get all -n tasky
+kubectl logs -f deployment/tasky-app -n tasky
+
+# Test MongoDB connectivity
+MONGODB_IP=$(terraform output -raw mongodb_private_ip)
+kubectl exec -it deployment/tasky-app -n tasky -- nc -zv $MONGODB_IP 27017
+
+# Verify S3 backup access
+S3_BUCKET=$(terraform output -raw s3_backup_bucket_name)
+curl -I https://$S3_BUCKET.s3.us-west-2.amazonaws.com/backups/
+```
 
 ### Pre-Presentation Checklist
 - [ ] Web application accessible via public URL
@@ -234,26 +231,64 @@ For detailed deployment procedures, environment promotion strategies, and troubl
 - [ ] S3 backup accessible via public URL  
 - [ ] Container includes `exercise.txt` file
 - [ ] EKS cluster has cluster-admin RBAC configured
-- [ ] MongoDB VM has AWS Admin permissions
+- [ ] MongoDB VM has AWS Administrator permissions
 
-### Testing Commands
+## 🔧 Troubleshooting
+
+### Common Issues
+1. **AWS Credentials**: Verify with `aws sts get-caller-identity`
+2. **Terraform Errors**: Check AWS permissions and region settings
+3. **EKS Access**: Ensure kubectl is configured correctly
+4. **Pod Failures**: Check logs with `kubectl logs -f deployment/tasky-app -n tasky`
+
+### Debug Commands
 ```bash
-# Test web application access
-curl -I https://your-alb-dns-name.us-west-2.elb.amazonaws.com
+# Check AWS resources
+aws eks describe-cluster --name $(terraform output -raw eks_cluster_name)
+aws ec2 describe-instances --filters "Name=tag:Project,Values=tasky"
 
-# Verify MongoDB connection from EKS pod
-kubectl exec -it tasky-pod -- mongosh mongodb://username:password@mongodb-ip:27017
-
-# Check S3 backup public access
-curl -I https://your-backup-bucket.s3.amazonaws.com/backups/latest.tar.gz
-
-# Verify exercise.txt in container
-kubectl exec -it tasky-pod -- cat /app/exercise.txt
+# Kubernetes debugging
+kubectl describe pod -l app.kubernetes.io/name=tasky -n tasky
+kubectl get events -n tasky --sort-by='.lastTimestamp'
 ```
 
----
+## 🧹 Cleanup
 
-## 📜 License
-© 2025 Insight – Technical Exercise Submission
+```bash
+# Delete Kubernetes resources
+kubectl delete namespace tasky
 
-Original project: https://github.com/dogukanozdemir/golang-todo-mongodb
+# Destroy Terraform infrastructure
+cd terraform/
+terraform destroy
+
+# Verify cleanup
+aws eks list-clusters
+aws ec2 describe-instances --filters "Name=tag:Project,Values=tasky"
+```
+
+## 🎤 Demo Preparation
+
+This deployment is ready for a **45-minute technical presentation** with:
+
+1. **Live Infrastructure Review** (AWS Console walkthrough)
+2. **Application Functionality** (Task management, user authentication)
+3. **Database Operations** (MongoDB queries, data persistence)
+4. **Security Demonstration** (RBAC, IAM roles, authentication)
+5. **Backup Strategy** (S3 public URLs, automated backups)
+6. **Architecture Discussion** (Design decisions, scalability)
+
+### Key Technical Talking Points
+- **Azure to AWS Migration**: Platform expertise demonstration
+- **Legacy System Integration**: Working within constraints (MongoDB 4.0.x, Amazon Linux 2)
+- **Security Compliance**: Enterprise-grade permissions and authentication
+- **Infrastructure Automation**: Terraform best practices and modular design
+- **Operational Excellence**: Monitoring, logging, and backup strategies
+
+## 📜 License & Attribution
+
+**Technical Exercise Submission for Insight Technical Architect Role**
+
+Original project: [dogukanozdemir/golang-todo-mongodb](https://github.com/dogukanozdemir/golang-todo-mongodb)  
+Forked and adapted by: [jeffthorne/tasky](https://github.com/jeffthorne/tasky)  
+AWS Architecture Implementation: © 2025

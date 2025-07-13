@@ -31,12 +31,102 @@ aws configure
 aws sts get-caller-identity
 ```
 
-## Deployment Steps
+## Phase 1: Pre-Flight Validation
 
-### Step 1: Clone and Setup Repository
+Before deploying to AWS, validate all tools and configurations locally:
+
+### Step 1.1: Terraform Validation
+```bash
+# Navigate to terraform directory
+cd terraform/
+
+# Format Terraform files
+terraform fmt
+
+# Validate Terraform syntax
+terraform validate
+
+# Expected output: "Success! The configuration is valid."
+```
+
+### Step 1.2: Go Application Build
+```bash
+# Return to project root
+cd ..
+
+# Install Go dependencies
+go mod tidy
+
+# Build the application
+go build -o tasky main.go
+
+# Verify build success
+ls -la tasky
+
+# Test application (optional)
+./tasky --help || echo "Build successful"
+```
+
+### Step 1.3: Docker Image Build
+```bash
+# Build Docker image
+docker build -t tasky:latest .
+
+# Verify image was created
+docker images | grep tasky
+
+# Verify exercise.txt is included in container
+docker run --rm tasky:latest cat /app/exercise.txt
+
+# Expected output: Technical exercise requirements content
+```
+
+### Step 1.4: Local Development Stack
+```bash
+# Start local development environment
+docker-compose up -d
+
+# Wait for services to start
+sleep 10
+
+# Test application connectivity
+curl -I http://localhost:8080 || echo "Local stack validation complete"
+
+# Clean up local stack
+docker-compose down
+```
+
+### Step 1.5: Kubernetes Manifest Validation
+```bash
+# Download kubeval for offline validation
+curl -L https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz | tar xz -C scripts/utils/
+
+# Validate all Kubernetes manifests
+for file in k8s/*.yaml; do
+  echo "Validating $file..."
+  ./scripts/utils/kubeval "$file"
+done
+
+# Expected output: All manifests should pass validation
+```
+
+### Phase 1 Validation Checklist
+- [ ] Terraform formatting and validation passed
+- [ ] Go application builds successfully
+- [ ] Docker image builds and contains exercise.txt
+- [ ] Local development stack starts without errors
+- [ ] Kubernetes manifests pass kubeval validation
+
+✅ **Phase 1 Complete**: All pre-flight validations passed - ready for AWS deployment
+
+---
+
+## Phase 2: AWS Infrastructure Deployment
+
+### Step 2.1: Clone and Setup Repository
 
 ```bash
-# Clone the repository
+# Clone the repository (if not done in Phase 1)
 git clone https://github.com/your-username/tasky-pivot-for-insight.git
 cd tasky-pivot-for-insight
 
@@ -44,7 +134,7 @@ cd tasky-pivot-for-insight
 chmod +x scripts/*.sh
 ```
 
-### Step 2: Configure Terraform Variables
+### Step 2.2: Configure Terraform Variables
 
 ```bash
 # Copy example variables file
@@ -60,7 +150,7 @@ nano terraform.tfvars
 - `mongodb_password`: Strong password for MongoDB
 - `jwt_secret`: Secret key for JWT tokens
 
-### Step 3: Deploy Infrastructure with Terraform
+### Step 2.3: Deploy Infrastructure with Terraform
 
 ```bash
 # Initialize Terraform
@@ -82,7 +172,7 @@ terraform apply
 - S3 bucket for backups
 - IAM roles and security groups
 
-### Step 4: Configure kubectl
+### Step 2.4: Configure kubectl
 
 ```bash
 # Get cluster name from Terraform output
@@ -96,7 +186,7 @@ aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
 kubectl cluster-info
 ```
 
-### Step 5: Deploy Application
+### Step 2.5: Deploy Application
 
 ```bash
 # Use the deployment script

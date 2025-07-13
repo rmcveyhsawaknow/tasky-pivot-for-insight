@@ -41,7 +41,8 @@ tasky-pivot-for-insight/
 │   └── deploy.sh                      # Application deployment script
 ├── docs/                              # Documentation
 │   ├── technical-specs.md             # Detailed technical specs
-│   └── deployment-guide.md            # Step-by-step deployment
+│   ├── deployment-guide.md            # Step-by-step deployment
+│   └── ops_git_flow.md               # GitOps workflow & deployment strategy
 ├── diagrams/                          # Architecture diagrams
 │   └── README.md                      # Diagram documentation
 ├── .github/workflows/                 # CI/CD pipelines
@@ -147,6 +148,16 @@ The existing `build-and-publish.yml` workflow continues to work:
 - ✅ Pushes to GitHub Container Registry
 - ✅ Tags with branch/commit information
 - ✅ Compatible with new Dockerfile structure
+
+## 🔧 GitOps Strategy Implementation
+
+New deployment branch strategy configured:
+- ✅ `deploy/*` branches trigger Terraform workflows only
+- ✅ `develop` and `main` branches for application development
+- ✅ Environment-specific configurations via branch naming
+- ✅ Secure credential management with GitHub Secrets
+
+**See detailed workflow documentation**: `docs/ops_git_flow.md`
 
 ## 📋 Pre-Presentation Checklist
 

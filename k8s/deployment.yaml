@@ -28,7 +28,7 @@ spec:
       serviceAccountName: tasky-admin
       containers:
       - name: tasky
-        image: ghcr.io/jeffthorne/tasky-pivot-for-insight:main
+        image: ghcr.io/rmcveyhsawaknow/tasky-pivot-for-insight:main
         imagePullPolicy: Always
         ports:
         - containerPort: 8080

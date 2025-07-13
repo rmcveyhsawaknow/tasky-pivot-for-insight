@@ -4,8 +4,8 @@ set -e
 echo "🚀 Deploying Tasky to AWS EKS..."
 
 # Configuration
-CLUSTER_NAME="${CLUSTER_NAME:-tasky-dev-eks-cluster}"
-AWS_REGION="${AWS_REGION:-us-west-2}"
+CLUSTER_NAME="${CLUSTER_NAME:-tasky-dev-v1-eks-cluster}"
+AWS_REGION="${AWS_REGION:-us-east-2}"
 NAMESPACE="tasky"
 
 # Colors for output
@@ -65,11 +65,21 @@ if [ -f "../terraform/terraform.tfstate" ]; then
         print_success "MongoDB IP found: $MONGODB_IP"
         
         # Update the secret with the correct MongoDB URI
-        MONGODB_URI="mongodb://taskyadmin:TaskySecure123!@$MONGODB_IP:27017/tasky"
+        MONGODB_URI="mongodb://taskyadmin:asimplepass@$MONGODB_IP:27017/tasky"
         MONGODB_URI_B64=$(echo -n "$MONGODB_URI" | base64)
         
         print_status "Updating MongoDB URI in secret..."
-        sed -i.bak "s|mongodb-uri:.*|mongodb-uri: $MONGODB_URI_B64|" ../k8s/secret.yaml
+        # Use awk to safely replace the mongodb-uri line
+        awk -v new_uri="$MONGODB_URI_B64" '
+        /^[[:space:]]*mongodb-uri:/ { 
+            print "  mongodb-uri: " new_uri
+            next 
+        }
+        { print }
+        ' ../k8s/secret.yaml > ../k8s/secret.yaml.tmp
+        mv ../k8s/secret.yaml.tmp ../k8s/secret.yaml
+        print_success "MongoDB URI updated successfully"
+        
     else
         print_warning "Could not retrieve MongoDB IP from Terraform. Using placeholder value."
     fi

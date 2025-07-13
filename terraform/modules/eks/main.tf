@@ -1,6 +1,6 @@
 # EKS Cluster Service Role
 resource "aws_iam_role" "eks_cluster" {
-  name = "${var.project_name}-${var.environment}-eks-cluster-role"
+  name = "${var.project_name}-${var.environment}-${var.stack_version}-eks-cluster-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -25,7 +25,7 @@ resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
 
 # EKS Node Group Service Role
 resource "aws_iam_role" "eks_node_group" {
-  name = "${var.project_name}-${var.environment}-eks-node-group-role"
+  name = "${var.project_name}-${var.environment}-${var.stack_version}-eks-node-group-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -60,7 +60,7 @@ resource "aws_iam_role_policy_attachment" "eks_container_registry_policy" {
 
 # Security Group for EKS additional rules
 resource "aws_security_group" "eks_additional" {
-  name_prefix = "${var.project_name}-${var.environment}-eks-additional-"
+  name_prefix = "${var.project_name}-${var.environment}-${var.stack_version}-eks-additional-"
   vpc_id      = var.vpc_id
 
   # Allow access to MongoDB
@@ -73,7 +73,7 @@ resource "aws_security_group" "eks_additional" {
   }
 
   tags = merge(var.tags, {
-    Name = "${var.project_name}-${var.environment}-eks-additional-sg"
+    Name = "${var.project_name}-${var.environment}-${var.stack_version}-eks-additional-sg"
   })
 }
 
@@ -90,7 +90,7 @@ resource "aws_security_group_rule" "mongodb_from_eks" {
 
 # EKS Cluster
 resource "aws_eks_cluster" "main" {
-  name     = "${var.project_name}-${var.environment}-eks-cluster"
+  name     = "${var.project_name}-${var.environment}-${var.stack_version}-eks-cluster"
   role_arn = aws_iam_role.eks_cluster.arn
   version  = "1.28"
 
@@ -113,7 +113,7 @@ resource "aws_eks_cluster" "main" {
 # EKS Node Group
 resource "aws_eks_node_group" "main" {
   cluster_name    = aws_eks_cluster.main.name
-  node_group_name = "${var.project_name}-${var.environment}-eks-nodes"
+  node_group_name = "${var.project_name}-${var.environment}-${var.stack_version}-eks-nodes"
   node_role_arn   = aws_iam_role.eks_node_group.arn
   subnet_ids      = var.private_subnet_ids
 
@@ -142,19 +142,19 @@ resource "aws_eks_node_group" "main" {
 
 # EKS Add-ons
 resource "aws_eks_addon" "vpc_cni" {
-  cluster_name = aws_eks_cluster.main.name
-  addon_name   = "vpc-cni"
+  cluster_name  = aws_eks_cluster.main.name
+  addon_name    = "vpc-cni"
   addon_version = "v1.15.1-eksbuild.1"
-  resolve_conflicts = "OVERWRITE"
+  #resolve_conflicts = "OVERWRITE"
 
   tags = var.tags
 }
 
 resource "aws_eks_addon" "coredns" {
-  cluster_name = aws_eks_cluster.main.name
-  addon_name   = "coredns"
+  cluster_name  = aws_eks_cluster.main.name
+  addon_name    = "coredns"
   addon_version = "v1.10.1-eksbuild.5"
-  resolve_conflicts = "OVERWRITE"
+  #resolve_conflicts = "OVERWRITE"
 
   depends_on = [aws_eks_node_group.main]
 
@@ -162,19 +162,19 @@ resource "aws_eks_addon" "coredns" {
 }
 
 resource "aws_eks_addon" "kube_proxy" {
-  cluster_name = aws_eks_cluster.main.name
-  addon_name   = "kube-proxy"
+  cluster_name  = aws_eks_cluster.main.name
+  addon_name    = "kube-proxy"
   addon_version = "v1.28.2-eksbuild.2"
-  resolve_conflicts = "OVERWRITE"
+  #resolve_conflicts = "OVERWRITE"
 
   tags = var.tags
 }
 
 resource "aws_eks_addon" "ebs_csi" {
-  cluster_name = aws_eks_cluster.main.name
-  addon_name   = "aws-ebs-csi-driver"
+  cluster_name  = aws_eks_cluster.main.name
+  addon_name    = "aws-ebs-csi-driver"
   addon_version = "v1.24.0-eksbuild.1"
-  resolve_conflicts = "OVERWRITE"
+  #resolve_conflicts = "OVERWRITE"
 
   tags = var.tags
 }

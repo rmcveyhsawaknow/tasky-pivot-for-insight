@@ -8,38 +8,41 @@ This document outlines a systematic post-it note approach for validating the Tas
 
 ### 1. **Terraform Syntax & Module Validation**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\terraform\
+# Location: Repo Root Directory -\terraform\
 cd terraform/
 terraform fmt -check -recursive
 terraform validate
-find modules/ -name "*.tf" -execdir terraform validate \;
 ```
 **Expected Result**: All modules pass validation without errors  
-**Post-it Status**: [ ] ✅ PASS [ ] ❌ FAIL [ ] 🔄 IN PROGRESS
+**Post-it Status**: [X] ✅ PASS [ ] ❌ FAIL [ ] 🔄 IN PROGRESS
 
 ### 2. **Go Application Compilation & Dependencies**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\
+# Location: Repo Root Directory -\
 go mod tidy
 go mod verify
 go build -o tasky ./main.go
 ```
 **Expected Result**: Application compiles successfully, all dependencies resolved  
-**Post-it Status**: [ ] ✅ PASS [ ] ❌ FAIL [ ] 🔄 IN PROGRESS
+**Post-it Status**: [X] ✅ PASS [ ] ❌ FAIL [ ] 🔄 IN PROGRESS
 
 ### 3. **Docker Build & exercise.txt Validation**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\
+# Location: Repo Root Directory -\
 docker build -t tasky-test .
-docker run --rm tasky-test cat /app/exercise.txt
-docker run --rm tasky-test ls -la /app/
+
+# Note: The container's default ENTRYPOINT runs the Go app, so to run shell commands like 'cat' or 'ls',
+# override the entrypoint as shown below:
+docker run --rm --entrypoint cat tasky-test /app/exercise.txt
+docker run --rm --entrypoint ls tasky-test -la /app/
 ```
-**Expected Result**: Container builds successfully, exercise.txt file present and readable  
-**Post-it Status**: [ ] ✅ PASS [ ] ❌ FAIL [ ] 🔄 IN PROGRESS
+**Expected Result**: Container builds successfully, `exercise.txt` file is present and readable, and `/app` contains the expected files (`tasky`, `exercise.txt`, `assets/`).
+
+**Post-it Status**: [X] ✅ PASS [ ] ❌ FAIL [ ] 🔄 IN PROGRESS
 
 ### 4. **Local Development Stack Testing**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\
+# Location: Repo Root Directory -\
 docker-compose up --build -d
 sleep 30
 curl -I http://localhost:8080
@@ -47,22 +50,41 @@ docker-compose logs tasky
 docker-compose down
 ```
 **Expected Result**: Application starts, responds to HTTP requests, no critical errors in logs  
-**Post-it Status**: [ ] ✅ PASS [ ] ❌ FAIL [ ] 🔄 IN PROGRESS
+**Post-it Status**: [X] ✅ PASS [ ] ❌ FAIL [ ] 🔄 IN PROGRESS
+
 
 ### 5. **Kubernetes Manifest Validation**
+
+**Option A: Validate with kubectl (Active Cluster)**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\k8s\
-kubectl apply --dry-run=client -f .
+# Location: Repo Root Directory -\k8s\
+kubectl apply --dry-run=client -f k8s/
 kubectl auth can-i '*' '*' --as=system:serviceaccount:tasky:tasky-admin --dry-run
 ```
-**Expected Result**: All manifests validate, RBAC permissions configured correctly  
-**Post-it Status**: [ ] ✅ PASS [ ] ❌ FAIL [ ] 🔄 IN PROGRESS
+**Expected Result**: All manifests validate, RBAC permissions configured correctly
+
+**Option B: Validate with kubeval (No Cluster Required)**
+```bash
+# Location: Repo Root Directory -\
+mkdir -p scripts/utils
+curl -sSLo scripts/utils/kubeval.tar.gz https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz
+tar -xzf scripts/utils/kubeval.tar.gz -C scripts/utils
+chmod +x scripts/utils/kubeval
+scripts/utils/kubeval k8s/*.yaml
+```
+**Expected Result**: All Kubernetes YAML files pass kubeval validation
+
+**Note:**
+- Use Option A if you have an active Kubernetes cluster configured.
+- Use Option B for offline validation or if you do not have cluster access. This keeps utility tools organized in `scripts/utils`.
+
+**Post-it Status**: [X-B] ✅ PASS [X-A] ❌ FAIL [ ] 🔄 IN PROGRESS
 
 ## 📋 Phase 2: AWS Infrastructure Deployment (Items 6-10)
 
 ### 6. **AWS Credentials & Terraform Initialization**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\terraform\
+# Location: Repo Root Directory -\terraform\
 aws sts get-caller-identity
 aws ec2 describe-regions --region us-west-2
 terraform init
@@ -72,7 +94,7 @@ terraform init
 
 ### 7. **Terraform Plan Validation (50+ Resources)**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\terraform\
+# Location: Repo Root Directory -\terraform\
 cp terraform.tfvars.example terraform.tfvars
 # Edit terraform.tfvars with your AWS settings
 terraform plan -out=tfplan -var-file=terraform.tfvars
@@ -82,7 +104,7 @@ terraform plan -out=tfplan -var-file=terraform.tfvars
 
 ### 8. **Infrastructure Deployment (15-20 minutes)**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\terraform\
+# Location: Repo Root Directory -\terraform\
 terraform apply tfplan
 terraform output > ../deployment-outputs.txt
 ```
@@ -91,7 +113,7 @@ terraform output > ../deployment-outputs.txt
 
 ### 9. **EKS Cluster Configuration & Connectivity**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\terraform\
+# Location: Repo Root Directory -\terraform\
 CLUSTER_NAME=$(terraform output -raw eks_cluster_name)
 AWS_REGION=$(terraform output -raw aws_region)
 aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
@@ -103,7 +125,7 @@ kubectl cluster-info
 
 ### 10. **MongoDB EC2 Instance Validation**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\terraform\
+# Location: Repo Root Directory -\terraform\
 MONGODB_IP=$(terraform output -raw mongodb_private_ip)
 INSTANCE_ID=$(terraform output -raw mongodb_instance_id)
 aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].State.Name'
@@ -115,7 +137,7 @@ aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].
 
 ### 11. **Kubernetes Application Deployment**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\k8s\
+# Location: Repo Root Directory -\k8s\
 kubectl apply -f .
 kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=tasky -n tasky --timeout=300s
 ```
@@ -124,7 +146,7 @@ kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=tasky -n tasky 
 
 ### 12. **Load Balancer Service Provisioning**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\
+# Location: Repo Root Directory -\
 kubectl get svc tasky-service -n tasky
 LB_URL=$(kubectl get svc tasky-service -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 echo "Application URL: http://$LB_URL"
@@ -134,7 +156,7 @@ echo "Application URL: http://$LB_URL"
 
 ### 13. **Public Web Application Access Testing**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\
+# Location: Repo Root Directory -\
 LB_URL=$(kubectl get svc tasky-service -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 curl -I http://$LB_URL
 curl http://$LB_URL | grep -i tasky
@@ -144,7 +166,7 @@ curl http://$LB_URL | grep -i tasky
 
 ### 14. **MongoDB Connectivity from EKS**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\terraform\
+# Location: Repo Root Directory -\terraform\
 MONGODB_IP=$(terraform output -raw mongodb_private_ip)
 kubectl exec -it deployment/tasky-app -n tasky -- nc -zv $MONGODB_IP 27017
 kubectl exec -it deployment/tasky-app -n tasky -- mongosh "mongodb://taskyadmin:TaskySecure123!@$MONGODB_IP:27017/tasky" --eval "db.stats()"
@@ -154,7 +176,7 @@ kubectl exec -it deployment/tasky-app -n tasky -- mongosh "mongodb://taskyadmin:
 
 ### 15. **Container Exercise Requirements Validation**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\
+# Location: Repo Root Directory -\
 kubectl exec -it deployment/tasky-app -n tasky -- cat /app/exercise.txt
 kubectl auth can-i '*' '*' --as=system:serviceaccount:tasky:tasky-admin
 kubectl describe pod -l app.kubernetes.io/name=tasky -n tasky | grep -A 5 -B 5 "Service Account"
@@ -166,7 +188,7 @@ kubectl describe pod -l app.kubernetes.io/name=tasky -n tasky | grep -A 5 -B 5 "
 
 ### 16. **S3 Backup Public Access Testing**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\terraform\
+# Location: Repo Root Directory -\terraform\
 S3_BUCKET=$(terraform output -raw s3_backup_bucket_name)
 curl -I https://$S3_BUCKET.s3.us-west-2.amazonaws.com/backups/latest.tar.gz
 aws s3 ls s3://$S3_BUCKET/backups/
@@ -176,7 +198,7 @@ aws s3 ls s3://$S3_BUCKET/backups/
 
 ### 17. **EC2 Instance Admin Permissions Validation**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\terraform\
+# Location: Repo Root Directory -\terraform\
 INSTANCE_ID=$(terraform output -raw mongodb_instance_id)
 aws ssm send-command \
   --instance-ids $INSTANCE_ID \
@@ -188,7 +210,7 @@ aws ssm send-command \
 
 ### 18. **MongoDB Backup Script Execution**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\terraform\
+# Location: Repo Root Directory -\terraform\
 INSTANCE_ID=$(terraform output -raw mongodb_instance_id)
 aws ssm send-command \
   --instance-ids $INSTANCE_ID \
@@ -200,7 +222,7 @@ aws ssm send-command \
 
 ### 19. **Legacy System Requirements Confirmation**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\terraform\
+# Location: Repo Root Directory -\terraform\
 INSTANCE_ID=$(terraform output -raw mongodb_instance_id)
 aws ssm send-command \
   --instance-ids $INSTANCE_ID \
@@ -212,7 +234,7 @@ aws ssm send-command \
 
 ### 20. **GitHub Actions Workflow Validation**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\
+# Location: Repo Root Directory -\
 yamllint .github/workflows/*.yml
 actionlint .github/workflows/*.yml
 git add . && git commit -m "test: validate GitHub Actions workflows"
@@ -224,7 +246,7 @@ git add . && git commit -m "test: validate GitHub Actions workflows"
 
 ### 21. **Deployment Branch Creation & Configuration**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\
+# Location: Repo Root Directory -\
 git checkout -b deploy/stack-version-1
 cp terraform/terraform.tfvars terraform/deploy-stack-v1.tfvars
 # Edit deploy-stack-v1.tfvars for production settings
@@ -244,7 +266,7 @@ echo "Configure GitHub secrets in repository settings"
 
 ### 23. **GitHub Actions Terraform Workflow Testing**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\
+# Location: Repo Root Directory -\
 git add .
 git commit -m "deploy: stack version 1 with branch-specific variables
 
@@ -270,7 +292,7 @@ echo "Monitor GitHub Actions workflow execution"
 
 ### 25. **Production Readiness Final Validation**
 ```bash
-# Location: c:\Users\rjmcv\source\repos\tasky-pivot-for-insight\
+# Location: Repo Root Directory -\
 # Execute complete validation suite
 ./scripts/validate-deployment.sh
 # Or run individual validation commands

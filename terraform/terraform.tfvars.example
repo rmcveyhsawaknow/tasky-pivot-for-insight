@@ -1,21 +1,38 @@
-# Copy this file to terraform.tfvars and customize values
-aws_region     = "us-west-2"
-environment    = "dev"
-project_name   = "tasky"
+# ==============================================================================
+# TASKY TERRAFORM VARIABLES EXAMPLE
+# ==============================================================================
+# Copy this file to terraform.tfvars and customize the values for your deployment
+
+# AWS Configuration
+aws_region = "us-west-2"  # Change to your preferred AWS region
+
+# Environment and Project
+environment    = "dev"      # Options: dev, stg, prd
+project_name   = "tasky"    # Used for resource naming and tagging
+stack_version  = "v1"       # Version identifier to avoid duplicates
 
 # VPC Configuration
-vpc_cidr = "10.0.0.0/16"
+vpc_cidr = "10.0.0.0/16"  # VPC CIDR block
+
+# EKS Cluster Configuration
+eks_node_instance_types = ["t3.medium"]  # Instance types for worker nodes
+eks_node_desired_size   = 2              # Desired number of worker nodes
+eks_node_max_size       = 3              # Maximum number of worker nodes
+eks_node_min_size       = 1              # Minimum number of worker nodes
 
 # MongoDB Configuration
-mongodb_instance_type = "t3.medium"
-mongodb_username     = "taskyadmin"
-mongodb_password     = "TaskySecure123!"
+mongodb_instance_type = "t3.medium"           # EC2 instance type for MongoDB
+mongodb_username     = "taskyadmin"           # MongoDB admin username
+mongodb_password     = "TaskySecure123!"      # MongoDB admin password (change this!)
 
 # JWT Configuration
-jwt_secret = "tasky-jwt-secret-key-for-insight-exercise"
+jwt_secret = "tasky-jwt-secret-key-for-insight-exercise"  # JWT secret key (change this!)
 
-# EKS Configuration
-eks_node_instance_types = ["t3.medium"]
-eks_node_desired_size   = 2
-eks_node_max_size       = 3
-eks_node_min_size       = 1
+# ==============================================================================
+# SECURITY NOTES:
+# ==============================================================================
+# 1. Change the default passwords before deploying to any environment
+# 2. Use strong, unique passwords for mongodb_password and jwt_secret
+# 3. Consider using AWS Secrets Manager for production deployments
+# 4. Never commit terraform.tfvars with real secrets to version control
+# 5. Add terraform.tfvars to .gitignore to prevent accidental commits

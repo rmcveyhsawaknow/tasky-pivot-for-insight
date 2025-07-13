@@ -1,0 +1,95 @@
+# ==============================================================================
+# DOCKERIGNORE - TASKY APPLICATION
+# ==============================================================================
+# Exclude unnecessary files from build context for faster builds and smaller images
+
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Build artifacts
+*.o
+*.so
+*.exe
+*.dll
+tasky
+dist/
+build/
+
+# Go specific
+vendor/
+*.test
+*.prof
+coverage.txt
+.coverage
+
+# Environment and configuration files
+.env
+.env.local
+.env.development
+.env.production
+*.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Documentation
+README.md
+CHANGELOG.md
+LICENSE
+docs/
+*.md
+!exercise.txt
+
+# CI/CD files
+.github/
+.gitlab-ci.yml
+Jenkinsfile
+
+# Terraform infrastructure
+terraform/
+*.tf
+*.tfvars
+*.tfstate
+*.tfstate.backup
+
+# Kubernetes manifests
+k8s/
+*.yaml
+*.yml
+
+# Backup and temporary files
+*.bak
+*.tmp
+*.log
+logs/
+
+# Test files and mocks
+*_test.go
+testdata/
+mocks/
+
+# Dependencies (will be downloaded in container)
+go.sum.backup
+
+# Docker files (don't include other Dockerfiles)
+Dockerfile.*
+docker-compose*.yml
+
+# Diagrams and images (not needed in container)
+diagrams/
+*.png
+*.jpg
+*.gif
+*.svg
+
+# Scripts not needed in container
+scripts/
+deploy.sh

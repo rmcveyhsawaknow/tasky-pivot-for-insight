@@ -47,13 +47,13 @@ resource "aws_security_group" "mongodb" {
   }
 
   tags = merge(var.tags, {
-    Name = "${var.project_name}-${var.environment}-mongodb-sg"
+    Name = "${var.project_name}-${var.environment}-${var.stack_version}-mongodb-sg"
   })
 }
 
 # IAM Role for MongoDB EC2 instance (Admin access as required)
 resource "aws_iam_role" "mongodb" {
-  name = "${var.project_name}-${var.environment}-mongodb-role"
+  name = "${var.project_name}-${var.environment}-${var.stack_version}-mongodb-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -79,7 +79,7 @@ resource "aws_iam_role_policy_attachment" "mongodb_admin" {
 
 # IAM Instance Profile
 resource "aws_iam_instance_profile" "mongodb" {
-  name = "${var.project_name}-${var.environment}-mongodb-profile"
+  name = "${var.project_name}-${var.environment}-${var.stack_version}-mongodb-profile"
   role = aws_iam_role.mongodb.name
 
   tags = var.tags
@@ -105,8 +105,8 @@ locals {
 # EC2 Instance for MongoDB
 resource "aws_instance" "mongodb" {
   ami                    = data.aws_ami.amazon_linux_2.id
-  instance_type         = var.instance_type
-  subnet_id             = var.private_subnet_ids[0]
+  instance_type          = var.instance_type
+  subnet_id              = var.private_subnet_ids[0]
   vpc_security_group_ids = [aws_security_group.mongodb.id]
   iam_instance_profile   = aws_iam_instance_profile.mongodb.name
 
@@ -118,12 +118,12 @@ resource "aws_instance" "mongodb" {
     encrypted   = true
 
     tags = merge(var.tags, {
-      Name = "${var.project_name}-${var.environment}-mongodb-root"
+      Name = "${var.project_name}-${var.environment}-${var.stack_version}-mongodb-root"
     })
   }
 
   tags = merge(var.tags, {
-    Name = "${var.project_name}-${var.environment}-mongodb"
+    Name = "${var.project_name}-${var.environment}-${var.stack_version}-mongodb"
     Role = "database"
   })
 }

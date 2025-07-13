@@ -1,5 +1,5 @@
 locals {
-  bucket_name = "${var.project_name}-${var.environment}-mongodb-backup-${random_string.bucket_suffix.result}"
+  bucket_name = "${var.project_name}-${var.environment}-${var.stack_version}-mongodb-backup-${random_string.bucket_suffix.result}"
 }
 
 resource "random_string" "bucket_suffix" {
@@ -13,7 +13,7 @@ resource "aws_s3_bucket" "backup" {
   bucket = local.bucket_name
 
   tags = merge(var.tags, {
-    Name = "${var.project_name}-${var.environment}-mongodb-backup"
+    Name    = "${var.project_name}-${var.environment}-${var.stack_version}-mongodb-backup"
     Purpose = "MongoDB backup storage with public read access"
   })
 }
@@ -63,6 +63,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "backup" {
   rule {
     id     = "backup_lifecycle"
     status = "Enabled"
+
+    filter {
+      prefix = "backups/"
+    }
 
     expiration {
       days = 30

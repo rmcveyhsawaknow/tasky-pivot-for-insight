@@ -37,7 +37,7 @@ This document provides detailed technical specifications for the Tasky applicati
 
 ### VPC Configuration
 - **CIDR Block**: 10.0.0.0/16
-- **Availability Zones**: 3 (us-west-2a, us-west-2b, us-west-2c)
+- **Availability Zones**: 3 (us-east-2a, us-east-2b, us-east-2c)
 - **Public Subnets**: 3 (10.0.0.0/24, 10.0.1.0/24, 10.0.2.0/24)
 - **Private Subnets**: 3 (10.0.3.0/24, 10.0.4.0/24, 10.0.5.0/24)
 - **NAT Gateways**: 3 (one per AZ for high availability)

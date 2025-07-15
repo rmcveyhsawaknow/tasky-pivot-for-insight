@@ -1,11 +1,11 @@
 variable "aws_region" {
   description = "AWS region where resources will be created"
   type        = string
-  default     = "us-west-2"
+  default     = "us-east-2"
 
   validation {
     condition     = can(regex("^[a-z]{2}-[a-z]+-[0-9]$", var.aws_region))
-    error_message = "AWS region must be in the format xx-xxxx-x (e.g., us-west-2)."
+    error_message = "AWS region must be in the format xx-xxxx-x (e.g., us-east-2)."
   }
 }
 
@@ -51,7 +51,7 @@ variable "vpc_cidr" {
 variable "availability_zones" {
   description = "Availability zones"
   type        = list(string)
-  default     = ["us-west-2a", "us-west-2b", "us-west-2c"]
+  default     = ["us-east-2a", "us-east-2b", "us-east-2c"]
 }
 
 variable "mongodb_instance_type" {

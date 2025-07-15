@@ -244,11 +244,11 @@ main() {
     if [ ${#missing_tools[@]} -eq 0 ]; then
         log_success "All required tools are installed and ready!"
         echo -e "\n${GREEN}Next Steps:${NC}"
-        echo "1. Configure AWS credentials: ${YELLOW}aws configure${NC}"
-        echo "2. Verify AWS access: ${YELLOW}aws sts get-caller-identity${NC}"
-        echo "3. Navigate to terraform directory: ${YELLOW}cd terraform/${NC}"
-        echo "4. Initialize Terraform: ${YELLOW}terraform init${NC}"
-        echo "5. Review deployment guide: ${YELLOW}docs/deployment-guide.md${NC}"
+        echo "1. Configure AWS credentials: aws configure"
+        echo "2. Verify AWS access: aws sts get-caller-identity"
+        echo "3. Navigate to terraform directory: cd terraform/"
+        echo "4. Initialize Terraform: terraform init"
+        echo "5. Review deployment guide: docs/deployment-guide.md"
     else
         log_error "Missing critical tools: ${missing_tools[*]}"
         echo -e "\n${RED}Please resolve the missing tools before proceeding.${NC}"

@@ -4,7 +4,7 @@
 # Copy this file to terraform.tfvars and customize the values for your deployment
 
 # AWS Configuration
-aws_region = "us-west-2"  # Change to your preferred AWS region
+aws_region = "us-east-2"  # Change to your preferred AWS region
 
 # Environment and Project
 environment    = "dev"      # Options: dev, stg, prd

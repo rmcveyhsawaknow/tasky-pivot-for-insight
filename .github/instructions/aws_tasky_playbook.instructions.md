@@ -76,7 +76,7 @@ cd tasky-pivot-for-insight
 
 ```bash
 # Set your AWS region
-export AWS_REGION=us-west-2
+export AWS_REGION=us-east-2
 export AWS_PROFILE=your-aws-profile
 
 # Verify AWS credentials
@@ -155,7 +155,7 @@ kubectl get pods -n tasky
 
 ```bash
 # Test web application access
-curl -I https://your-alb-dns-name.us-west-2.elb.amazonaws.com
+curl -I https://your-alb-dns-name.us-east-2.elb.amazonaws.com
 
 # Verify MongoDB connection from EKS pod
 kubectl exec -it tasky-pod -- mongosh mongodb://username:password@mongodb-ip:27017

@@ -57,7 +57,7 @@ cp terraform.tfvars.example terraform.tfvars
 Edit `terraform.tfvars` with your specific values:
 
 ```hcl
-aws_region    = "us-west-2"
+aws_region    = "us-east-2"
 environment   = "dev"        # Options: dev, stg, prd
 project_name  = "tasky"
 stack_version = "v1"         # Version identifier for unique naming
@@ -95,7 +95,7 @@ terraform apply
 ### 6. Configure kubectl
 
 ```bash
-aws eks update-kubeconfig --region us-west-2 --name tasky-dev-v1-eks-cluster
+aws eks update-kubeconfig --region us-east-2 --name tasky-dev-v1-eks-cluster
 ```
 
 ## Module Structure
@@ -121,7 +121,7 @@ terraform/
 
 | Variable | Description | Type | Default | Required |
 |----------|-------------|------|---------|----------|
-| `aws_region` | AWS region for resources | string | "us-west-2" | No |
+| `aws_region` | AWS region for resources | string | "us-east-2" | No |
 | `environment` | Environment name (dev/stg/prd) | string | "dev" | No |
 | `project_name` | Project name for resource naming | string | "tasky" | No |
 | `stack_version` | Stack version identifier | string | "v1" | No |
@@ -195,7 +195,7 @@ terraform {
   backend "s3" {
     bucket         = "your-terraform-state-bucket"
     key            = "tasky/terraform.tfstate"
-    region         = "us-west-2"
+    region         = "us-east-2"
     dynamodb_table = "terraform-state-lock"
     encrypt        = true
   }

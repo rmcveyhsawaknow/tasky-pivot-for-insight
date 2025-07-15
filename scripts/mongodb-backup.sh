@@ -8,7 +8,7 @@ MONGODB_DATABASE="${MONGODB_DATABASE:-tasky}"
 MONGODB_USERNAME="${MONGODB_USERNAME:-taskyadmin}"
 MONGODB_PASSWORD="${MONGODB_PASSWORD:-TaskySecure123!}"
 S3_BUCKET="${S3_BUCKET:-tasky-dev-mongodb-backup}"
-AWS_REGION="${AWS_REGION:-us-west-2}"
+AWS_REGION="${AWS_REGION:-us-east-2}"
 
 # Generate timestamp
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)

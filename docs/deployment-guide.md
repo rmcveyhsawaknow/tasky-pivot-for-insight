@@ -4,7 +4,30 @@ This guide provides step-by-step instructions for deploying the Tasky applicatio
 
 ## Prerequisites
 
-### Required Tools
+### Automated Setup (Recommended for Codespaces)
+
+For GitHub Codespaces or fresh Linux environments, use the automated setup script:
+
+```bash
+# Run the automated setup script
+./scripts/setup-codespace.sh
+```
+
+This script will:
+- ✅ Check versions of pre-installed tools (Git, Docker, kubectl)
+- 🔧 Install AWS CLI v2 if missing or upgrade from v1
+- 🔧 Install Terraform v1.0+ if missing or below minimum version
+- ✅ Verify all installations and display version summary
+- 📋 Provide next steps for AWS configuration
+
+> **📝 Note:** For detailed script documentation, see [`scripts/README.md`](../scripts/README.md)
+- 📋 Provide next steps for AWS configuration
+
+### Manual Installation (Alternative)
+
+If you prefer manual installation or the script doesn't work for your environment:
+
+#### Required Tools
 - **AWS CLI v2**: [Installation Guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 - **Terraform v1.0+**: [Installation Guide](https://developer.hashicorp.com/terraform/install)
 - **kubectl**: [Installation Guide](https://kubernetes.io/docs/tasks/tools/)

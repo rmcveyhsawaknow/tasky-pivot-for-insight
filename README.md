@@ -35,11 +35,25 @@ This repository delivers a **three-tier web application architecture** as part o
 ## 🚀 Quick Start
 
 ### Prerequisites
+
+#### Option 1: Automated Setup (Recommended for Codespaces)
+```bash
+# Run the automated setup script
+./scripts/setup-codespace.sh
+```
+
+#### Option 2: Manual Prerequisites
 - **AWS Account** with billing enabled and appropriate permissions
 - **AWS CLI v2** installed and configured (`aws configure`)
 - **Terraform v1.0+** installed  
 - **kubectl** installed
 - **Docker** installed
+
+#### Quick Version Check
+```bash
+# Check if all tools are installed and meet requirements
+./scripts/check-versions.sh
+```
 
 ### 1. Configure AWS Credentials
 ```bash
@@ -125,6 +139,8 @@ tasky-pivot-for-insight/
 │   ├── secret.yaml            # MongoDB connection secrets
 │   └── namespace.yaml         # Namespace definition
 ├── scripts/                   # Automation scripts
+│   ├── setup-codespace.sh     # Automated tool installation & setup
+│   ├── check-versions.sh      # Tool version verification
 │   ├── deploy.sh              # Application deployment script
 │   └── mongodb-backup.sh      # MongoDB backup script
 ├── docs/                      # Documentation

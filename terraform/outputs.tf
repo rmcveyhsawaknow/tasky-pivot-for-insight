@@ -9,6 +9,11 @@ output "vpc_id" {
   value       = module.vpc.vpc_id
 }
 
+output "aws_region" {
+  description = "AWS region where resources are deployed"
+  value       = var.aws_region
+}
+
 # EKS Cluster Information
 output "eks_cluster_name" {
   description = "Name of the EKS cluster for containerized applications"
@@ -25,10 +30,20 @@ output "eks_cluster_security_group_id" {
   value       = module.eks.cluster_security_group_id
 }
 
+output "eks_node_group_security_group_id" {
+  description = "Security group ID for EKS node group"
+  value       = module.eks.node_group_security_group_id
+}
+
 # MongoDB Database Information
 output "mongodb_private_ip" {
   description = "Private IP address of the MongoDB EC2 instance"
   value       = module.mongodb_ec2.private_ip
+}
+
+output "mongodb_instance_id" {
+  description = "EC2 instance ID for the MongoDB server"
+  value       = module.mongodb_ec2.instance_id
 }
 
 output "mongodb_connection_string" {

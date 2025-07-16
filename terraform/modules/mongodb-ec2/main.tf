@@ -110,7 +110,11 @@ resource "aws_instance" "mongodb" {
   vpc_security_group_ids = [aws_security_group.mongodb.id]
   iam_instance_profile   = aws_iam_instance_profile.mongodb.name
 
-  user_data = base64encode(local.user_data)
+  # Fixed: Remove base64encode as templatefile handles encoding properly
+  user_data = local.user_data
+  
+  # Force replacement if user data changes
+  user_data_replace_on_change = true
 
   root_block_device {
     volume_type = "gp3"

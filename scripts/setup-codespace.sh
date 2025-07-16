@@ -64,6 +64,9 @@ main() {
     TEMP_DIR=$(mktemp -d)
     trap "rm -rf $TEMP_DIR" EXIT
     
+    # Create utils directory for tools (needed for kubeval in deployment guide)
+    mkdir -p scripts/utils
+    
     log_header "Phase 1: Checking Pre-installed Tools"
     
     # Check tools that should already be in codespace

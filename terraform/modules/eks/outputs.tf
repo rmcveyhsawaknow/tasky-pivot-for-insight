@@ -23,6 +23,11 @@ output "node_group_arn" {
   value       = aws_eks_node_group.main.arn
 }
 
+output "node_group_security_group_id" {
+  description = "Security group ID for EKS node group"
+  value       = aws_security_group.eks_additional.id
+}
+
 output "load_balancer_hostname" {
   description = "Load balancer hostname (placeholder - will be available after app deployment)"
   value       = "pending-deployment"

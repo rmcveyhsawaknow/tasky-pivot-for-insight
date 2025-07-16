@@ -72,20 +72,40 @@ resource "aws_security_group" "eks_additional" {
     description     = "Access to MongoDB"
   }
 
+  # Add explicit egress for all traffic (required for node functionality)
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "All outbound traffic"
+  }
+
   tags = merge(var.tags, {
     Name = "${var.project_name}-${var.environment}-${var.stack_version}-eks-additional-sg"
   })
 }
 
-# Add rule to MongoDB security group to allow EKS access
-resource "aws_security_group_rule" "mongodb_from_eks" {
+# Add rule to MongoDB security group to allow EKS additional security group access
+resource "aws_security_group_rule" "mongodb_from_eks_additional" {
   type                     = "ingress"
   from_port                = 27017
   to_port                  = 27017
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.eks_additional.id
   security_group_id        = var.mongodb_security_group_id
-  description              = "MongoDB access from EKS cluster"
+  description              = "MongoDB access from EKS additional security group"
+}
+
+# Add rule to MongoDB security group to allow EKS cluster security group access
+resource "aws_security_group_rule" "mongodb_from_eks_cluster" {
+  type                     = "ingress"
+  from_port                = 27017
+  to_port                  = 27017
+  protocol                 = "tcp"
+  source_security_group_id = aws_eks_cluster.main.vpc_config[0].cluster_security_group_id
+  security_group_id        = var.mongodb_security_group_id
+  description              = "MongoDB access from EKS cluster security group"
 }
 
 # EKS Cluster

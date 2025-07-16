@@ -3,10 +3,46 @@ set -e
 
 echo "🚀 Deploying Tasky to AWS EKS..."
 
-# Configuration
+# Configuration - Auto-detect from Terraform if not provided
+if [ -z "$CLUSTER_NAME" ] || [ -z "$AWS_REGION" ]; then
+    print_status() {
+        echo -e "\033[0;34m[INFO]\033[0m $1"
+    }
+    
+    print_status "Auto-detecting cluster configuration from Terraform..."
+    
+    if [ -f "../terraform/terraform.tfstate" ]; then
+        if [ -z "$CLUSTER_NAME" ]; then
+            CLUSTER_NAME=$(cd ../terraform && terraform output -raw eks_cluster_name 2>/dev/null || echo "")
+        fi
+        
+        if [ -z "$AWS_REGION" ]; then
+            # Try different ways to get the region
+            AWS_REGION=$(cd ../terraform && terraform output -raw aws_region 2>/dev/null || echo "")
+            
+            # If aws_region output doesn't exist, extract from kubectl_config_command
+            if [ -z "$AWS_REGION" ]; then
+                AWS_REGION=$(cd ../terraform && terraform output -raw kubectl_config_command 2>/dev/null | grep -o 'region [a-z0-9-]*' | cut -d' ' -f2 || echo "")
+            fi
+        fi
+        
+        if [ -n "$CLUSTER_NAME" ] && [ -n "$AWS_REGION" ]; then
+            echo "✅ Auto-detected from Terraform:"
+            echo "   Cluster Name: $CLUSTER_NAME"
+            echo "   AWS Region: $AWS_REGION"
+        fi
+    fi
+fi
+
+# Fallback to defaults if still not set
 CLUSTER_NAME="${CLUSTER_NAME:-tasky-dev-v1-eks-cluster}"
-AWS_REGION="${AWS_REGION:-us-east-2}"
+AWS_REGION="${AWS_REGION:-us-west-2}"  # Changed to match terraform default
 NAMESPACE="tasky"
+
+echo "Using configuration:"
+echo "  Cluster Name: $CLUSTER_NAME"
+echo "  AWS Region: $AWS_REGION"
+echo "  Namespace: $NAMESPACE"
 
 # Colors for output
 RED='\033[0;31m'
@@ -64,24 +100,38 @@ if [ -f "../terraform/terraform.tfstate" ]; then
     if [ -n "$MONGODB_IP" ]; then
         print_success "MongoDB IP found: $MONGODB_IP"
         
+        # Get MongoDB credentials from terraform outputs or use defaults
+        MONGODB_USERNAME=$(cd ../terraform && terraform output -raw mongodb_username 2>/dev/null || echo "taskyadmin")
+        MONGODB_PASSWORD=$(cd ../terraform && terraform output -raw mongodb_password 2>/dev/null || echo "asimplepass")
+        
         # Update the secret with the correct MongoDB URI
-        MONGODB_URI="mongodb://taskyadmin:asimplepass@$MONGODB_IP:27017/tasky"
+        MONGODB_URI="mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_IP}:27017/tasky"
         MONGODB_URI_B64=$(echo -n "$MONGODB_URI" | base64)
         
-        print_status "Updating MongoDB URI in secret..."
-        # Use awk to safely replace the mongodb-uri line
-        awk -v new_uri="$MONGODB_URI_B64" '
+        # Get JWT secret from terraform or use default
+        JWT_SECRET=$(cd ../terraform && terraform output -raw jwt_secret 2>/dev/null || echo "tasky-jwt-secret-key-for-insight-exercise")
+        JWT_SECRET_B64=$(echo -n "$JWT_SECRET" | base64)
+        
+        print_status "Updating MongoDB URI and JWT secret in secret..."
+        
+        # Use awk to safely replace both the mongodb-uri and jwt-secret lines
+        awk -v new_uri="$MONGODB_URI_B64" -v new_jwt="$JWT_SECRET_B64" '
         /^[[:space:]]*mongodb-uri:/ { 
             print "  mongodb-uri: " new_uri
+            next 
+        }
+        /^[[:space:]]*jwt-secret:/ { 
+            print "  jwt-secret: " new_jwt
             next 
         }
         { print }
         ' ../k8s/secret.yaml > ../k8s/secret.yaml.tmp
         mv ../k8s/secret.yaml.tmp ../k8s/secret.yaml
-        print_success "MongoDB URI updated successfully"
+        print_success "MongoDB URI and JWT secret updated successfully"
         
     else
         print_warning "Could not retrieve MongoDB IP from Terraform. Using placeholder value."
+        print_warning "You may need to manually update the MongoDB connection string later."
     fi
 else
     print_warning "Terraform state not found. Using placeholder MongoDB URI."

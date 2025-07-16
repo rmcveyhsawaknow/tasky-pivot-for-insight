@@ -6,11 +6,42 @@ exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
 echo "Starting MongoDB 4.0.x installation on Amazon Linux 2..."
 
-# Update system
-yum update -y
+# Function to retry commands
+retry_command() {
+    local max_attempts=3
+    local delay=10
+    local attempt=1
+    
+    while [ $attempt -le $max_attempts ]; do
+        echo "Attempt $attempt of $max_attempts..."
+        if "$@"; then
+            echo "Command succeeded on attempt $attempt"
+            return 0
+        else
+            echo "Command failed on attempt $attempt"
+            if [ $attempt -lt $max_attempts ]; then
+                echo "Waiting $delay seconds before retry..."
+                sleep $delay
+            fi
+            attempt=$((attempt + 1))
+        fi
+    done
+    
+    echo "Command failed after $max_attempts attempts"
+    return 1
+}
 
-# Install AWS CLI v2
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+# Wait for network connectivity
+echo "Waiting for network connectivity..."
+retry_command ping -c 3 amazon.com
+
+# Update system with retry
+echo "Updating system packages..."
+retry_command yum update -y
+
+# Install AWS CLI v2 with retry
+echo "Installing AWS CLI v2..."
+retry_command curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 sudo ./aws/install
 rm -rf aws awscliv2.zip
@@ -25,8 +56,9 @@ enabled=1
 gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc
 EOF
 
-# Install MongoDB 4.0.28 (legacy version as required)
-yum install -y mongodb-org-4.0.28 mongodb-org-server-4.0.28 mongodb-org-shell-4.0.28 mongodb-org-mongos-4.0.28 mongodb-org-tools-4.0.28
+# Install MongoDB 4.0.28 (legacy version as required) with retry
+echo "Installing MongoDB 4.0.28..."
+retry_command yum install -y mongodb-org-4.0.28 mongodb-org-server-4.0.28 mongodb-org-shell-4.0.28 mongodb-org-mongos-4.0.28 mongodb-org-tools-4.0.28
 
 # Prevent MongoDB from being updated
 echo "exclude=mongodb-org,mongodb-org-server,mongodb-org-shell,mongodb-org-mongos,mongodb-org-tools" >> /etc/yum.conf
@@ -125,8 +157,9 @@ chmod +x /opt/mongodb-backup/backup.sh
 # Setup daily backup cron job
 echo "0 2 * * * root /opt/mongodb-backup/backup.sh >> /var/log/mongodb-backup.log 2>&1" >> /etc/crontab
 
-# Install CloudWatch agent
-yum install -y amazon-cloudwatch-agent
+# Install CloudWatch agent with retry
+echo "Installing CloudWatch agent..."
+retry_command yum install -y amazon-cloudwatch-agent
 
 # Create CloudWatch agent configuration
 cat > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json << 'EOF'

@@ -36,7 +36,7 @@
 - **Infrastructure**: Complete Terraform automation with ~50+ AWS resources
 
 ### 🗺️ Architecture Diagram
-![AWS Architecture Diagram](diagrams/aws_architecture_diagram1.png)
+![AWS Architecture Diagram](diagrams/enhanced-graph.svg)
 
 ## 🚀 Infrastructure Automation Methods
 

@@ -73,6 +73,17 @@ variable "mongodb_password" {
   default     = "TaskySecure123!"
 }
 
+variable "mongodb_database_name" {
+  description = "Name of the MongoDB database to create"
+  type        = string
+  default     = "go-mongodb"
+
+  validation {
+    condition     = can(regex("^[a-zA-Z][a-zA-Z0-9_-]*$", var.mongodb_database_name))
+    error_message = "Database name must start with a letter and contain only letters, numbers, underscores, and hyphens."
+  }
+}
+
 variable "jwt_secret" {
   description = "JWT secret key"
   type        = string

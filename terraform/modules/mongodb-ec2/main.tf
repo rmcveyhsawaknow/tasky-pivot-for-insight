@@ -96,9 +96,10 @@ resource "aws_cloudwatch_log_group" "mongodb" {
 # Render user data script with variables
 locals {
   user_data = templatefile("${path.module}/user-data.sh", {
-    MONGODB_USERNAME   = var.mongodb_username
-    MONGODB_PASSWORD   = var.mongodb_password
-    BACKUP_BUCKET_NAME = var.backup_bucket_name
+    MONGODB_USERNAME      = var.mongodb_username
+    MONGODB_PASSWORD      = var.mongodb_password
+    MONGODB_DATABASE_NAME = var.mongodb_database_name
+    BACKUP_BUCKET_NAME    = var.backup_bucket_name
   })
 }
 
@@ -110,8 +111,8 @@ resource "aws_instance" "mongodb" {
   vpc_security_group_ids = [aws_security_group.mongodb.id]
   iam_instance_profile   = aws_iam_instance_profile.mongodb.name
 
-  # Fixed: Remove base64encode as templatefile handles encoding properly
-  user_data = local.user_data
+  # CRITICAL FIX: Use user_data_base64 for proper encoding
+  user_data_base64 = base64encode(local.user_data)
   
   # Force replacement if user data changes
   user_data_replace_on_change = true

@@ -36,6 +36,7 @@ terraform.tfstate
 terraform.tfstate.backup
 terraform.tfplan
 *.tfplan
+terraform/.terraform.tfstate.lock.info
 
 # DO commit .terraform.lock.hcl
 # This file locks Terraform provider versions for reproducible builds across your team and CI/CD.

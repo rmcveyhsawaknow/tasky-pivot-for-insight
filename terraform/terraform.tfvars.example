@@ -24,6 +24,7 @@ eks_node_min_size       = 1              # Minimum number of worker nodes
 mongodb_instance_type = "t3.medium"           # EC2 instance type for MongoDB
 mongodb_username     = "taskyadmin"           # MongoDB admin username
 mongodb_password     = "TaskySecure123!"      # MongoDB admin password (change this!)
+mongodb_database_name = "go-mongodb"          # MongoDB database name used by the application
 
 # JWT Configuration
 jwt_secret = "tasky-jwt-secret-key-for-insight-exercise"  # JWT secret key (change this!)

@@ -101,16 +101,26 @@ if [ -f "../terraform/terraform.tfstate" ]; then
         print_success "MongoDB IP found: $MONGODB_IP"
         
         # Get MongoDB credentials from terraform outputs or use defaults
-        MONGODB_USERNAME=$(cd ../terraform && terraform output -raw mongodb_username 2>/dev/null || echo "taskyadmin")
-        MONGODB_PASSWORD=$(cd ../terraform && terraform output -raw mongodb_password 2>/dev/null || echo "asimplepass")
+        MONGODB_USERNAME=$(cd ../terraform && terraform output -raw mongodb_username 2>/dev/null || echo "
+        admin")
+        
+        # Try to get password from terraform output, if not available, try to read from tfvars
+        MONGODB_PASSWORD=$(cd ../terraform && terraform output -raw mongodb_password 2>/dev/null || echo "")
+        if [ -z "$MONGODB_PASSWORD" ]; then
+            # Try to extract from terraform.tfvars as fallback
+            MONGODB_PASSWORD=$(cd ../terraform && grep '^mongodb_password' terraform.tfvars 2>/dev/null | sed 's/.*=.*"\([^"]*\)".*/\1/' || echo "asimplepass")
+        fi
+        
+        # Get MongoDB database name from terraform
+        MONGODB_DATABASE=$(cd ../terraform && terraform output -raw mongodb_database_name 2>/dev/null || echo "go-mongodb")
         
         # Update the secret with the correct MongoDB URI
-        MONGODB_URI="mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_IP}:27017/tasky"
-        MONGODB_URI_B64=$(echo -n "$MONGODB_URI" | base64)
+        MONGODB_URI="mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_IP}:27017/${MONGODB_DATABASE}"
+        MONGODB_URI_B64=$(echo -n "$MONGODB_URI" | base64 | tr -d '\n')
         
         # Get JWT secret from terraform or use default
         JWT_SECRET=$(cd ../terraform && terraform output -raw jwt_secret 2>/dev/null || echo "tasky-jwt-secret-key-for-insight-exercise")
-        JWT_SECRET_B64=$(echo -n "$JWT_SECRET" | base64)
+        JWT_SECRET_B64=$(echo -n "$JWT_SECRET" | base64 | tr -d '\n')
         
         print_status "Updating MongoDB URI and JWT secret in secret..."
         

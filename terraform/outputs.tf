@@ -48,13 +48,46 @@ output "mongodb_instance_id" {
 
 output "mongodb_connection_string" {
   description = "MongoDB connection string for application configuration"
-  value       = "mongodb://${var.mongodb_username}:${var.mongodb_password}@${module.mongodb_ec2.private_ip}:27017/tasky"
+  value       = module.mongodb_ec2.mongodb_connection_uri
   sensitive   = true
 }
 
 output "mongodb_security_group_id" {
   description = "Security group ID for the MongoDB instance"
   value       = module.mongodb_ec2.security_group_id
+}
+
+output "mongodb_cloudwatch_logs" {
+  description = "CloudWatch log group for MongoDB monitoring"
+  value       = module.mongodb_ec2.cloudwatch_log_group_name
+}
+
+output "mongodb_troubleshooting" {
+  description = "Commands for troubleshooting MongoDB instance"
+  value       = module.mongodb_ec2.troubleshooting_commands
+}
+
+output "mongodb_username" {
+  description = "MongoDB username for application connections"
+  value       = var.mongodb_username
+  sensitive   = true
+}
+
+output "mongodb_password" {
+  description = "MongoDB password for application connections"
+  value       = var.mongodb_password
+  sensitive   = true
+}
+
+output "mongodb_database_name" {
+  description = "MongoDB database name used by the application"
+  value       = var.mongodb_database_name
+}
+
+output "jwt_secret" {
+  description = "JWT secret key for application authentication"
+  value       = var.jwt_secret
+  sensitive   = true
 }
 
 # S3 Backup Storage

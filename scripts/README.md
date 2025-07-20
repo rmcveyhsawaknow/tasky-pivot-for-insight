@@ -28,6 +28,62 @@ Automated setup script for GitHub Codespaces or fresh Linux environments.
 ### `check-versions.sh`
 Quick version checker that verifies tool installations without installing anything.
 
+## MongoDB Troubleshooting Scripts
+
+### `check-mongodb-status.sh`
+Comprehensive status checker for the MongoDB EC2 instance.
+
+**Purpose:**
+- Checks EC2 instance state and health
+- Verifies CloudWatch logging setup
+- Tests MongoDB connectivity
+- Provides troubleshooting guidance
+
+**Usage:**
+```bash
+./scripts/check-mongodb-status.sh
+```
+
+**Features:**
+- 🔍 Complete infrastructure health check
+- 📊 CloudWatch log stream verification
+- 🚀 Quick troubleshooting commands
+- 📋 Status summary and next steps
+
+### `view-mongodb-logs.sh`
+Interactive log viewer for MongoDB CloudWatch logs.
+
+**Purpose:**
+- View different log types from CloudWatch
+- Follow logs in real-time
+- List available log streams
+
+**Usage:**
+```bash
+# Show available log types
+./scripts/view-mongodb-logs.sh --help
+
+# View user-data execution logs
+./scripts/view-mongodb-logs.sh user-data
+
+# Follow MongoDB server logs in real-time
+./scripts/view-mongodb-logs.sh mongod --follow
+
+# Show last 50 lines of setup logs
+./scripts/view-mongodb-logs.sh mongodb-setup --lines 50
+
+# List all available log streams
+./scripts/view-mongodb-logs.sh --list
+```
+
+**Available Log Types:**
+- `user-data` - Initial setup script execution
+- `mongodb-setup` - Detailed MongoDB installation logs
+- `mongod` - MongoDB server logs
+- `backup` - Backup operation logs
+- `cloud-init` - Cloud-init execution logs
+- `cloud-init-output` - Cloud-init output logs
+
 **Purpose:**
 - Checks if all required tools are installed
 - Verifies minimum version requirements

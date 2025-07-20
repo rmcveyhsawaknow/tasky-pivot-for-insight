@@ -60,15 +60,16 @@ module "s3_backup" {
 module "mongodb_ec2" {
   source = "./modules/mongodb-ec2"
 
-  project_name       = var.project_name
-  environment        = var.environment
-  stack_version      = var.stack_version
-  vpc_id             = module.vpc.vpc_id
-  private_subnet_ids = module.vpc.private_subnet_ids
-  instance_type      = var.mongodb_instance_type
-  mongodb_username   = var.mongodb_username
-  mongodb_password   = var.mongodb_password
-  backup_bucket_name = module.s3_backup.bucket_name
+  project_name         = var.project_name
+  environment          = var.environment
+  stack_version        = var.stack_version
+  vpc_id               = module.vpc.vpc_id
+  private_subnet_ids   = module.vpc.private_subnet_ids
+  instance_type        = var.mongodb_instance_type
+  mongodb_username     = var.mongodb_username
+  mongodb_password     = var.mongodb_password
+  mongodb_database_name = var.mongodb_database_name
+  backup_bucket_name   = module.s3_backup.bucket_name
 
   tags = local.common_tags
 }

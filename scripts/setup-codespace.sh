@@ -179,6 +179,33 @@ main() {
         fi
     fi
     
+    # Install AWS Session Manager Plugin
+    log_info "Installing AWS Session Manager Plugin..."
+    if command_exists session-manager-plugin; then
+        log_info "AWS Session Manager Plugin already installed"
+        # Try to get version (note: session-manager-plugin doesn't have a standard --version flag)
+        log_success "AWS Session Manager Plugin is already available"
+        tools_status+=("session-manager:existing:installed")
+    else
+        log_info "AWS Session Manager Plugin not found, installing..."
+        
+        cd "$TEMP_DIR"
+        log_info "Downloading AWS Session Manager Plugin..."
+        curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
+        
+        log_info "Installing AWS Session Manager Plugin..."
+        sudo dpkg -i session-manager-plugin.deb
+        
+        # Verify installation
+        if command_exists session-manager-plugin; then
+            log_success "AWS Session Manager Plugin installed successfully"
+            tools_status+=("session-manager:installed:latest")
+        else
+            log_error "AWS Session Manager Plugin installation failed!"
+            tools_status+=("session-manager:failed:N/A")
+        fi
+    fi
+    
     log_header "Phase 3: Final Version Check"
     
     # Display all tool versions
@@ -232,10 +259,17 @@ main() {
         git version
     fi
     
+    # AWS Session Manager Plugin
+    if command_exists session-manager-plugin; then
+        echo -e "\n${YELLOW}AWS Session Manager Plugin:${NC}"
+        echo "AWS Session Manager Plugin is installed and available"
+        # Note: session-manager-plugin doesn't have a standard --version flag
+    fi
+    
     log_header "Setup Complete"
     
     # Check if all critical tools are available
-    critical_tools=("aws" "terraform" "kubectl" "docker" "git")
+    critical_tools=("aws" "terraform" "kubectl" "docker" "git" "session-manager-plugin")
     missing_tools=()
     
     for tool in "${critical_tools[@]}"; do

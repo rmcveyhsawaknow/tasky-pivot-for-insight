@@ -1,0 +1,51 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tasky-ingress
+  namespace: tasky
+  labels:
+    app.kubernetes.io/name: tasky
+    app.kubernetes.io/component: ingress
+    app.kubernetes.io/part-of: tasky-app
+  annotations:
+    # AWS Load Balancer Controller annotations
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/backend-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-path: /
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '30'
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '5'
+    alb.ingress.kubernetes.io/healthy-threshold-count: '2'
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: '2'
+    # Cost optimization settings
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=60
+    # SSL redirect (uncomment when SSL certificate is configured)
+    # alb.ingress.kubernetes.io/ssl-redirect: '443'
+    # alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:ACCOUNT:certificate/CERT-ID
+    # alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    # Tags for cost tracking and management
+    alb.ingress.kubernetes.io/tags: Environment=dev,Project=tasky,ManagedBy=kubernetes,Component=alb
+spec:
+  rules:
+  - host: ideatasky.ryanmcvey.me  # Custom domain - update DNS to point to ALB
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: tasky-service
+            port:
+              number: 80
+  - http:  # Default rule for ALB DNS name access
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: tasky-service
+            port:
+              number: 80

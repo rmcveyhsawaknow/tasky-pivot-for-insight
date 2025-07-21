@@ -27,6 +27,9 @@ resource "aws_subnet" "public" {
   availability_zone       = var.availability_zones[count.index]
   map_public_ip_on_launch = true
 
+  # Ensure proper destruction order
+  depends_on = [aws_internet_gateway.main]
+
   tags = merge(var.tags, {
     Name                     = "${var.project_name}-${var.environment}-${var.stack_version}-public-subnet-${count.index + 1}"
     Type                     = "public"
@@ -84,6 +87,9 @@ resource "aws_route_table" "public" {
     gateway_id = aws_internet_gateway.main.id
   }
 
+  # Ensure proper destruction order
+  depends_on = [aws_internet_gateway.main]
+
   tags = merge(var.tags, {
     Name = "${var.project_name}-${var.environment}-${var.stack_version}-public-rt"
   })
@@ -111,6 +117,9 @@ resource "aws_route_table_association" "public" {
 
   subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public.id
+
+  # Ensure proper destruction order
+  depends_on = [aws_subnet.public, aws_route_table.public]
 }
 
 # Private Route Table Associations
@@ -119,6 +128,9 @@ resource "aws_route_table_association" "private" {
 
   subnet_id      = aws_subnet.private[count.index].id
   route_table_id = aws_route_table.private[count.index].id
+
+  # Ensure proper destruction order
+  depends_on = [aws_subnet.private, aws_route_table.private]
 }
 
 # Data source for current region

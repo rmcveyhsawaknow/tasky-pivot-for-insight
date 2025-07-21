@@ -4,7 +4,7 @@
 # Copy this file to terraform.tfvars and customize the values for your deployment
 
 # AWS Configuration
-aws_region = "us-east-2"  # Change to your preferred AWS region
+aws_region = "us-east-1"  # Change to your preferred AWS region
 
 # Environment and Project
 environment    = "dev"      # Options: dev, stg, prd
@@ -28,6 +28,57 @@ mongodb_database_name = "go-mongodb"          # MongoDB database name used by th
 
 # JWT Configuration
 jwt_secret = "tasky-jwt-secret-key-for-insight-exercise"  # JWT secret key (change this!)
+
+# ==============================================================================
+# APPLICATION LOAD BALANCER CONFIGURATION
+# ==============================================================================
+
+# Health Check Configuration
+alb_health_check_path = "/"  # Ensure your app responds with 200 OK at this path
+
+# SSL/HTTPS Configuration (Optional)
+# Uncomment and configure if you want HTTPS termination at ALB
+# alb_ssl_certificate_arn = "arn:aws:acm:us-east-1:123456789012:certificate/your-cert-id"
+
+# Access Logs (Optional - increases S3 costs)
+alb_enable_access_logs = false
+
+# Custom Domain Configuration
+# Set to true if you want Terraform to manage Route53 DNS record
+# Note: This requires your domain to be managed by Route53
+alb_create_dns_record = false
+
+# If using Route53 (alb_create_dns_record = true), configure these:
+# alb_domain_name = "ideatasky.ryanmcvey.me"
+# alb_hosted_zone_id = "Z1D633PJN98FT9"  # Your Route53 hosted zone ID
+
+# ==============================================================================
+# DOMAIN CONFIGURATION NOTES
+# ==============================================================================
+
+# For Cloudflare-managed domains (recommended approach):
+# 1. Keep alb_create_dns_record = false
+# 2. After Terraform apply, get ALB DNS name from outputs
+# 3. Create CNAME record in Cloudflare:
+#    - Name: ideatasky
+#    - Target: <ALB-DNS-NAME>
+#    - Proxy Status: DNS Only (grey cloud)
+
+# For Route53-managed domains:
+# 1. Set alb_create_dns_record = true
+# 2. Set alb_domain_name = "ideatasky.ryanmcvey.me"
+# 3. Set alb_hosted_zone_id to your Route53 hosted zone ID
+# 4. Terraform will create the DNS record automatically
+
+# ==============================================================================
+# COST OPTIMIZATION SETTINGS
+# ==============================================================================
+
+# The ALB configuration includes cost optimization features:
+# - Idle timeout set to 60 seconds
+# - Health check interval optimized for cost vs performance
+# - Access logs disabled by default
+# - Single ALB can serve multiple applications with path-based routing
 
 # ==============================================================================
 # SECURITY NOTES:

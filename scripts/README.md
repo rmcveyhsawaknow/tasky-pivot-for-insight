@@ -25,6 +25,32 @@ Automated setup script for GitHub Codespaces or fresh Linux environments.
 - 📋 Final verification and next steps guidance
 - 🛡️ Safe to run multiple times (idempotent)
 
+### `setup-alb-controller.sh`
+Automated AWS Load Balancer Controller installation and application deployment.
+
+**Purpose:**
+- Installs AWS Load Balancer Controller using Helm
+- Configures IRSA (IAM Role for Service Accounts) integration
+- Deploys Tasky application with ALB Ingress
+- Provides ALB DNS name for domain configuration
+
+**Usage:**
+```bash
+./scripts/setup-alb-controller.sh
+```
+
+**Prerequisites:**
+- Terraform infrastructure must be applied first
+- kubectl configured for EKS cluster access
+- Helm 3.x installed
+
+**Features:**
+- ✅ Automatic prerequisite checking
+- 🔧 Reads cluster info from Terraform outputs
+- 📦 Installs and configures AWS Load Balancer Controller
+- 🌐 Provides domain configuration instructions
+- 🛡️ Comprehensive error handling and status reporting
+
 ### `check-versions.sh`
 Quick version checker that verifies tool installations without installing anything.
 

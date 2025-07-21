@@ -1,6 +1,6 @@
 #!/bin/bash
 # Terraform Visualization Script
-# Handles multiple visualization methods with fallbacks
+# Handles multiple visualization methods with fallbacks and stale plan detection
 
 set -e
 
@@ -13,19 +13,128 @@ echo "================================"
 # Create output directory
 mkdir -p "$OUTPUT_DIR"
 
-# Check if plan file exists
-if [[ ! -f "$PLAN_FILE" ]]; then
-    echo "❌ Plan file $PLAN_FILE not found."
-    echo "   Please run: terraform plan -out=$PLAN_FILE"
-    exit 1
-fi
+# Function to check if plan is stale
+check_plan_staleness() {
+    if [[ ! -f "$PLAN_FILE" ]]; then
+        return 1  # Plan doesn't exist
+    fi
+    
+    # Test if plan is stale by trying to run terraform graph
+    if ! terraform graph -plan="$PLAN_FILE" >/dev/null 2>&1; then
+        return 2  # Plan is stale
+    fi
+    
+    return 0  # Plan is valid
+}
 
+# Function to generate fresh plan
+generate_fresh_plan() {
+    echo "🔄 Generating fresh plan..."
+    if terraform plan -out="$PLAN_FILE" >/dev/null 2>&1; then
+        echo "✅ Fresh plan generated successfully"
+        return 0
+    else
+        echo "❌ Failed to generate fresh plan"
+        return 1
+    fi
+}
+
+# Function to generate current state graph (without plan)
+generate_current_state_graph() {
+    echo "📊 Generating current state graph..."
+    terraform graph > "$OUTPUT_DIR/terraform-current-state.dot"
+    echo "✅ Current state graph generated"
+}
+
+# Check plan status
+echo "🔍 Checking plan status..."
+check_result=$(check_plan_staleness; echo $?)
+
+case $check_result in
+    1)
+        echo "❌ Plan file $PLAN_FILE not found."
+        echo "   Options:"
+        echo "   1. Generate fresh plan: terraform plan -out=$PLAN_FILE"
+        echo "   2. Visualize current state only (no plan needed)"
+        echo ""
+        read -p "Generate fresh plan now? (y/N): " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            if generate_fresh_plan; then
+                echo "✅ Proceeding with fresh plan..."
+            else
+                echo "❌ Plan generation failed. Generating current state graph only..."
+                generate_current_state_graph
+                exit 1
+            fi
+        else
+            echo "📊 Generating current state graph only..."
+            generate_current_state_graph
+            # Continue with current state visualization only
+            PLAN_FILE=""
+        fi
+        ;;
+    2)
+        echo "⚠️  Plan file is STALE (state changed since plan was created)"
+        echo "   Plan created: $(stat -c %y "$PLAN_FILE" 2>/dev/null || echo 'unknown')"
+        echo "   State modified: $(stat -c %y terraform.tfstate 2>/dev/null || echo 'unknown')"
+        echo ""
+        echo "   Options:"
+        echo "   1. Generate fresh plan for accurate visualization"
+        echo "   2. Visualize current state only (recommended)"
+        echo "   3. Continue anyway (may show outdated information)"
+        echo ""
+        read -p "Choose option (1/2/3): " -n 1 -r
+        echo
+        case $REPLY in
+            1)
+                if generate_fresh_plan; then
+                    echo "✅ Proceeding with fresh plan..."
+                else
+                    echo "❌ Plan generation failed. Generating current state graph only..."
+                    generate_current_state_graph
+                    PLAN_FILE=""
+                fi
+                ;;
+            2)
+                echo "📊 Generating current state graph only..."
+                generate_current_state_graph
+                PLAN_FILE=""
+                ;;
+            3)
+                echo "⚠️  Proceeding with stale plan (results may be inaccurate)..."
+                # Continue with existing stale plan
+                ;;
+            *)
+                echo "📊 Defaulting to current state graph only..."
+                generate_current_state_graph
+                PLAN_FILE=""
+                ;;
+        esac
+        ;;
+    0)
+        echo "✅ Plan file is valid and current"
+        ;;
+esac
+
+echo ""
 echo "📊 Generating graph files..."
 
-# Generate basic Terraform graphs
-terraform graph -plan="$PLAN_FILE" > "$OUTPUT_DIR/terraform-graph.dot"
-terraform graph -plan="$PLAN_FILE" -type=plan > "$OUTPUT_DIR/terraform-plan-graph.dot"
-terraform graph -plan="$PLAN_FILE" -type=apply > "$OUTPUT_DIR/terraform-apply-graph.dot"
+if [[ -n "$PLAN_FILE" && -f "$PLAN_FILE" ]]; then
+    echo "📋 Using plan file: $PLAN_FILE"
+    # Generate plan-based graphs
+    terraform graph -plan="$PLAN_FILE" > "$OUTPUT_DIR/terraform-graph.dot"
+    terraform graph -plan="$PLAN_FILE" -type=plan > "$OUTPUT_DIR/terraform-plan-graph.dot"  
+    terraform graph -plan="$PLAN_FILE" -type=apply > "$OUTPUT_DIR/terraform-apply-graph.dot"
+else
+    echo "📊 Using current state only"
+    # Generate current state graph
+    if [[ ! -f "$OUTPUT_DIR/terraform-current-state.dot" ]]; then
+        terraform graph > "$OUTPUT_DIR/terraform-current-state.dot"
+    fi
+    # Copy current state as main graph for consistency
+    cp "$OUTPUT_DIR/terraform-current-state.dot" "$OUTPUT_DIR/terraform-graph.dot"
+fi
 
 echo "✅ DOT files generated in $OUTPUT_DIR/"
 
@@ -38,13 +147,17 @@ if command -v dot >/dev/null 2>&1; then
     dot -Tsvg "$OUTPUT_DIR/terraform-graph.dot" -o "$OUTPUT_DIR/terraform-graph.svg"
     dot -Tpdf "$OUTPUT_DIR/terraform-graph.dot" -o "$OUTPUT_DIR/terraform-graph.pdf"
     
-    # Generate plan-specific visualizations
-    dot -Tpng "$OUTPUT_DIR/terraform-plan-graph.dot" -o "$OUTPUT_DIR/terraform-plan.png"
-    dot -Tsvg "$OUTPUT_DIR/terraform-plan-graph.dot" -o "$OUTPUT_DIR/terraform-plan.svg"
+    # Generate plan-specific visualizations only if plan files exist
+    if [[ -f "$OUTPUT_DIR/terraform-plan-graph.dot" ]]; then
+        dot -Tpng "$OUTPUT_DIR/terraform-plan-graph.dot" -o "$OUTPUT_DIR/terraform-plan.png"
+        dot -Tsvg "$OUTPUT_DIR/terraform-plan-graph.dot" -o "$OUTPUT_DIR/terraform-plan.svg"
+    fi
     
-    # Generate apply-specific visualizations
-    dot -Tpng "$OUTPUT_DIR/terraform-apply-graph.dot" -o "$OUTPUT_DIR/terraform-apply.png"
-    dot -Tsvg "$OUTPUT_DIR/terraform-apply-graph.dot" -o "$OUTPUT_DIR/terraform-apply.svg"
+    # Generate apply-specific visualizations only if apply files exist
+    if [[ -f "$OUTPUT_DIR/terraform-apply-graph.dot" ]]; then
+        dot -Tpng "$OUTPUT_DIR/terraform-apply-graph.dot" -o "$OUTPUT_DIR/terraform-apply.png"
+        dot -Tsvg "$OUTPUT_DIR/terraform-apply-graph.dot" -o "$OUTPUT_DIR/terraform-apply.svg"
+    fi
     
     echo "✅ Static visualizations created!"
 else

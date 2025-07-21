@@ -35,6 +35,11 @@ output "eks_node_group_security_group_id" {
   value       = module.eks.node_group_security_group_id
 }
 
+output "eks_aws_load_balancer_controller_role_arn" {
+  description = "ARN of the AWS Load Balancer Controller IAM role"
+  value       = module.eks.aws_load_balancer_controller_role_arn
+}
+
 # MongoDB Database Information
 output "mongodb_private_ip" {
   description = "Private IP address of the MongoDB EC2 instance"
@@ -101,15 +106,39 @@ output "s3_backup_public_url" {
   value       = module.s3_backup.public_url
 }
 
+# ==============================================================================
+# APPLICATION LOAD BALANCER OUTPUTS
+# ==============================================================================
+
+output "alb_dns_name" {
+  description = "DNS name of the Application Load Balancer"
+  value       = module.alb.alb_dns_name
+}
+
+output "alb_hosted_zone_id" {
+  description = "Hosted zone ID of the Application Load Balancer"
+  value       = module.alb.alb_hosted_zone_id
+}
+
+output "alb_target_group_arn" {
+  description = "ARN of the ALB target group"
+  value       = module.alb.target_group_arn
+}
+
+output "application_url" {
+  description = "Application URL via Application Load Balancer"
+  value       = module.alb.application_url
+}
+
+output "custom_domain_url" {
+  description = "Custom domain URL if configured"
+  value       = module.alb.custom_domain_url
+}
+
 # Deployment Commands and Information
 output "kubectl_config_command" {
   description = "Command to configure kubectl for EKS cluster access"
   value       = "aws eks update-kubeconfig --region ${var.aws_region} --name ${module.eks.cluster_name}"
-}
-
-output "application_url" {
-  description = "Application URL after load balancer deployment"
-  value       = "http://${module.eks.load_balancer_hostname}"
 }
 
 # # Deployment Instructions

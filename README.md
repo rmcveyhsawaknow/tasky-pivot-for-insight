@@ -88,6 +88,7 @@ tasky-pivot-for-insight/
 │   ├── versions.tf            # Version constraints
 │   ├── terraform.tfvars.example # Example configuration
 │   └── modules/               # Terraform modules
+│       ├── alb/               # Application Load Balancer module
 │       ├── eks/               # EKS cluster module
 │       ├── mongodb-ec2/       # MongoDB EC2 module
 │       ├── s3-backup/         # S3 backup bucket module
@@ -98,7 +99,8 @@ tasky-pivot-for-insight/
 │   ├── configmap.yaml         # Application configuration
 │   ├── secret.yaml            # MongoDB connection secrets
 │   ├── deployment.yaml        # Tasky application deployment
-│   └── service.yaml           # LoadBalancer service
+│   ├── ingress.yaml           # ALB Ingress resource
+│   └── service.yaml           # ClusterIP service
 ├── scripts/                   # Automation scripts
 │   ├── setup-codespace.sh     # Automated tool installation & setup
 │   ├── check-versions.sh      # Tool version verification
@@ -186,9 +188,18 @@ go run main.go
 
 ### ✅ Architecture Requirements
 - **Three-tier architecture**: Web (EKS) + Data (MongoDB EC2) + Storage (S3)
-- **Public access**: Web application via Application Load Balancer
+- **Public access**: Web application via cost-effective Application Load Balancer
+- **Cloud-native load balancer**: AWS ALB with Kubernetes Ingress Controller
+- **Custom domain ready**: Pre-configured for `ideatasky.ryanmcvey.me`
 - **Database**: MongoDB with authentication enabled
 - **Storage**: S3 bucket with public read access for backups
+
+### ✅ Load Balancer Implementation
+- **ALB vs NLB**: Cost-optimized Application Load Balancer chosen over Network Load Balancer
+- **ALB Controller**: AWS Load Balancer Controller with IRSA (IAM Roles for Service Accounts)
+- **Ingress Resource**: Kubernetes-native ingress with ALB annotations
+- **Health Checks**: Application-aware health checks for better reliability
+- **SSL Ready**: Pre-configured for HTTPS with certificate management
 
 ### ✅ Security & Configuration
 - **MongoDB Authentication**: Connection string-based auth implemented
@@ -198,10 +209,34 @@ go run main.go
 - **Legacy Requirements**: Amazon Linux 2 + MongoDB v4.0.x
 
 ### ✅ Infrastructure-as-Code
-- **Complete Terraform automation**: ~50+ AWS resources
-- **Modular design**: Reusable Terraform modules
+- **Complete Terraform automation**: ~50+ AWS resources including ALB module
+- **Modular design**: Reusable Terraform modules including dedicated ALB module
 - **State management**: Remote state with S3 backend support
-- **Variable configuration**: Customizable deployment parameters
+- **Variable configuration**: Customizable deployment parameters including domain settings
+
+## 🌐 Application Load Balancer Setup
+
+### Quick ALB Deployment
+```bash
+# Apply infrastructure with ALB
+cd terraform
+terraform apply
+
+# Install AWS Load Balancer Controller
+./scripts/setup-alb-controller.sh
+
+# Get ALB DNS name for domain configuration
+kubectl get ingress tasky-ingress -n tasky
+```
+
+### Custom Domain Configuration
+1. **Get ALB DNS**: `kubectl get ingress tasky-ingress -n tasky`
+2. **Cloudflare Setup**:
+   - Add CNAME: `ideatasky` → `<ALB-DNS-NAME>`
+   - Set to "DNS Only" (grey cloud)
+3. **Access**: `http://ideatasky.ryanmcvey.me`
+
+For detailed ALB setup instructions, see: [docs/alb-setup-guide.md](docs/alb-setup-guide.md)
 
 ## 🔄 CI/CD & GitOps
 
@@ -230,7 +265,7 @@ kubectl exec -it deployment/tasky-app -n tasky -- nc -zv $MONGODB_IP 27017
 
 # Verify S3 backup access
 S3_BUCKET=$(terraform output -raw s3_backup_bucket_name)
-curl -I https://$S3_BUCKET.s3.us-east-2.amazonaws.com/backups/
+curl -I https://$S3_BUCKET.s3.us-east-1.amazonaws.com/backups/
 ```
 
 ### Pre-Presentation Checklist

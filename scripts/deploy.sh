@@ -38,6 +38,7 @@ fi
 CLUSTER_NAME="${CLUSTER_NAME:-tasky-dev-v1-eks-cluster}"
 AWS_REGION="${AWS_REGION:-us-west-2}"  # Changed to match terraform default
 NAMESPACE="tasky"
+USE_ALB=false  # Default to false, will be set to true if ALB controller is available
 
 echo "Using configuration:"
 echo "  Cluster Name: $CLUSTER_NAME"
@@ -166,6 +167,25 @@ kubectl apply -f ../k8s/deployment.yaml
 # Apply Service
 kubectl apply -f ../k8s/service.yaml
 
+# Check if ingress.yaml exists and AWS Load Balancer Controller is available
+if [ -f "../k8s/ingress.yaml" ]; then
+    print_status "Checking for AWS Load Balancer Controller..."
+    ALB_CONTROLLER_READY=$(kubectl get deployment aws-load-balancer-controller -n kube-system --no-headers 2>/dev/null | awk '{print $2}' | grep -E '^[0-9]+/[0-9]+$' || echo "")
+    
+    if [ -n "$ALB_CONTROLLER_READY" ]; then
+        print_status "AWS Load Balancer Controller found. Applying ingress for ALB..."
+        kubectl apply -f ../k8s/ingress.yaml
+        USE_ALB=true
+    else
+        print_warning "AWS Load Balancer Controller not found. Skipping ingress deployment."
+        print_warning "Run './setup-alb-controller.sh' first to install the controller, or use LoadBalancer service."
+        USE_ALB=false
+    fi
+else
+    print_status "No ingress.yaml found. Using LoadBalancer service approach."
+    USE_ALB=false
+fi
+
 # Wait for deployment to be ready
 print_status "Waiting for deployment to be ready..."
 kubectl wait --for=condition=available deployment/tasky-app -n "$NAMESPACE" --timeout=300s
@@ -183,34 +203,72 @@ print_success "Deployment is ready!"
 print_status "Getting service information..."
 kubectl get svc -n "$NAMESPACE"
 
-# Wait for Load Balancer to be ready
-print_status "Waiting for Load Balancer to be ready (this may take a few minutes)..."
-LB_HOSTNAME=""
-for i in {1..30}; do
-    LB_HOSTNAME=$(kubectl get svc tasky-service -n "$NAMESPACE" -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || echo "")
-    if [ -n "$LB_HOSTNAME" ] && [ "$LB_HOSTNAME" != "null" ]; then
-        break
-    fi
-    echo "Waiting for Load Balancer... ($i/30)"
-    sleep 10
-done
+# Wait for Load Balancer or Ingress to be ready based on deployment type
+if [ "$USE_ALB" = "true" ]; then
+    print_status "Waiting for ALB Ingress to be ready (this may take a few minutes)..."
+    ALB_HOSTNAME=""
+    for i in {1..30}; do
+        ALB_HOSTNAME=$(kubectl get ingress tasky-ingress -n "$NAMESPACE" -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || echo "")
+        if [ -n "$ALB_HOSTNAME" ] && [ "$ALB_HOSTNAME" != "null" ]; then
+            break
+        fi
+        echo "Waiting for ALB Ingress... ($i/30)"
+        sleep 10
+    done
 
-if [ -n "$LB_HOSTNAME" ] && [ "$LB_HOSTNAME" != "null" ]; then
-    print_success "Load Balancer is ready!"
-    echo ""
-    echo "🎉 Deployment completed successfully!"
-    echo ""
-    echo "Application URL: http://$LB_HOSTNAME"
-    echo ""
-    echo "You can test the application with:"
-    echo "curl -I http://$LB_HOSTNAME"
-    echo ""
-    echo "To check the status:"
-    echo "kubectl get pods -n $NAMESPACE"
-    echo "kubectl get svc -n $NAMESPACE"
+    if [ -n "$ALB_HOSTNAME" ] && [ "$ALB_HOSTNAME" != "null" ]; then
+        print_success "ALB Ingress is ready!"
+        echo ""
+        echo "🎉 Deployment completed successfully!"
+        echo ""
+        echo "Application URL: http://$ALB_HOSTNAME"
+        echo "Custom Domain: http://ideatasky.ryanmcvey.me (configure DNS CNAME)"
+        echo ""
+        echo "You can test the application with:"
+        echo "curl -I http://$ALB_HOSTNAME"
+        echo ""
+        echo "To configure custom domain in Cloudflare:"
+        echo "  Type: CNAME"
+        echo "  Name: ideatasky"
+        echo "  Target: $ALB_HOSTNAME"
+        echo ""
+        echo "To check the status:"
+        echo "kubectl get pods -n $NAMESPACE"
+        echo "kubectl get ingress -n $NAMESPACE"
+    else
+        print_warning "ALB Ingress is still provisioning. Check status with:"
+        echo "kubectl get ingress tasky-ingress -n $NAMESPACE"
+    fi
 else
-    print_warning "Load Balancer is still provisioning. Check status with:"
-    echo "kubectl get svc -n $NAMESPACE"
+    # Legacy LoadBalancer service approach
+    print_status "Waiting for LoadBalancer to be ready (this may take a few minutes)..."
+    LB_HOSTNAME=""
+    for i in {1..30}; do
+        LB_HOSTNAME=$(kubectl get svc tasky-service -n "$NAMESPACE" -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || echo "")
+        if [ -n "$LB_HOSTNAME" ] && [ "$LB_HOSTNAME" != "null" ]; then
+            break
+        fi
+        echo "Waiting for LoadBalancer... ($i/30)"
+        sleep 10
+    done
+
+    if [ -n "$LB_HOSTNAME" ] && [ "$LB_HOSTNAME" != "null" ]; then
+        print_success "LoadBalancer is ready!"
+        echo ""
+        echo "🎉 Deployment completed successfully!"
+        echo ""
+        echo "Application URL: http://$LB_HOSTNAME"
+        echo ""
+        echo "You can test the application with:"
+        echo "curl -I http://$LB_HOSTNAME"
+        echo ""
+        echo "To check the status:"
+        echo "kubectl get pods -n $NAMESPACE"
+        echo "kubectl get svc -n $NAMESPACE"
+    else
+        print_warning "LoadBalancer is still provisioning. Check status with:"
+        echo "kubectl get svc -n $NAMESPACE"
+    fi
 fi
 
 print_status "Deployment completed!"

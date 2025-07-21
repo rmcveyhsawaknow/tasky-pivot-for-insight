@@ -28,7 +28,12 @@ output "node_group_security_group_id" {
   value       = aws_security_group.eks_additional.id
 }
 
-output "load_balancer_hostname" {
-  description = "Load balancer hostname (placeholder - will be available after app deployment)"
-  value       = "pending-deployment"
+output "aws_load_balancer_controller_role_arn" {
+  description = "ARN of the AWS Load Balancer Controller IAM role"
+  value       = aws_iam_role.aws_load_balancer_controller.arn
+}
+
+output "oidc_provider_arn" {
+  description = "ARN of the OIDC provider for the EKS cluster"
+  value       = aws_iam_openid_connect_provider.eks.arn
 }

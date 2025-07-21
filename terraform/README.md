@@ -2,6 +2,49 @@
 
 This directory contains the Infrastructure-as-Code (IaC) implementation for the Tasky three-tier web application using Terraform and AWS services.
 
+## ⚠️ IMPORTANT: Terraform Destroy Issues and Solutions
+
+### Common Problem
+Running `terraform destroy` may fail with:
+- S3 bucket not empty errors (versioned objects)
+- Subnet dependency violations (orphaned ENIs from EKS/ALB)
+- Resource cleanup timing issues
+
+### ✅ Solution: Use Provided Scripts
+
+We've created comprehensive scripts to handle these destroy issues:
+
+#### 1. Safe Destroy (Recommended)
+```bash
+./safe-destroy.sh
+```
+**Complete automated destroy with cleanup, retries, and fallback options.**
+
+#### 2. Pre-Destroy Cleanup
+```bash
+./cleanup-before-destroy.sh
+terraform destroy -auto-approve
+```
+**Automated cleanup before manual destroy.**
+
+#### 3. Manual Cleanup
+```bash
+./manual-cleanup.sh
+```
+**Interactive menu-driven cleanup for complex scenarios.**
+
+### Scripts Overview
+
+| Script | Purpose | When to Use |
+|--------|---------|-------------|
+| `safe-destroy.sh` | Complete automated destroy | **Always use this first** |
+| `cleanup-before-destroy.sh` | Automated pre-cleanup | When safe-destroy fails |
+| `manual-cleanup.sh` | Interactive cleanup | When automation fails |
+
+**📖 For detailed troubleshooting, see: [docs/terraform-destroy-troubleshooting.md](../docs/terraform-destroy-troubleshooting.md)**
+
+---
+
 ## Architecture Overview
 
 ### Three-Tier Architecture Components
@@ -57,7 +100,7 @@ cp terraform.tfvars.example terraform.tfvars
 Edit `terraform.tfvars` with your specific values:
 
 ```hcl
-aws_region    = "us-east-2"
+aws_region    = "us-east-1"
 environment   = "dev"        # Options: dev, stg, prd
 project_name  = "tasky"
 stack_version = "v1"         # Version identifier for unique naming
@@ -95,7 +138,7 @@ terraform apply
 ### 6. Configure kubectl
 
 ```bash
-aws eks update-kubeconfig --region us-east-2 --name tasky-dev-v1-eks-cluster
+aws eks update-kubeconfig --region us-east-1 --name tasky-dev-v1-eks-cluster
 ```
 
 ## Module Structure
@@ -121,7 +164,7 @@ terraform/
 
 | Variable | Description | Type | Default | Required |
 |----------|-------------|------|---------|----------|
-| `aws_region` | AWS region for resources | string | "us-east-2" | No |
+| `aws_region` | AWS region for resources | string | "us-east-1" | No |
 | `environment` | Environment name (dev/stg/prd) | string | "dev" | No |
 | `project_name` | Project name for resource naming | string | "tasky" | No |
 | `stack_version` | Stack version identifier | string | "v1" | No |
@@ -195,7 +238,7 @@ terraform {
   backend "s3" {
     bucket         = "your-terraform-state-bucket"
     key            = "tasky/terraform.tfstate"
-    region         = "us-east-2"
+    region         = "us-east-1"
     dynamodb_table = "terraform-state-lock"
     encrypt        = true
   }

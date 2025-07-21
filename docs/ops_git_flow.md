@@ -54,7 +54,7 @@ Edit `terraform/terraform-dev.tfvars` with development-specific settings:
 
 ```hcl
 # Development Environment Configuration
-aws_region    = "us-east-2"
+aws_region    = "us-east-1"
 environment   = "dev"
 project_name  = "tasky"
 stack_version = "v1"
@@ -86,7 +86,7 @@ Configure the following secrets in GitHub repository settings (`Settings > Secre
 ```
 AWS_ACCESS_KEY_ID       # IAM user access key for development
 AWS_SECRET_ACCESS_KEY   # IAM user secret key for development
-AWS_REGION              # us-east-2
+AWS_REGION              # us-east-1
 MONGODB_PASSWORD        # DevTaskySecure123!
 JWT_SECRET              # Development JWT secret
 ```
@@ -94,7 +94,7 @@ JWT_SECRET              # Development JWT secret
 **Repository Secrets (for OIDC - Recommended):**
 ```
 AWS_ROLE_ARN           # arn:aws:iam::ACCOUNT:role/GitHubActionsTerraformRole
-AWS_REGION             # us-east-2
+AWS_REGION             # us-east-1
 ```
 
 ## Phase 3: Terraform Deployment Execution
@@ -134,7 +134,7 @@ After successful Terraform deployment:
 
 ```bash
 # Configure kubectl access (run locally)
-aws eks update-kubeconfig --region us-east-2 --name tasky-dev-v1-eks-cluster
+aws eks update-kubeconfig --region us-east-1 --name tasky-dev-v1-eks-cluster
 
 # Verify EKS connectivity
 kubectl get nodes
@@ -171,7 +171,7 @@ aws ec2 describe-instances --instance-ids $INSTANCE_ID
 # 4. Test S3 backup bucket
 S3_BUCKET=$(terraform output -raw s3_backup_bucket_name)
 aws s3 ls s3://$S3_BUCKET/
-curl -I https://$S3_BUCKET.s3.us-east-2.amazonaws.com/backups/
+curl -I https://$S3_BUCKET.s3.us-east-1.amazonaws.com/backups/
 ```
 
 ### Application Validation ✅
@@ -207,7 +207,7 @@ aws ssm send-command \
   --parameters 'commands=["aws sts get-caller-identity"]'
 
 # 3. Test S3 public access
-curl -I https://$S3_BUCKET.s3.us-east-2.amazonaws.com/backups/latest.tar.gz
+curl -I https://$S3_BUCKET.s3.us-east-1.amazonaws.com/backups/latest.tar.gz
 
 # 4. Verify legacy system requirements
 aws ssm send-command \

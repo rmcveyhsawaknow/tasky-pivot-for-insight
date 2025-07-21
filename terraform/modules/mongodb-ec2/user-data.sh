@@ -180,47 +180,158 @@ else
     fi
 fi
 
-log_info "Creating backup script"
+log_info "Creating enhanced demo backup script"
 mkdir -p /opt/mongodb-backup
 cat > /opt/mongodb-backup/backup.sh << 'EOF'
 #!/bin/bash
 set -e
+
+# Configuration
+MONGODB_HOST="$${MONGODB_HOST:-localhost}"
+MONGODB_PORT="$${MONGODB_PORT:-27017}"
+MONGODB_DATABASE="$${MONGODB_DATABASE:-${MONGODB_DATABASE_NAME}}"
+MONGODB_USERNAME="$${MONGODB_USERNAME:-${MONGODB_USERNAME}}"
+MONGODB_PASSWORD="$${MONGODB_PASSWORD:-${MONGODB_PASSWORD}}"
+S3_BUCKET="$${S3_BUCKET:-${BACKUP_BUCKET_NAME}}"
+AWS_REGION="$${AWS_REGION:-us-east-1}"
+
+# Backup directory and logging
 BACKUP_LOG="/var/log/mongodb-backup.log"
-exec > >(tee -a "$BACKUP_LOG") 2>&1
+exec > >(tee -a "$$BACKUP_LOG") 2>&1
+
 log_backup() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1"
+    echo "[$$(date '+%Y-%m-%d %H:%M:%S')] $$1"
 }
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-BACKUP_DIR="/tmp/mongodb-backup-$TIMESTAMP"
-BACKUP_FILE="mongodb-backup-$TIMESTAMP.tar.gz"
-S3_BUCKET="${BACKUP_BUCKET_NAME}"
-log_backup "Starting backup"
-mkdir -p $BACKUP_DIR
-if mongodump --host localhost:27017 --db ${MONGODB_DATABASE_NAME} --username ${MONGODB_USERNAME} --password ${MONGODB_PASSWORD} --authenticationDatabase ${MONGODB_DATABASE_NAME} --out $BACKUP_DIR; then
-    log_backup "Dump created"
+
+# Generate timestamp and Julian date for demo
+TIMESTAMP=$$(date +%Y%m%d_%H%M%S)
+JULIAN_DATE=$$(date +%Y%j)  # Year + Julian day (e.g., 2025202 for July 21, 2025)
+BACKUP_DIR="/tmp/mongodb-backup-$$TIMESTAMP"
+JULIAN_BACKUP_FILE="cron_$$JULIAN_DATE.tar.gz"
+
+log_backup "Starting MongoDB backup for demo (5-minute interval)"
+log_backup "Julian date: $$JULIAN_DATE"
+
+# Create backup directory
+mkdir -p $$BACKUP_DIR
+
+# Create BSON dump (standard MongoDB backup)
+log_backup "Creating MongoDB dump..."
+if mongodump --host localhost:27017 --db $$MONGODB_DATABASE --username $$MONGODB_USERNAME --password $$MONGODB_PASSWORD --authenticationDatabase $$MONGODB_DATABASE --out $$BACKUP_DIR --quiet; then
+    log_backup "BSON dump created successfully"
 else
-    if mongodump --host localhost:27017 --db ${MONGODB_DATABASE_NAME} --username admin --password ${MONGODB_PASSWORD} --authenticationDatabase admin --out $BACKUP_DIR; then
-        log_backup "Dump created (admin)"
+    # Fallback to admin user if main user fails
+    if mongodump --host localhost:27017 --db $$MONGODB_DATABASE --username admin --password $$MONGODB_PASSWORD --authenticationDatabase admin --out $$BACKUP_DIR --quiet; then
+        log_backup "BSON dump created (admin user)"
     else
-        log_backup "ERROR: Dump failed"
+        log_backup "ERROR: MongoDB dump failed"
         exit 1
     fi
 fi
-cd /tmp
-tar -czf $BACKUP_FILE mongodb-backup-$TIMESTAMP/
-if aws s3 cp $BACKUP_FILE s3://$S3_BUCKET/backups/$BACKUP_FILE; then
-    log_backup "Uploaded to S3"
+
+# Create JSON exports for easy demo viewing
+mkdir -p $$BACKUP_DIR/json
+log_backup "Creating JSON exports for demo viewing..."
+
+# Export todos collection as readable JSON
+if mongoexport --host localhost:27017 --db $$MONGODB_DATABASE --collection "todos" --username $$MONGODB_USERNAME --password $$MONGODB_PASSWORD --authenticationDatabase $$MONGODB_DATABASE --jsonArray --pretty --out $$BACKUP_DIR/json/todos.json --quiet; then
+    log_backup "Todos JSON export created"
 else
-    log_backup "ERROR: S3 upload failed"
+    # Fallback to admin user
+    mongoexport --host localhost:27017 --db $$MONGODB_DATABASE --collection "todos" --username admin --password $$MONGODB_PASSWORD --authenticationDatabase admin --jsonArray --pretty --out $$BACKUP_DIR/json/todos.json --quiet || log_backup "Warning: Could not export todos JSON"
+fi
+
+# Export users collection as readable JSON
+if mongoexport --host localhost:27017 --db $$MONGODB_DATABASE --collection "user" --username $$MONGODB_USERNAME --password $$MONGODB_PASSWORD --authenticationDatabase $$MONGODB_DATABASE --jsonArray --pretty --out $$BACKUP_DIR/json/user.json --quiet; then
+    log_backup "User JSON export created"
+else
+    # Fallback to admin user
+    mongoexport --host localhost:27017 --db $$MONGODB_DATABASE --collection "user" --username admin --password $$MONGODB_PASSWORD --authenticationDatabase admin --jsonArray --pretty --out $$BACKUP_DIR/json/user.json --quiet || log_backup "Warning: Could not export user JSON"
+fi
+
+# Create demo README with instructions
+cat > $$BACKUP_DIR/README_DEMO.txt << DEMOEOF
+MongoDB Backup for Tasky App Demo
+Generated: $$(date)
+Julian Date: $$JULIAN_DATE
+
+=== DEMO VIEWING INSTRUCTIONS ===
+1. Open json/todos.json in any text editor (Notepad, VS Code, etc.)
+2. This file contains all current tasks in readable JSON format
+3. Watch this file to see real-time demo changes!
+
+Files included:
+- json/todos.json     - All tasks (human-readable)
+- json/user.json      - User data (human-readable) 
+- $$MONGODB_DATABASE/  - Standard MongoDB BSON backup format
+
+Demo schedule: Backups run every 5 minutes automatically
+DEMOEOF
+
+# Get document counts for logging
+TODOS_COUNT=$$(mongo $$MONGODB_DATABASE --host localhost:27017 --username $$MONGODB_USERNAME --password $$MONGODB_PASSWORD --authenticationDatabase $$MONGODB_DATABASE --quiet --eval "db.todos.count()" 2>/dev/null || echo "0")
+USERS_COUNT=$$(mongo $$MONGODB_DATABASE --host localhost:27017 --username $$MONGODB_USERNAME --password $$MONGODB_PASSWORD --authenticationDatabase $$MONGODB_DATABASE --quiet --eval "db.user.count()" 2>/dev/null || echo "0")
+log_backup "Backup created - Todos: $$TODOS_COUNT, Users: $$USERS_COUNT"
+
+# Create compressed archives
+cd /tmp
+log_backup "Creating compressed archives..."
+
+# Create latest.tar.gz (overwrites previous - always current for demo)
+tar -czf "latest.tar.gz" "mongodb-backup-$$TIMESTAMP/"
+
+# Create Julian date backup (preserves history)
+tar -czf "$$JULIAN_BACKUP_FILE" "mongodb-backup-$$TIMESTAMP/"
+
+# Get file size for logging
+FILE_SIZE=$$(du -h "latest.tar.gz" | cut -f1)
+log_backup "Archive size: $$FILE_SIZE"
+
+# Upload to S3
+log_backup "Uploading to S3 bucket: $$S3_BUCKET"
+
+# Upload latest.tar.gz (overwrites previous)
+if aws s3 cp "latest.tar.gz" "s3://$$S3_BUCKET/backups/latest.tar.gz" --region $$AWS_REGION --quiet; then
+    log_backup "✓ Uploaded latest.tar.gz (demo file)"
+else
+    log_backup "ERROR: Failed to upload latest.tar.gz"
     exit 1
 fi
-aws s3 cp s3://$S3_BUCKET/backups/$BACKUP_FILE s3://$S3_BUCKET/backups/latest.tar.gz
-rm -rf $BACKUP_DIR $BACKUP_FILE
-log_backup "Backup complete"
+
+# Upload Julian date backup (preserves history)
+if aws s3 cp "$$JULIAN_BACKUP_FILE" "s3://$$S3_BUCKET/backups/$$JULIAN_BACKUP_FILE" --region $$AWS_REGION --quiet; then
+    log_backup "✓ Uploaded Julian backup: $$JULIAN_BACKUP_FILE"
+else
+    log_backup "ERROR: Failed to upload Julian backup"
+    exit 1
+fi
+
+# Generate public URLs
+LATEST_URL="https://$$S3_BUCKET.s3.$$AWS_REGION.amazonaws.com/backups/latest.tar.gz"
+JULIAN_URL="https://$$S3_BUCKET.s3.$$AWS_REGION.amazonaws.com/backups/$$JULIAN_BACKUP_FILE"
+
+log_backup "=== BACKUP COMPLETE ==="
+log_backup "Public URLs:"
+log_backup "  Latest (demo): $$LATEST_URL"
+log_backup "  This backup: $$JULIAN_URL"
+log_backup "Demo: Download latest.tar.gz and open */json/todos.json in text editor"
+
+# Cleanup local files
+rm -rf $$BACKUP_DIR latest.tar.gz $$JULIAN_BACKUP_FILE
+log_backup "Local cleanup completed"
 EOF
 
 chmod +x /opt/mongodb-backup/backup.sh
-echo "0 2 * * * root /opt/mongodb-backup/backup.sh" >> /etc/crontab
+
+# Schedule backup to run every 5 minutes for demo purposes
+log_info "Configuring cron job for 5-minute backup schedule"
+echo "*/5 * * * * root /opt/mongodb-backup/backup.sh" >> /etc/crontab
+
+log_info "Backup system configured:"
+log_info "  - Runs every 5 minutes automatically"
+log_info "  - Creates latest.tar.gz (overwrites for demo)"
+log_info "  - Creates Julian date backups (preserves history)"
+log_info "  - Includes JSON exports for easy text viewing"
 
 log_info "Configuring CloudWatch"
 mkdir -p /opt/aws/amazon-cloudwatch-agent/etc
@@ -333,10 +444,10 @@ log_info "Creating status script"
 cat > /opt/mongodb-backup/status-check.sh << 'EOF'
 #!/bin/bash
 echo "=== MongoDB Status Check ==="
-echo "Timestamp: $(date)"
-echo "Instance ID: $(curl -s http://169.254.169.254/latest/meta-data/instance-id)"
-echo "Instance Type: $(curl -s http://169.254.169.254/latest/meta-data/instance-type)"
-echo "AZ: $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)"
+echo "Timestamp: $$(date)"
+echo "Instance ID: $$(curl -s http://169.254.169.254/latest/meta-data/instance-id)"
+echo "Instance Type: $$(curl -s http://169.254.169.254/latest/meta-data/instance-type)"
+echo "AZ: $$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)"
 systemctl status mongod
 ps aux | grep mongod | grep -v grep
 netstat -tlnp | grep :27017
@@ -365,6 +476,6 @@ log_info "Running final status check"
 /opt/mongodb-backup/status-check.sh | tee -a $MONGODB_LOG_FILE
 
 log_success "MongoDB install complete"
-log_info "URI: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4):27017/${MONGODB_DATABASE_NAME}"
+log_info "URI: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@$$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4):27017/${MONGODB_DATABASE_NAME}"
 
 touch /var/log/user-data-completed

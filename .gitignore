@@ -19,13 +19,15 @@ oryxBuildBinary
 # Dependency directories (remove the comment below to include it)
 vendor/
 
-
 .idea
 setup_test.sh
 Makefile
 deploy
 test
 tmp
+
+# AWS Session Manager Plugin
+session-manager-plugin.deb
 
 # The terraform/.terraform directory should NOT be committed.
 # This directory contains local state, provider plugins, and other environment-specific files.

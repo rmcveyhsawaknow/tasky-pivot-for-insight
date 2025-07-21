@@ -131,11 +131,33 @@ docker-compose down
 # Download kubeval for offline validation
 curl -L https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz | tar xz -C scripts/utils/
 
-# Validate all Kubernetes manifests
+# Enhanced validation with error handling
+echo "=== Kubernetes Manifest Validation ==="
+VALIDATION_ERRORS=0
+
 for file in k8s/*.yaml; do
   echo "Validating $file..."
-  ./scripts/utils/kubeval "$file"
+  if ./scripts/utils/kubeval "$file" 2>&1 | grep -q "ERR"; then
+    echo " Validation issues found in $file"
+    # Check if it's an Ingress networking/v1 schema issue
+    if [[ "$file" == *"ingress.yaml" ]] && ./scripts/utils/kubeval "$file" 2>&1 | grep -q "ingress-networking-v1.json.*404"; then
+      echo "Known issue: Ingress networking.k8s.io/v1 schema not available in kubeval"
+      echo "Using kubectl validation instead..."
+      kubectl --dry-run=client apply -f "$file" >/dev/null 2>&1 && echo "$file: kubectl validation PASSED" || echo "$file: kubectl validation FAILED"
+    else
+      VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
+    fi
+  else
+    echo "$file: kubeval validation PASSED"
+  fi
 done
+
+if [ $VALIDATION_ERRORS -eq 0 ]; then
+  echo "All Kubernetes manifests validated successfully"
+else
+  echo "Found $VALIDATION_ERRORS validation error(s)"
+  echo "Review the errors above before proceeding"
+fi
 
 # Expected output: All manifests should pass validation
 ```
@@ -210,10 +232,10 @@ terraform apply terraform.tfplan
 export CLUSTER_NAME=$(terraform output -raw eks_cluster_name)
 
 # For existing deployments: Extract region from EKS endpoint or use default
-export AWS_REGION=$(terraform output -raw aws_region 2>/dev/null || echo "us-east-2")
+export AWS_REGION=$(terraform output -raw aws_region 2>/dev/null || echo "us-east-1")
 
 # If the aws_region output is missing (older Terraform state), extract from kubectl command
-if [ "$AWS_REGION" = "us-east-2" ] && terraform output kubectl_config_command >/dev/null 2>&1; then
+if [ "$AWS_REGION" = "us-east-1" ] && terraform output kubectl_config_command >/dev/null 2>&1; then
     AWS_REGION=$(terraform output -raw kubectl_config_command | grep -o 'region [a-z0-9-]*' | cut -d' ' -f2)
     export AWS_REGION
 fi
@@ -232,15 +254,45 @@ kubectl get nodes
 
 ### Step 2.5: Deploy Application
 
+The deployment process uses AWS Application Load Balancer (ALB) for cost-effective, cloud-native load balancing with custom domain support.
+
+**Recommended: ALB-First Deployment (Cost-Optimized & Production-Ready)**
+
+This is the preferred deployment method for production workloads:
+
 ```bash
-# Use the deployment script
+# Install AWS Load Balancer Controller and deploy application
+cd ../scripts
+./setup-alb-controller.sh
+
+# The setup script automatically:
+# ✅ Installs AWS Load Balancer Controller via Helm
+# ✅ Deploys the application with ALB Ingress configuration
+# ✅ Configures health checks and security groups
+# ✅ Sets up custom domain support for ideatasky.ryanmcvey.me
+# ✅ Provides cost-optimized Layer 7 load balancing
+```
+
+**Alternative: Automated Deployment (Legacy Fallback)**
+
+Use this method for development or if ALB setup encounters issues:
+
+```bash
+# Use the enhanced deployment script (falls back to LoadBalancer if no ALB)
 cd ../scripts
 ./deploy.sh
 ```
 
-**Or deploy manually:**
+The script will automatically:
+- 🔍 Check for AWS Load Balancer Controller
+- ✅ Deploy ALB Ingress if controller is available  
+- 🔄 Fall back to LoadBalancer service if no ALB controller
+- 🌐 Provide appropriate URLs and configuration instructions
+
+**Manual Deployment (Advanced Users Only)**
+
 ```bash
-# Apply Kubernetes manifests
+# Apply Kubernetes manifests manually
 cd ../k8s
 
 # Create namespace and RBAC
@@ -254,6 +306,9 @@ kubectl apply -f secret.yaml
 # Deploy application
 kubectl apply -f deployment.yaml
 kubectl apply -f service.yaml
+
+# Deploy ingress (requires ALB controller)
+kubectl apply -f ingress.yaml
 ```
 
 ### Step 3: Verify Deployment
@@ -265,7 +320,13 @@ kubectl get pods -n tasky
 # Check service status
 kubectl get svc -n tasky
 
-# Get application URL
+# For ALB deployments - Check ingress status
+kubectl get ingress -n tasky
+
+# Get application URL (ALB)
+kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+
+# Get application URL (LoadBalancer - legacy)
 kubectl get svc tasky-service -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
 
 # Check for container connection issues to mongo db
@@ -277,16 +338,121 @@ kubectl logs -f deployment/tasky-app -n tasky --tail=50
 ### Step 4: Test Application
 
 ```bash
-# Get Load Balancer URL
-LB_URL=$(kubectl get svc tasky-service -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+# For ALB deployments
+ALB_URL=$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null)
+if [ -n "$ALB_URL" ]; then
+    echo "Testing ALB deployment: http://$ALB_URL"
+    curl -I http://$ALB_URL
+else
+    # For LoadBalancer deployments (legacy)
+    LB_URL=$(kubectl get svc tasky-service -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null)
+    if [ -n "$LB_URL" ]; then
+        echo "Testing LoadBalancer deployment: http://$LB_URL"
+        curl -I http://$LB_URL
+    else
+        echo "No load balancer URL available yet. Check deployment status."
+    fi
+fi
 
-# Test application
-curl -I http://$LB_URL
+# Custom domain testing (ALB only)
+# After configuring DNS: curl -I http://ideatasky.ryanmcvey.me
 
 # Open in browser
-open http://$LB_URL  # macOS
+open http://$ALB_URL  # macOS (ALB)
+open http://$LB_URL   # macOS (LoadBalancer)
 # or
-start http://$LB_URL  # Windows
+start http://$ALB_URL  # Windows (ALB)
+start http://$LB_URL   # Windows (LoadBalancer)
+```
+
+## Application Verification and URLs
+
+### Get Current Application URL
+
+```bash
+# Comprehensive URL detection script
+echo "=== Application URL Detection ==="
+
+# Check for ALB deployment (preferred)
+ALB_URL=$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null)
+if [ -n "$ALB_URL" ]; then
+    echo "✅ ALB Deployment Detected"
+    echo "Primary URL: http://$ALB_URL"
+    echo "Custom Domain (after DNS setup): http://ideatasky.ryanmcvey.me"
+    
+    # Test ALB health
+    echo -n "ALB Health Check: "
+    curl -s -o /dev/null -w "%{http_code}" http://$ALB_URL && echo " ✅ OK" || echo " ❌ FAILED"
+else
+    echo "⚠️  ALB not detected, checking for LoadBalancer..."
+    
+    # Check for LoadBalancer deployment (fallback)
+    LB_URL=$(kubectl get svc tasky-service -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null)
+    if [ -n "$LB_URL" ]; then
+        echo "✅ LoadBalancer Deployment Detected"
+        echo "Application URL: http://$LB_URL"
+        
+        # Test LoadBalancer health
+        echo -n "LoadBalancer Health Check: "
+        curl -s -o /dev/null -w "%{http_code}" http://$LB_URL && echo " ✅ OK" || echo " ❌ FAILED"
+    else
+        echo "❌ No load balancer URL available"
+        echo "Check deployment status with: kubectl get pods,svc,ingress -n tasky"
+    fi
+fi
+```
+
+### Complete Deployment Status
+
+```bash
+# Full deployment verification
+echo "=== Tasky Deployment Status ==="
+
+echo "1. Namespace Status:"
+kubectl get namespace tasky
+
+echo "2. Pod Status:"
+kubectl get pods -n tasky -o wide
+
+echo "3. Service Status:"
+kubectl get svc -n tasky
+
+echo "4. Ingress Status (ALB):"
+kubectl get ingress -n tasky 2>/dev/null || echo "No ingress found (LoadBalancer deployment)"
+
+echo "5. Recent Pod Logs:"
+kubectl logs --tail=10 deployment/tasky-deployment -n tasky
+
+echo "6. Resource Usage:"
+kubectl top pods -n tasky 2>/dev/null || echo "Metrics server not available"
+
+echo "7. ALB Controller Status:"
+kubectl get pods -n kube-system | grep aws-load-balancer-controller || echo "ALB Controller not installed"
+```
+
+### Custom Domain Setup (ALB Only)
+
+After ALB deployment, configure your custom domain:
+
+1. **Get ALB DNS name:**
+```bash
+ALB_DNS=$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+echo "ALB DNS: $ALB_DNS"
+```
+
+2. **Configure Cloudflare CNAME:**
+- Login to Cloudflare dashboard
+- Select domain: `ryanmcvey.me`
+- Add CNAME record:
+  - **Name:** `ideatasky`
+  - **Content:** `$ALB_DNS` (the value from above)
+  - **Proxy status:** ✅ Proxied (for additional security/performance)
+
+3. **Test custom domain:**
+```bash
+# Wait 2-5 minutes for DNS propagation, then test
+curl -I http://ideatasky.ryanmcvey.me
+nslookup ideatasky.ryanmcvey.me
 ```
 
 ## Post-Deployment Configuration

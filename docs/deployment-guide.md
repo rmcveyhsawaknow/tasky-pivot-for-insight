@@ -262,8 +262,8 @@ This is the preferred deployment method for production workloads:
 
 ```bash
 # Install AWS Load Balancer Controller and deploy application
-cd ../scripts
-./setup-alb-controller.sh
+cd ..
+./scripts/setup-alb-controller.sh
 
 # The setup script automatically:
 # ✅ Installs AWS Load Balancer Controller via Helm

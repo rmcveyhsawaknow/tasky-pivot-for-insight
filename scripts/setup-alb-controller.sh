@@ -259,28 +259,35 @@ EOF
     kubectl apply -f k8s/configmap.yaml
     
     # Step 4: Create Secret with proper MongoDB URI from Terraform
-    print_status "Creating Secret with MongoDB connection..."
-    cd terraform
-    MONGODB_IP=$(terraform output -raw mongodb_private_ip 2>/dev/null || echo "")
-    MONGODB_PASSWORD=$(terraform output -raw mongodb_password 2>/dev/null || echo "TaskySecure123!")
-    JWT_SECRET=$(terraform output -raw jwt_secret 2>/dev/null || echo "tasky-jwt-secret-key-for-insight-exercise")
-    cd ..
+    print_status "Creating Secret with MongoDB connection using shared utilities..."
     
-    if [ -z "$MONGODB_IP" ]; then
-        print_error "Could not get MongoDB IP from Terraform outputs"
-        print_status "Using placeholder secret - you'll need to update it manually later"
-        kubectl apply -f k8s/secret.yaml 2>/dev/null || {
-            print_status "Creating secret manually with default values..."
-            kubectl create secret generic tasky-secrets -n tasky \
-                --from-literal=mongodb-uri="mongodb://taskyadmin:TaskySecure123!@mongodb-placeholder:27017/tasky" \
-                --from-literal=jwt-secret="tasky-jwt-secret-key-for-insight-exercise"
-        }
+    # Source shared secret management utilities
+    if [ -f "scripts/manage-secrets.sh" ]; then
+        source scripts/manage-secrets.sh
+        
+        # First, try to update secret.yaml for consistency
+        print_status "Updating secret.yaml file for consistency..."
+        if update_secret_yaml "terraform" "k8s/secret.yaml"; then
+            print_success "Secret.yaml updated with consistent Terraform values"
+        else
+            print_warning "Could not update secret.yaml - will create secret directly"
+        fi
+        
+        # Create/update the Kubernetes secret using consistent approach
+        print_status "Creating Kubernetes secret with consistent values..."
+        if create_k8s_secret "tasky" "tasky-secrets" "terraform"; then
+            print_success "Secret created/updated successfully with consistent values"
+            
+            # Validate the created secret
+            validate_secret "tasky" "tasky-secrets"
+        else
+            print_error "Failed to create secret with shared utilities"
+            exit 1
+        fi
     else
-        print_status "Creating secret with MongoDB IP: $MONGODB_IP"
-        MONGODB_URI="mongodb://taskyadmin:${MONGODB_PASSWORD}@${MONGODB_IP}:27017/tasky"
-        kubectl create secret generic tasky-secrets -n tasky \
-            --from-literal=mongodb-uri="$MONGODB_URI" \
-            --from-literal=jwt-secret="$JWT_SECRET"
+        print_error "Shared secret utilities not found at scripts/manage-secrets.sh"
+        print_status "Expected file: scripts/manage-secrets.sh"
+        exit 1
     fi
     
     # Step 5: Create Service

@@ -96,53 +96,116 @@ kubectl cluster-info
 
 # Get MongoDB IP from Terraform output (if available)
 if [ -f "../terraform/terraform.tfstate" ]; then
-    print_status "Retrieving MongoDB IP from Terraform state..."
-    MONGODB_IP=$(cd ../terraform && terraform output -raw mongodb_private_ip 2>/dev/null || echo "")
-    if [ -n "$MONGODB_IP" ]; then
-        print_success "MongoDB IP found: $MONGODB_IP"
+    # Source shared secret management utilities
+    if [ -f "utils/manage-secrets.sh" ]; then
+        source utils/manage-secrets.sh
         
-        # Get MongoDB credentials from terraform outputs or use defaults
-        MONGODB_USERNAME=$(cd ../terraform && terraform output -raw mongodb_username 2>/dev/null || echo "
-        admin")
-        
-        # Try to get password from terraform output, if not available, try to read from tfvars
-        MONGODB_PASSWORD=$(cd ../terraform && terraform output -raw mongodb_password 2>/dev/null || echo "")
-        if [ -z "$MONGODB_PASSWORD" ]; then
-            # Try to extract from terraform.tfvars as fallback
-            MONGODB_PASSWORD=$(cd ../terraform && grep '^mongodb_password' terraform.tfvars 2>/dev/null | sed 's/.*=.*"\([^"]*\)".*/\1/' || echo "asimplepass")
+        print_status "Updating secret.yaml with Terraform values using shared utility..."
+        if update_secret_yaml "../terraform" "../k8s/secret.yaml"; then
+            print_success "Secret.yaml updated successfully with consistent values"
+        else
+            print_warning "Could not update secret.yaml automatically. Using manual approach..."
+            
+            # Fallback to original approach
+            print_status "Retrieving MongoDB IP from Terraform state..."
+            MONGODB_IP=$(cd ../terraform && terraform output -raw mongodb_private_ip 2>/dev/null || echo "")
+            if [ -n "$MONGODB_IP" ]; then
+                print_success "MongoDB IP found: $MONGODB_IP"
+                
+                # Get MongoDB credentials from terraform outputs or use defaults
+                MONGODB_USERNAME=$(cd ../terraform && terraform output -raw mongodb_username 2>/dev/null || echo "admin")
+                
+                # Try to get password from terraform output, if not available, try to read from tfvars
+                MONGODB_PASSWORD=$(cd ../terraform && terraform output -raw mongodb_password 2>/dev/null || echo "")
+                if [ -z "$MONGODB_PASSWORD" ]; then
+                    # Try to extract from terraform.tfvars as fallback
+                    MONGODB_PASSWORD=$(cd ../terraform && grep '^mongodb_password' terraform.tfvars 2>/dev/null | sed 's/.*=.*"\([^"]*\)".*/\1/' || echo "asimplepass")
+                fi
+                
+                # Get MongoDB database name from terraform
+                MONGODB_DATABASE=$(cd ../terraform && terraform output -raw mongodb_database_name 2>/dev/null || echo "go-mongodb")
+                
+                # Update the secret with the correct MongoDB URI
+                MONGODB_URI="mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_IP}:27017/${MONGODB_DATABASE}"
+                MONGODB_URI_B64=$(echo -n "$MONGODB_URI" | base64 | tr -d '\n')
+                
+                # Get JWT secret from terraform or use default
+                JWT_SECRET=$(cd ../terraform && terraform output -raw jwt_secret 2>/dev/null || echo "tasky-jwt-secret-key-for-insight-exercise")
+                JWT_SECRET_B64=$(echo -n "$JWT_SECRET" | base64 | tr -d '\n')
+                
+                print_status "Updating MongoDB URI and JWT secret in secret..."
+                
+                # Use awk to safely replace both the mongodb-uri and jwt-secret lines
+                awk -v new_uri="$MONGODB_URI_B64" -v new_jwt="$JWT_SECRET_B64" '
+                /^[[:space:]]*mongodb-uri:/ { 
+                    print "  mongodb-uri: " new_uri
+                    next 
+                }
+                /^[[:space:]]*jwt-secret:/ { 
+                    print "  jwt-secret: " new_jwt
+                    next 
+                }
+                { print }
+                ' ../k8s/secret.yaml > ../k8s/secret.yaml.tmp
+                mv ../k8s/secret.yaml.tmp ../k8s/secret.yaml
+                print_success "MongoDB URI and JWT secret updated successfully"
+            else
+                print_warning "Could not retrieve MongoDB IP from Terraform. Using placeholder value."
+                print_warning "You may need to manually update the MongoDB connection string later."
+            fi
         fi
-        
-        # Get MongoDB database name from terraform
-        MONGODB_DATABASE=$(cd ../terraform && terraform output -raw mongodb_database_name 2>/dev/null || echo "go-mongodb")
-        
-        # Update the secret with the correct MongoDB URI
-        MONGODB_URI="mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_IP}:27017/${MONGODB_DATABASE}"
-        MONGODB_URI_B64=$(echo -n "$MONGODB_URI" | base64 | tr -d '\n')
-        
-        # Get JWT secret from terraform or use default
-        JWT_SECRET=$(cd ../terraform && terraform output -raw jwt_secret 2>/dev/null || echo "tasky-jwt-secret-key-for-insight-exercise")
-        JWT_SECRET_B64=$(echo -n "$JWT_SECRET" | base64 | tr -d '\n')
-        
-        print_status "Updating MongoDB URI and JWT secret in secret..."
-        
-        # Use awk to safely replace both the mongodb-uri and jwt-secret lines
-        awk -v new_uri="$MONGODB_URI_B64" -v new_jwt="$JWT_SECRET_B64" '
-        /^[[:space:]]*mongodb-uri:/ { 
-            print "  mongodb-uri: " new_uri
-            next 
-        }
-        /^[[:space:]]*jwt-secret:/ { 
-            print "  jwt-secret: " new_jwt
-            next 
-        }
-        { print }
-        ' ../k8s/secret.yaml > ../k8s/secret.yaml.tmp
-        mv ../k8s/secret.yaml.tmp ../k8s/secret.yaml
-        print_success "MongoDB URI and JWT secret updated successfully"
-        
     else
-        print_warning "Could not retrieve MongoDB IP from Terraform. Using placeholder value."
-        print_warning "You may need to manually update the MongoDB connection string later."
+        print_warning "Shared secret utilities not found. Using original approach..."
+        
+        # Original approach as fallback
+        print_status "Retrieving MongoDB IP from Terraform state..."
+        MONGODB_IP=$(cd ../terraform && terraform output -raw mongodb_private_ip 2>/dev/null || echo "")
+        if [ -n "$MONGODB_IP" ]; then
+            print_success "MongoDB IP found: $MONGODB_IP"
+            
+            # Get MongoDB credentials from terraform outputs or use defaults
+            MONGODB_USERNAME=$(cd ../terraform && terraform output -raw mongodb_username 2>/dev/null || echo "admin")
+            
+            # Try to get password from terraform output, if not available, try to read from tfvars
+            MONGODB_PASSWORD=$(cd ../terraform && terraform output -raw mongodb_password 2>/dev/null || echo "")
+            if [ -z "$MONGODB_PASSWORD" ]; then
+                # Try to extract from terraform.tfvars as fallback
+                MONGODB_PASSWORD=$(cd ../terraform && grep '^mongodb_password' terraform.tfvars 2>/dev/null | sed 's/.*=.*"\([^"]*\)".*/\1/' || echo "asimplepass")
+            fi
+            
+            # Get MongoDB database name from terraform
+            MONGODB_DATABASE=$(cd ../terraform && terraform output -raw mongodb_database_name 2>/dev/null || echo "go-mongodb")
+            
+            # Update the secret with the correct MongoDB URI
+            MONGODB_URI="mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_IP}:27017/${MONGODB_DATABASE}"
+            MONGODB_URI_B64=$(echo -n "$MONGODB_URI" | base64 | tr -d '\n')
+            
+            # Get JWT secret from terraform or use default
+            JWT_SECRET=$(cd ../terraform && terraform output -raw jwt_secret 2>/dev/null || echo "tasky-jwt-secret-key-for-insight-exercise")
+            JWT_SECRET_B64=$(echo -n "$JWT_SECRET" | base64 | tr -d '\n')
+            
+            print_status "Updating MongoDB URI and JWT secret in secret..."
+            
+            # Use awk to safely replace both the mongodb-uri and jwt-secret lines
+            awk -v new_uri="$MONGODB_URI_B64" -v new_jwt="$JWT_SECRET_B64" '
+            /^[[:space:]]*mongodb-uri:/ { 
+                print "  mongodb-uri: " new_uri
+                next 
+            }
+            /^[[:space:]]*jwt-secret:/ { 
+                print "  jwt-secret: " new_jwt
+                next 
+            }
+            { print }
+            ' ../k8s/secret.yaml > ../k8s/secret.yaml.tmp
+            mv ../k8s/secret.yaml.tmp ../k8s/secret.yaml
+            print_success "MongoDB URI and JWT secret updated successfully"
+            
+        else
+            print_warning "Could not retrieve MongoDB IP from Terraform. Using placeholder value."
+            print_warning "You may need to manually update the MongoDB connection string later."
+        fi
+    fi
     fi
 else
     print_warning "Terraform state not found. Using placeholder MongoDB URI."

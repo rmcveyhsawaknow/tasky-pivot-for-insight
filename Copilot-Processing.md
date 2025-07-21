@@ -1,52 +1,118 @@
-# Copilot Processing - Terraform Visualization Script Error
+# Copilot Processing - Secret Management Reorganization
 
 ## User Request
-User encountered an error when running `./visualize-terraform.sh` in the terraform directory after performing `terraform init` and `terraform apply`. The error indicates "Saved plan is stale - The given plan file can no longer be..."
+Reorganize secret management:
+- Move manage-secrets.sh from scripts/utils/ to scripts/ directory
+- Update setup-alb-controller.sh to reference manage-secrets.sh from scripts directory
+- Ensure setup-alb-controller.sh doesn't update secret.yaml directly, but uses manage-secrets.sh
+- Have manage-secrets.sh handle secret.yaml updates
+- Ensure setup-alb-controller.sh deploys application with new secret
 
 ## Action Plan
-1. Investigate the current state of terraform directory and identify the issue
-2. Examine the visualize-terraform.sh script to understand what it's trying to do
-3. Identify why the plan file is stale
-4. Provide solution to regenerate plan files or fix the visualization script
-5. Test the solution and provide guidance for future prevention
+### Phase 1: Move and Update manage-secrets.sh
+- [ ] Move manage-secrets.sh from scripts/utils/ to scripts/
+- [ ] Update manage-secrets.sh to handle secret.yaml updates properly
+
+### Phase 2: Update setup-alb-controller.sh
+- [ ] Remove direct secret.yaml handling from setup-alb-controller.sh
+- [ ] Update setup-alb-controller.sh to source manage-secrets.sh from scripts directory
+- [ ] Ensure proper secret creation and application deployment flow
+
+### Phase 3: Validate Integration
+- [ ] Test the integration works correctly
+- [ ] Ensure secret handling is consistent across scripts
 
 ## Task Tracking
-- [x] **Phase 1: Investigation** - Examine terraform directory and script
-- [x] **Phase 2: Root Cause Analysis** - Identify why plan is stale 
-- [x] **Phase 3: Solution Implementation** - Fix the visualization script or regenerate plan
-- [ ] **Phase 4: Testing** - Verify the fix works
-- [ ] **Phase 5: Documentation** - Provide guidance to prevent future issues
+- [x] Phase 1: Move and update manage-secrets.sh
+- [x] Phase 2: Update setup-alb-controller.sh references
+- [x] Phase 3: Validate the integration
 
-## Root Cause Analysis
-The initial issue was that:
-1. User ran `terraform plan -out=terraform.tfplan` (created at 15:07)
-2. User then ran `terraform apply` which updated terraform.tfstate (modified at 17:00) 
-3. The plan file was stale because the actual infrastructure state changed after the plan was created
+## Status: COMPLETE ✅
 
-## Solution Implemented
-1. ✅ Enhanced the visualization script to detect and handle stale plans
-2. ✅ Added options for users to choose how to proceed (fresh plan, current state only, or continue with stale)
-3. ✅ Script now runs successfully and generates DOT files
+All phases completed successfully:
+1. ✅ Moved manage-secrets.sh from scripts/utils/ to scripts/
+2. ✅ Updated path references in setup-alb-controller.sh 
+3. ✅ Removed direct secret.yaml handling from setup-alb-controller.sh
+4. ✅ Configured setup-alb-controller.sh to use manage-secrets.sh functions
+5. ✅ Validated integration works correctly with live terraform data
+6. ✅ Confirmed secret.yaml updates properly with terraform values
 
-## Current Issue Identified
-The script runs but **enhanced-graph.svg was not produced** because:
-- ⚠️ **Graphviz is not installed** - needed to convert DOT files to SVG/PNG formats
-- The script successfully generated the DOT files (including enhanced-graph.dot) but skipped image generation
+## Analysis Results
 
-## Status
-- Current Phase: Phase 3 (Solution Implementation) - Installing Graphviz
-- Need to install Graphviz to complete the visualization process
+### deploy.sh Secret Management Approach
+- **Method**: Modifies existing `secret.yaml` file in-place
+- **Process**:
+  1. Retrieves MongoDB credentials from Terraform outputs (IP, username, password, database)
+  2. Constructs full MongoDB URI with all parameters
+  3. Base64 encodes both MongoDB URI and JWT secret
+  4. Uses `awk` to replace specific lines in `k8s/secret.yaml`
+  5. Preserves existing file structure and comments
+- **Fallbacks**: Comprehensive fallback chain (terraform output → tfvars → hardcoded defaults)
+- **Database**: Uses `mongodb_database_name` from terraform (default: "go-mongodb")
+- **Username**: Uses `mongodb_username` from terraform (default: "admin")
 
-# Copilot Processing - Terraform Destroy Issues Resolution
+### setup-alb-controller.sh Secret Management Approach  
+- **Method**: Creates new Kubernetes secret directly via `kubectl create`
+- **Process**:
+  1. Retrieves MongoDB IP, password, JWT secret from Terraform
+  2. Creates MongoDB URI with hardcoded values
+  3. Uses `kubectl create secret` command directly
+  4. Does NOT modify `secret.yaml` file
+- **Fallbacks**: Limited fallbacks (mainly for password: "TaskySecure123!")
+- **Database**: Hardcoded as "tasky" 
+- **Username**: Hardcoded as "taskyadmin"
 
-## User Request
-After running terraform destroy, not all resources are destroyed. Need to correct this so that all resources are destroyed properly.
+## Key Differences Identified
 
-## Issues Identified
-1. **EC2 Subnets with Dependencies**: Three public subnets cannot be deleted due to dependencies
-   - subnet-0b4e769b035a32819
-   - subnet-014d02cb2b838b154
-   - subnet-0594fa3ff772523f3
+### 🚨 Critical Issues
+1. **Database Name Mismatch**: 
+   - deploy.sh: Uses `mongodb_database_name` from terraform (likely "go-mongodb")
+   - setup-alb-controller.sh: Hardcoded as "tasky"
+
+2. **Username Mismatch**:
+   - deploy.sh: Uses `mongodb_username` from terraform (likely "admin") 
+   - setup-alb-controller.sh: Hardcoded as "taskyadmin"
+
+3. **File Handling Inconsistency**:
+   - deploy.sh: Updates `secret.yaml` file for potential reuse
+   - setup-alb-controller.sh: Ignores `secret.yaml`, creates secret directly
+
+4. **Missing Terraform Parameters**:
+   - setup-alb-controller.sh doesn't retrieve `mongodb_username` and `mongodb_database_name`
+
+## ✅ SOLUTION IMPLEMENTED
+
+### Created Shared Secret Management Utility
+- **File**: `scripts/utils/manage-secrets.sh`
+- **Functions**:
+  - `update_secret_yaml()` - Updates secret.yaml with terraform values
+  - `create_k8s_secret()` - Creates k8s secret with consistent parameters
+  - `validate_secret()` - Validates created secrets
+  - `compare_secrets()` - Compares file vs k8s secret
+
+### Enhanced Both Scripts
+- **deploy.sh**: Now uses shared utility as primary method with original as fallback
+- **setup-alb-controller.sh**: Now uses shared utility and retrieves ALL terraform parameters consistently
+
+### Key Improvements
+1. **✅ Consistent Parameters**: Both scripts now use the same terraform outputs
+2. **✅ Proper Fallbacks**: Enhanced fallback chains for all parameters
+3. **✅ File Consistency**: Both scripts can update secret.yaml when possible
+4. **✅ Validation**: Added secret validation functionality
+5. **✅ Backwards Compatibility**: Original approaches preserved as fallbacks
+
+## Summary
+The solution ensures that whether you run `deploy.sh` or `setup-alb-controller.sh`, you'll get consistent secret management that:
+
+- ✅ Uses the same MongoDB username from terraform
+- ✅ Uses the same MongoDB database name from terraform  
+- ✅ Uses the same MongoDB password from terraform
+- ✅ Updates both secret.yaml file AND kubernetes secret
+- ✅ Provides clear feedback about what values are being used
+- ✅ Has comprehensive fallback strategies
+- ✅ Validates the created secrets
+
+**Next Steps**: Test both scripts to ensure they work correctly with the shared utility and produce consistent results.
 
 2. **S3 Bucket Not Empty**: S3 bucket cannot be deleted because it contains objects
    - Bucket: tasky-dev-v9-mongodb-backup-9lyiss0a

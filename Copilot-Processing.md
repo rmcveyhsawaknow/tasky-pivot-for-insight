@@ -1,53 +1,41 @@
-# Copilot Processing - Terraform Destroy Issues Resolution
+# Copilot Processing - Terraform Visualization Script Error
 
 ## User Request
-After running terraform destroy, not all resources are destroyed. Need to correct this so that all resources are destroyed properly.
-
-## Issues Identified
-1. **EC2 Subnets with Dependencies**: Three public subnets cannot be deleted due to dependencies
-   - subnet-0b4e769b035a32819
-   - subnet-014d02cb2b838b154
-   - subnet-0594fa3ff772523f3
-
-2. **S3 Bucket Not Empty**: S3 bucket cannot be deleted because it contains objects
-   - Bucket: tasky-dev-v9-mongodb-backup-9lyiss0a
-   - Error: BucketNotEmpty - must delete all versions in the bucket
-
-## Analysis Required
-- [ ] Examine current Terraform configuration structure
-- [ ] Identify resource dependencies causing subnet deletion failures
-- [ ] Review S3 bucket configuration and versioning settings
-- [ ] Analyze ALB and EKS resource cleanup order
-- [ ] Check for orphaned resources not managed by Terraform
+User encountered an error when running `./visualize-terraform.sh` in the terraform directory after performing `terraform init` and `terraform apply`. The error indicates "Saved plan is stale - The given plan file can no longer be..."
 
 ## Action Plan
+1. Investigate the current state of terraform directory and identify the issue
+2. Examine the visualize-terraform.sh script to understand what it's trying to do
+3. Identify why the plan file is stale
+4. Provide solution to regenerate plan files or fix the visualization script
+5. Test the solution and provide guidance for future prevention
 
-### Phase 1: Investigation and Analysis
-- [x] Review main Terraform configuration files
-- [x] Examine VPC module configuration
-- [x] Review S3 backup module configuration
-- [x] Check ALB module configuration
-- [x] Analyze EKS module configuration
-- [x] Identify resource dependency chain
+## Task Tracking
+- [x] **Phase 1: Investigation** - Examine terraform directory and script
+- [x] **Phase 2: Root Cause Analysis** - Identify why plan is stale 
+- [x] **Phase 3: Solution Implementation** - Fix the visualization script or regenerate plan
+- [ ] **Phase 4: Testing** - Verify the fix works
+- [ ] **Phase 5: Documentation** - Provide guidance to prevent future issues
 
-### Phase 2: S3 Bucket Cleanup Strategy
-- [x] Create script to empty S3 bucket before destruction
-- [x] Add lifecycle configuration to prevent object retention
-- [x] Implement force_destroy option for S3 bucket
-- [x] Add versioning cleanup procedures
+## Root Cause Analysis
+The initial issue was that:
+1. User ran `terraform plan -out=terraform.tfplan` (created at 15:07)
+2. User then ran `terraform apply` which updated terraform.tfstate (modified at 17:00) 
+3. The plan file was stale because the actual infrastructure state changed after the plan was created
 
-### Phase 3: Subnet Dependency Resolution
-- [x] Identify resources causing subnet dependencies
-- [x] Review ALB target groups and listeners
-- [x] Check EKS node groups and ENIs
-- [x] Analyze NAT gateways and route tables
-- [x] Review security group dependencies
+## Solution Implemented
+1. ✅ Enhanced the visualization script to detect and handle stale plans
+2. ✅ Added options for users to choose how to proceed (fresh plan, current state only, or continue with stale)
+3. ✅ Script now runs successfully and generates DOT files
 
-### Phase 4: Enhanced Destroy Process
-- [x] Create pre-destroy cleanup script
-- [x] Implement proper resource destruction order
-- [x] Add retry mechanisms for dependent resources
-- [x] Create manual cleanup procedures as fallback
+## Current Issue Identified
+The script runs but **enhanced-graph.svg was not produced** because:
+- ⚠️ **Graphviz is not installed** - needed to convert DOT files to SVG/PNG formats
+- The script successfully generated the DOT files (including enhanced-graph.dot) but skipped image generation
+
+## Status
+- Current Phase: Phase 3 (Solution Implementation) - Installing Graphviz
+- Need to install Graphviz to complete the visualization process
 
 # Copilot Processing - Terraform Destroy Issues Resolution
 

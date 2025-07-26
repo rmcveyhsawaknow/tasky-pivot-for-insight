@@ -269,8 +269,8 @@ Demo schedule: Backups run every 5 minutes automatically
 DEMOEOF
 
 # Get document counts for logging
-TODOS_COUNT=$$(mongo $$MONGODB_DATABASE --host localhost:27017 --username $$MONGODB_USERNAME --password $$MONGODB_PASSWORD --authenticationDatabase $$MONGODB_DATABASE --quiet --eval "db.todos.count()" 2>/dev/null || echo "0")
-USERS_COUNT=$$(mongo $$MONGODB_DATABASE --host localhost:27017 --username $$MONGODB_USERNAME --password $$MONGODB_PASSWORD --authenticationDatabase $$MONGODB_DATABASE --quiet --eval "db.user.count()" 2>/dev/null || echo "0")
+TODOS_COUNT=$$(mongo $$MONGODB_DATABASE --host localhost:27017 --username $$MONGODB_USERNAME --password $$MONGODB_PASSWORD --authenticationDatabase $$MONGODB_DATABASE --quiet --eval 'db.todos.count()' 2>/dev/null || echo "0")
+USERS_COUNT=$$(mongo $$MONGODB_DATABASE --host localhost:27017 --username $$MONGODB_USERNAME --password $$MONGODB_PASSWORD --authenticationDatabase $$MONGODB_DATABASE --quiet --eval 'db.user.count()' 2>/dev/null || echo "0")
 log_backup "Backup created - Todos: $$TODOS_COUNT, Users: $$USERS_COUNT"
 
 # Create compressed archives

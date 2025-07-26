@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jeffthorne/tasky/auth"
 	"github.com/jeffthorne/tasky/database"
 	"github.com/jeffthorne/tasky/models"
-	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -34,11 +34,11 @@ func GetTodo(c *gin.Context) {
 }
 
 func ClearAll(c *gin.Context) {
-	session := auth.ValidateSession(c)
-	if !session{
+	session := auth.ValidateSessionAPI(c)
+	if !session {
 		return
-	} 
-	
+	}
+
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 	userid := c.Param("userid")
 	_, err := todoCollection.DeleteMany(ctx, bson.M{"userid": userid})
@@ -54,10 +54,10 @@ func ClearAll(c *gin.Context) {
 }
 
 func GetTodos(c *gin.Context) {
-	session := auth.ValidateSession(c)
-	if !session{
+	session := auth.ValidateSessionAPI(c)
+	if !session {
 		return
-	} 
+	}
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 	userid := c.Param("userid")
 	findResult, err := todoCollection.Find(ctx, bson.M{"userid": userid})
@@ -82,10 +82,10 @@ func GetTodos(c *gin.Context) {
 }
 
 func DeleteTodo(c *gin.Context) {
-	session := auth.ValidateSession(c)
-	if !session{
+	session := auth.ValidateSessionAPI(c)
+	if !session {
 		return
-	} 
+	}
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 
 	id := c.Param("id")
@@ -109,10 +109,10 @@ func DeleteTodo(c *gin.Context) {
 }
 
 func UpdateTodo(c *gin.Context) {
-	session := auth.ValidateSession(c)
-	if !session{
+	session := auth.ValidateSessionAPI(c)
+	if !session {
 		return
-	} 
+	}
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 	var newTodo models.Todo
 	if err := c.BindJSON(&newTodo); err != nil {
@@ -120,7 +120,7 @@ func UpdateTodo(c *gin.Context) {
 		return
 	}
 
-	_, err := todoCollection.UpdateOne(ctx, bson.M{"_id": newTodo.ID, "userid" : newTodo.UserID}, bson.M{"$set": newTodo})
+	_, err := todoCollection.UpdateOne(ctx, bson.M{"_id": newTodo.ID, "userid": newTodo.UserID}, bson.M{"$set": newTodo})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		fmt.Println(err.Error())
@@ -133,10 +133,10 @@ func UpdateTodo(c *gin.Context) {
 }
 
 func AddTodo(c *gin.Context) {
-	session := auth.ValidateSession(c)
-	if !session{
+	session := auth.ValidateSessionAPI(c)
+	if !session {
 		return
-	} 
+	}
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 
 	var todo models.Todo

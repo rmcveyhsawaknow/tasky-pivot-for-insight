@@ -90,8 +90,11 @@ go build -o tasky main.go
 # Verify build success
 ls -la tasky
 
-# Test application (optional, there is expected output, error parsing uri: scheme must be "mongodb" or "mongodb+srv", this is showing app trying to start, but no db)
-./tasky --help || echo "Build successful"
+# Test application build and startup validation
+./test-build.sh
+
+# Alternative manual validation (if test-build.sh is not available):
+# MONGODB_URI="mongodb://fake:fake@localhost:27017/fake" SECRET_KEY="fake123" timeout 5s ./tasky 2>&1 | grep -q "Connected to MONGO" && echo "✅ Build successful" || echo "❌ Build failed"
 ```
 
 ### Step 1.3: Docker Image Build
@@ -105,10 +108,6 @@ docker images | grep tasky
 # Verify exercise.txt is included in container (override entrypoint to avoid MongoDB connection error)
 docker run --rm --entrypoint="" tasky:latest cat /app/exercise.txt
 
-# Alternative verification with file details
-docker run --rm --entrypoint="sh" tasky:latest -c "ls -la /app/exercise.txt && echo '--- Content ---' && cat /app/exercise.txt"
-
-# Expected output: Technical exercise requirements content
 ```
 
 ### Step 1.4: Local Development Stack
@@ -119,8 +118,7 @@ docker-compose up -d
 # Wait for services to start
 sleep 10
 
-# Test application connectivity
-curl -I http://localhost:8080 || echo "Local stack validation complete"
+# Codespace test, check ports tab in terminal context, browse to UI and Signup, create a task
 
 # Clean up local stack
 docker-compose down
@@ -330,9 +328,21 @@ kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.in
 kubectl get svc tasky-service -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
 
 # Check for container connection issues to mongo db
-kubectl logs -f deployment/tasky-app -n tasky --tail=50
-
+kubectl logs -f deployment/tasky-app -n tasky --tail=500
 # look for " 27017: connect: connection refused "
+
+#If you see this error in pod logs, it means the application cannot connect to MongoDB. After fixing MongoDB connectivity or updating secrets, perform a rolling restart of the Tasky application pods to reinitialize connections:
+
+kubectl rollout restart deployment/tasky-app -n tasky
+
+```
+
+Then check pod status and logs again:
+
+```bash
+kubectl get pods -n tasky
+kubectl logs -f deployment/tasky-app -n tasky --tail=100
+```
 ```
 
 ### Step 4: Test Application
@@ -520,7 +530,7 @@ sudo cat /etc/mongod.conf | grep -A 5 -B 5 "bindIp\|port"
 sudo tail -20 /var/log/mongodb/mongod.log
 
 # Connect to MongoDB with authentication and run database queries
-mongo --host 127.0.0.1:27017 -u taskyadmin -p asimplepass --authenticationDatabase tasky
+mongo --host 127.0.0.1:27017 -u taskyadmin -p asimplepassfromtfvars --authenticationDatabase go-mongodbfromtfvars
 
 # Once in MongoDB shell, run these queries:
 ```
@@ -532,7 +542,7 @@ mongo --host 127.0.0.1:27017 -u taskyadmin -p asimplepass --authenticationDataba
 db;
 
 // Switch to tasky database
-use tasky;
+use go-mongodb;
 
 // Show all databases and their sizes
 db.adminCommand("listDatabases");

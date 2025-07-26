@@ -99,12 +99,15 @@ resource "aws_cloudwatch_log_group" "mongodb" {
 
 # Render user data script with variables
 locals {
-  user_data = templatefile("${path.module}/user-data.sh", {
+  # First apply templatefile to substitute Terraform variables
+  user_data_template = templatefile("${path.module}/user-data.sh", {
     MONGODB_USERNAME      = var.mongodb_username
     MONGODB_PASSWORD      = var.mongodb_password
     MONGODB_DATABASE_NAME = var.mongodb_database_name
     BACKUP_BUCKET_NAME    = var.backup_bucket_name
   })
+  # Then convert $$ to $ for proper bash syntax in heredocs
+  user_data = replace(local.user_data_template, "$$", "$")
 }
 
 # EC2 Instance for MongoDB

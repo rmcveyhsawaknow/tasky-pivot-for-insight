@@ -8,6 +8,7 @@
 
 # Go Build artifacts
 tasky
+tasky-fixed
 oryxBuildBinary
 
 # Test binary, built with `go test -c`

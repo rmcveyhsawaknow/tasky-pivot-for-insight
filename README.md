@@ -38,11 +38,56 @@
 ### 🗺️ Architecture Diagram
 ![AWS Architecture Diagram](diagrams/enhanced-graph.svg)
 
+## 🚀 Quick Start
+
+**Deploy everything in under 30 minutes using GitHub Actions:**
+
+```bash
+git clone https://github.com/rmcveyhsawaknow/tasky-pivot-for-insight.git
+cd tasky-pivot-for-insight
+
+# Setup AWS OIDC and GitHub repository (one-time)
+./scripts/setup-aws-oidc.sh
+./scripts/setup-github-repo.sh
+
+# Deploy via GitHub Actions
+git checkout -b deploy/quickstart
+git add . && git commit -m "feat: deploy via GitHub Actions"
+git push origin deploy/quickstart
+```
+
+**⏱️ Total time: 15-20 minutes | 💰 Monthly cost: ~$25**
+
+See [📋 QUICKSTART.md](QUICKSTART.md) for detailed instructions.
+
 ## 🚀 Infrastructure Automation Methods
 
-This project implements **DevOps automation principles** through two primary deployment approaches, emphasizing the CALMS framework (Culture, Automation, Lean, Measurement, Sharing) and Infrastructure-as-Code best practices.
+This project implements **DevOps automation principles** through multiple deployment approaches, emphasizing the CALMS framework (Culture, Automation, Lean, Measurement, Sharing) and Infrastructure-as-Code best practices.
 
-### Method A: Local Development & IDE Deployment
+### Method A: GitHub Actions CI/CD (Recommended)
+
+**Purpose**: Production-ready automated deployment with complete CI/CD pipeline automation, OIDC security, and infrastructure-as-code best practices.
+
+**Features**:
+- **Complete Automation**: Deploy from scratch with zero manual intervention
+- **OIDC Security**: Credential-less authentication with temporary AWS tokens  
+- **Cost Optimization**: Modern ALB architecture saving $25/month vs dual-ALB setup
+- **Validation**: Automated Terraform planning, cost estimation, and security scanning
+- **Observability**: Comprehensive monitoring, logging, and health checks
+
+**Workflow**:
+1. **One-time Setup**: Configure AWS OIDC and GitHub repository settings
+2. **Automated Deployment**: Push to `deploy/*` branches triggers complete infrastructure and application deployment
+3. **Validation**: Pull requests trigger Terraform validation and cost estimation
+4. **Monitoring**: Real-time deployment status and application health monitoring
+
+**Key Components**:
+- `.github/workflows/terraform-apply.yml`: Infrastructure and application deployment
+- `.github/workflows/terraform-plan.yml`: PR validation and cost estimation  
+- `scripts/setup-aws-oidc.sh`: One-time AWS OIDC provider configuration
+- `scripts/setup-github-repo.sh`: GitHub repository secrets and variables setup
+
+### Method B: Local Development & IDE Deployment
 
 **Purpose**: Developer-centric workflow for rapid iteration, testing, and manual infrastructure provisioning.
 

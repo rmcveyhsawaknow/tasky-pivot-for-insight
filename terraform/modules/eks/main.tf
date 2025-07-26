@@ -72,20 +72,46 @@ resource "aws_security_group" "eks_additional" {
     description     = "Access to MongoDB"
   }
 
+  # Add explicit egress for all traffic (required for node functionality)
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "All outbound traffic"
+  }
+
   tags = merge(var.tags, {
     Name = "${var.project_name}-${var.environment}-${var.stack_version}-eks-additional-sg"
   })
 }
 
-# Add rule to MongoDB security group to allow EKS access
-resource "aws_security_group_rule" "mongodb_from_eks" {
+# Add rule to MongoDB security group to allow EKS additional security group access
+resource "aws_security_group_rule" "mongodb_from_eks_additional" {
   type                     = "ingress"
   from_port                = 27017
   to_port                  = 27017
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.eks_additional.id
   security_group_id        = var.mongodb_security_group_id
-  description              = "MongoDB access from EKS cluster"
+  description              = "MongoDB access from EKS additional security group"
+
+  # Ensure proper destruction order
+  depends_on = [aws_security_group.eks_additional]
+}
+
+# Add rule to MongoDB security group to allow EKS cluster security group access
+resource "aws_security_group_rule" "mongodb_from_eks_cluster" {
+  type                     = "ingress"
+  from_port                = 27017
+  to_port                  = 27017
+  protocol                 = "tcp"
+  source_security_group_id = aws_eks_cluster.main.vpc_config[0].cluster_security_group_id
+  security_group_id        = var.mongodb_security_group_id
+  description              = "MongoDB access from EKS cluster security group"
+
+  # Ensure proper destruction order
+  depends_on = [aws_eks_cluster.main]
 }
 
 # EKS Cluster
@@ -177,4 +203,63 @@ resource "aws_eks_addon" "ebs_csi" {
   #resolve_conflicts = "OVERWRITE"
 
   tags = var.tags
+}
+
+# ==============================================================================
+# AWS LOAD BALANCER CONTROLLER IRSA SETUP
+# ==============================================================================
+
+data "aws_iam_policy_document" "aws_load_balancer_controller_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    effect  = "Allow"
+
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(aws_eks_cluster.main.identity[0].oidc[0].issuer, "https://", "")}:sub"
+      values   = ["system:serviceaccount:kube-system:aws-load-balancer-controller"]
+    }
+
+    principals {
+      identifiers = [aws_iam_openid_connect_provider.eks.arn]
+      type        = "Federated"
+    }
+  }
+}
+
+resource "aws_iam_role" "aws_load_balancer_controller" {
+  assume_role_policy = data.aws_iam_policy_document.aws_load_balancer_controller_assume_role_policy.json
+  name               = "${var.project_name}-${var.environment}-${var.stack_version}-aws-load-balancer-controller"
+  
+  tags = merge(var.tags, {
+    Name = "${var.project_name}-${var.environment}-${var.stack_version}-alb-controller-role"
+  })
+}
+
+resource "aws_iam_policy" "aws_load_balancer_controller" {
+  policy = file("${path.module}/iam-policy-aws-load-balancer-controller.json")
+  name   = "${var.project_name}-${var.environment}-${var.stack_version}-AWSLoadBalancerControllerPolicy"
+
+  tags = merge(var.tags, {
+    Name = "${var.project_name}-${var.environment}-${var.stack_version}-alb-controller-policy"
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "aws_load_balancer_controller_attach" {
+  role       = aws_iam_role.aws_load_balancer_controller.name
+  policy_arn = aws_iam_policy.aws_load_balancer_controller.arn
+}
+
+resource "aws_iam_openid_connect_provider" "eks" {
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = [data.tls_certificate.eks.certificates[0].sha1_fingerprint]
+  url             = aws_eks_cluster.main.identity[0].oidc[0].issuer
+
+  tags = merge(var.tags, {
+    Name = "${aws_eks_cluster.main.name}-eks-irsa"
+  })
+}
+
+data "tls_certificate" "eks" {
+  url = aws_eks_cluster.main.identity[0].oidc[0].issuer
 }

@@ -40,6 +40,12 @@ variable "mongodb_password" {
   sensitive   = true
 }
 
+variable "mongodb_database_name" {
+  description = "MongoDB database name"
+  type        = string
+  default     = "go-mongodb"
+}
+
 variable "backup_bucket_name" {
   description = "S3 backup bucket name"
   type        = string

@@ -87,19 +87,27 @@ resource "aws_iam_instance_profile" "mongodb" {
 
 # CloudWatch Log Group
 resource "aws_cloudwatch_log_group" "mongodb" {
-  name              = "/aws/ec2/mongodb"
+  name              = "/aws/ec2/${var.project_name}-${var.environment}-${var.stack_version}/mongodb"
   retention_in_days = 30
 
-  tags = var.tags
+  tags = merge(var.tags, {
+    Name      = "${var.project_name}-${var.environment}-${var.stack_version}-mongodb-logs"
+    Component = "mongodb"
+    LogType   = "application"
+  })
 }
 
 # Render user data script with variables
 locals {
-  user_data = templatefile("${path.module}/user-data.sh", {
-    MONGODB_USERNAME   = var.mongodb_username
-    MONGODB_PASSWORD   = var.mongodb_password
-    BACKUP_BUCKET_NAME = var.backup_bucket_name
+  # First apply templatefile to substitute Terraform variables
+  user_data_template = templatefile("${path.module}/user-data.sh", {
+    MONGODB_USERNAME      = var.mongodb_username
+    MONGODB_PASSWORD      = var.mongodb_password
+    MONGODB_DATABASE_NAME = var.mongodb_database_name
+    BACKUP_BUCKET_NAME    = var.backup_bucket_name
   })
+  # Then convert $$ to $ for proper bash syntax in heredocs
+  user_data = replace(local.user_data_template, "$$", "$")
 }
 
 # EC2 Instance for MongoDB
@@ -110,7 +118,11 @@ resource "aws_instance" "mongodb" {
   vpc_security_group_ids = [aws_security_group.mongodb.id]
   iam_instance_profile   = aws_iam_instance_profile.mongodb.name
 
-  user_data = base64encode(local.user_data)
+  # CRITICAL FIX: Use user_data_base64 for proper encoding
+  user_data_base64 = base64encode(local.user_data)
+
+  # Force replacement if user data changes
+  user_data_replace_on_change = true
 
   root_block_device {
     volume_type = "gp3"

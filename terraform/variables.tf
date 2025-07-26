@@ -1,11 +1,11 @@
 variable "aws_region" {
   description = "AWS region where resources will be created"
   type        = string
-  default     = "us-west-2"
+  default     = "us-east-1"
 
   validation {
     condition     = can(regex("^[a-z]{2}-[a-z]+-[0-9]$", var.aws_region))
-    error_message = "AWS region must be in the format xx-xxxx-x (e.g., us-west-2)."
+    error_message = "AWS region must be in the format xx-xxxx-x (e.g., us-east-1)."
   }
 }
 
@@ -51,7 +51,7 @@ variable "vpc_cidr" {
 variable "availability_zones" {
   description = "Availability zones"
   type        = list(string)
-  default     = ["us-west-2a", "us-west-2b", "us-west-2c"]
+  default     = ["us-east-1a", "us-east-1b", "us-east-1c"]
 }
 
 variable "mongodb_instance_type" {
@@ -71,6 +71,17 @@ variable "mongodb_password" {
   type        = string
   sensitive   = true
   default     = "TaskySecure123!"
+}
+
+variable "mongodb_database_name" {
+  description = "Name of the MongoDB database to create"
+  type        = string
+  default     = "go-mongodb"
+
+  validation {
+    condition     = can(regex("^[a-zA-Z][a-zA-Z0-9_-]*$", var.mongodb_database_name))
+    error_message = "Database name must start with a letter and contain only letters, numbers, underscores, and hyphens."
+  }
 }
 
 variable "jwt_secret" {
@@ -122,4 +133,54 @@ variable "eks_node_min_size" {
     condition     = var.eks_node_min_size >= 0 && var.eks_node_min_size <= 10
     error_message = "Minimum size must be between 0 and 10 nodes."
   }
+}
+
+# ==============================================================================
+# APPLICATION LOAD BALANCER VARIABLES
+# ==============================================================================
+
+variable "alb_health_check_path" {
+  description = "Health check path for ALB target group"
+  type        = string
+  default     = "/"
+
+  validation {
+    condition     = can(regex("^/", var.alb_health_check_path))
+    error_message = "Health check path must start with '/'."
+  }
+}
+
+variable "alb_ssl_certificate_arn" {
+  description = "SSL certificate ARN for HTTPS listener (optional)"
+  type        = string
+  default     = null
+}
+
+variable "alb_enable_access_logs" {
+  description = "Enable ALB access logs (stored in S3 backup bucket)"
+  type        = bool
+  default     = false
+}
+
+variable "alb_create_dns_record" {
+  description = "Whether to create Route53 DNS record for custom domain"
+  type        = bool
+  default     = false
+}
+
+variable "alb_domain_name" {
+  description = "Custom domain name (e.g., ideatasky.ryanmcvey.me)"
+  type        = string
+  default     = null
+
+  validation {
+    condition     = var.alb_domain_name == null || can(regex("^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]\\.[a-zA-Z]{2,}$", var.alb_domain_name))
+    error_message = "Domain name must be a valid FQDN format."
+  }
+}
+
+variable "alb_hosted_zone_id" {
+  description = "Route53 hosted zone ID for DNS record creation"
+  type        = string
+  default     = null
 }

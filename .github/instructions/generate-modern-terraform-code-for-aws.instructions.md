@@ -86,7 +86,7 @@ terraform {
   backend "s3" {
     bucket         = "your-terraform-state-bucket"
     key            = "tasky/terraform.tfstate"
-    region         = "us-west-2"
+    region         = "us-east-1"
     dynamodb_table = "terraform-state-lock"
     encrypt        = true
   }
@@ -111,7 +111,155 @@ terraform {
   - Pre-commit hooks
   - Enforce formatting, linting, and basic validation
 
-## 11. AWS-Specific Best Practices
+## 12. Resource Management and Destruction Best Practices
+
+### Ensuring Proper Terraform Apply/Destroy Cycles
+- **Principle:** All resources created by Terraform must be properly tagged, tracked, and destroyable without orphaning resources.
+
+- **Comprehensive Resource Tagging:** Every single resource (VPC, subnets, gateways, logs, security groups, etc.) must include standardized tags
+```hcl
+# Define common tags at the root level
+locals {
+  common_tags = {
+    Project     = "tasky-pivot-for-insight"
+    Environment = var.environment
+    ManagedBy   = "terraform"
+    Owner       = "insight-technical-exercise"
+    CreatedBy   = "terraform"
+    Repository  = "tasky-pivot-for-insight"
+  }
+}
+
+# Apply to ALL resources without exception
+resource "aws_internet_gateway" "main" {
+  vpc_id = aws_vpc.main.id
+  tags = merge(local.common_tags, {
+    Name = "${var.project_name}-igw"
+    Type = "internet-gateway"
+  })
+}
+```
+
+- **Explicit Resource Dependencies:** Use `depends_on` to control destruction order and prevent orphaned resources
+```hcl
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+  
+  # Ensure internet gateway exists before creating routes
+  depends_on = [aws_internet_gateway.main]
+  
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main.id
+  }
+  
+  tags = merge(local.common_tags, {
+    Name = "${var.project_name}-public-rt"
+  })
+}
+
+resource "aws_subnet" "public" {
+  count                   = length(var.public_subnet_cidrs)
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.public_subnet_cidrs[count.index]
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  map_public_ip_on_launch = true
+  
+  # Ensure proper destruction order
+  depends_on = [aws_internet_gateway.main, aws_route_table.public]
+  
+  tags = merge(local.common_tags, {
+    Name = "${var.project_name}-public-subnet-${count.index + 1}"
+    Type = "public"
+    AZ   = data.aws_availability_zones.available.names[count.index]
+  })
+}
+```
+
+- **Log Group Management:** CloudWatch log groups are commonly orphaned - ensure they're tracked
+```hcl
+resource "aws_cloudwatch_log_group" "mongodb_backup" {
+  name              = "/aws/ec2/${var.project_name}/mongodb-backup"
+  retention_in_days = 14
+  
+  tags = merge(local.common_tags, {
+    Name        = "${var.project_name}-mongodb-backup-logs"
+    Component   = "mongodb"
+    LogType     = "backup"
+  })
+}
+
+resource "aws_cloudwatch_log_group" "eks_cluster" {
+  name              = "/aws/eks/${var.cluster_name}/cluster"
+  retention_in_days = 7
+  
+  tags = merge(local.common_tags, {
+    Name        = "${var.project_name}-eks-cluster-logs"
+    Component   = "eks"
+    LogType     = "cluster"
+  })
+}
+```
+
+- **Module Tag Consistency:** Ensure all modules propagate tags correctly
+```hcl
+# In module call
+module "vpc" {
+  source = "./modules/vpc"
+  
+  project_name = var.project_name
+  environment  = var.environment
+  
+  # Always pass common tags to modules
+  tags = local.common_tags
+}
+
+# In module variables.tf
+variable "tags" {
+  description = "Common tags to apply to all resources"
+  type        = map(string)
+  default     = {}
+}
+
+# In module main.tf - apply to every resource
+resource "aws_vpc" "main" {
+  # ... configuration ...
+  tags = merge(var.tags, {
+    Name = "${var.project_name}-vpc"
+  })
+}
+```
+
+- **Destruction Testing and Validation:**
+```bash
+# Before destroying, verify all resources have proper tags
+aws resourcegroupstaggingapi get-resources \
+  --tag-filters "Key=Project,Values=tasky-pivot-for-insight" \
+  --region us-east-1
+
+# After destroy, check for orphaned resources
+aws resourcegroupstaggingapi get-resources \
+  --tag-filters "Key=ManagedBy,Values=terraform" \
+  --region us-east-1
+
+# Manual cleanup command for any orphaned resources
+aws logs describe-log-groups --log-group-name-prefix "/aws/ec2/tasky"
+```
+
+### Troubleshooting Destruction Issues
+- **Common Orphaned Resources:**
+  - CloudWatch Log Groups (not automatically destroyed)
+  - Security Group rules with circular dependencies
+  - Route tables with active routes
+  - Network interfaces still attached to instances
+  
+- **Prevention Strategies:**
+  - Use `terraform plan -destroy` before actual destruction
+  - Implement pre-destroy hooks for cleanup
+  - Regular state validation with `terraform refresh`
+  - Monitor AWS billing for unexpected resources
+
+### AWS-Specific Best Practices
 
 ### Three-Tier Architecture Components
 - **Web Tier**: Use EKS for containerized applications with Application Load Balancer for public access
@@ -130,7 +278,8 @@ terraform {
 - **CloudWatch**: Integrate logging and monitoring for backup scripts and application health
 - **Route 53**: Use for DNS management if custom domains are required
 
-### Resource Tagging
+### Resource Tagging and Lifecycle Management
+- **Consistent Tagging Strategy**: Apply comprehensive tags to ALL resources for proper tracking and destruction
 ```hcl
 locals {
   common_tags = {
@@ -138,7 +287,70 @@ locals {
     Environment = var.environment
     ManagedBy   = "terraform"
     Owner       = "insight-technical-exercise"
+    CreatedBy   = "terraform"
+    Timestamp   = timestamp()
   }
+}
+
+# Apply to every resource
+resource "aws_vpc" "main" {
+  cidr_block           = var.vpc_cidr
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+  tags = merge(local.common_tags, {
+    Name = "${var.project_name}-vpc"
+  })
+}
+```
+
+- **Explicit Dependencies**: Use `depends_on` to ensure correct resource destruction order
+```hcl
+resource "aws_subnet" "public" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.public_subnet_cidrs[count.index]
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  map_public_ip_on_launch = true
+  
+  depends_on = [aws_internet_gateway.main]
+  
+  tags = merge(local.common_tags, {
+    Name = "${var.project_name}-public-subnet-${count.index + 1}"
+    Type = "public"
+  })
+}
+```
+
+- **Resource Lifecycle Controls**: Prevent accidental destruction and ensure proper cleanup
+```hcl
+resource "aws_cloudwatch_log_group" "app_logs" {
+  name              = "/aws/eks/${var.cluster_name}/cluster"
+  retention_in_days = var.log_retention_days
+  
+  lifecycle {
+    prevent_destroy = false
+    create_before_destroy = true
+  }
+  
+  tags = local.common_tags
+}
+```
+
+- **Module Tag Propagation**: Ensure all modules accept and apply tags consistently
+```hcl
+# In module variables.tf
+variable "tags" {
+  description = "A map of tags to assign to the resource"
+  type        = map(string)
+  default     = {}
+}
+
+# In module resources
+resource "aws_instance" "mongodb" {
+  # ... other configuration ...
+  tags = merge(var.tags, {
+    Name = "${var.project_name}-mongodb"
+    Role = "database"
+  })
 }
 ```
 

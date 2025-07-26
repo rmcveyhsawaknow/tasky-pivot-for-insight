@@ -9,6 +9,11 @@ output "vpc_id" {
   value       = module.vpc.vpc_id
 }
 
+output "aws_region" {
+  description = "AWS region where resources are deployed"
+  value       = var.aws_region
+}
+
 # EKS Cluster Information
 output "eks_cluster_name" {
   description = "Name of the EKS cluster for containerized applications"
@@ -25,21 +30,69 @@ output "eks_cluster_security_group_id" {
   value       = module.eks.cluster_security_group_id
 }
 
+output "eks_node_group_security_group_id" {
+  description = "Security group ID for EKS node group"
+  value       = module.eks.node_group_security_group_id
+}
+
+output "eks_aws_load_balancer_controller_role_arn" {
+  description = "ARN of the AWS Load Balancer Controller IAM role"
+  value       = module.eks.aws_load_balancer_controller_role_arn
+}
+
 # MongoDB Database Information
 output "mongodb_private_ip" {
   description = "Private IP address of the MongoDB EC2 instance"
   value       = module.mongodb_ec2.private_ip
 }
 
+output "mongodb_instance_id" {
+  description = "EC2 instance ID for the MongoDB server"
+  value       = module.mongodb_ec2.instance_id
+}
+
 output "mongodb_connection_string" {
   description = "MongoDB connection string for application configuration"
-  value       = "mongodb://${var.mongodb_username}:${var.mongodb_password}@${module.mongodb_ec2.private_ip}:27017/tasky"
+  value       = module.mongodb_ec2.mongodb_connection_uri
   sensitive   = true
 }
 
 output "mongodb_security_group_id" {
   description = "Security group ID for the MongoDB instance"
   value       = module.mongodb_ec2.security_group_id
+}
+
+output "mongodb_cloudwatch_logs" {
+  description = "CloudWatch log group for MongoDB monitoring"
+  value       = module.mongodb_ec2.cloudwatch_log_group_name
+}
+
+output "mongodb_troubleshooting" {
+  description = "Commands for troubleshooting MongoDB instance"
+  value       = module.mongodb_ec2.troubleshooting_commands
+}
+
+output "mongodb_username" {
+  description = "MongoDB username for application connections"
+  value       = var.mongodb_username
+  sensitive   = true
+}
+
+output "mongodb_password" {
+  description = "MongoDB password for application connections"
+  value       = var.mongodb_password
+  sensitive   = true
+}
+
+output "mongodb_database_name" {
+  description = "MongoDB database name used by the application"
+  value       = var.mongodb_database_name
+}
+
+output "jwt_secret" {
+  description = "JWT secret key for application authentication"
+  value       = var.jwt_secret
+  sensitive   = true
 }
 
 # S3 Backup Storage
@@ -53,15 +106,39 @@ output "s3_backup_public_url" {
   value       = module.s3_backup.public_url
 }
 
+# ==============================================================================
+# APPLICATION LOAD BALANCER OUTPUTS
+# ==============================================================================
+
+output "alb_dns_name" {
+  description = "DNS name of the Application Load Balancer"
+  value       = module.alb.alb_dns_name
+}
+
+output "alb_hosted_zone_id" {
+  description = "Hosted zone ID of the Application Load Balancer"
+  value       = module.alb.alb_hosted_zone_id
+}
+
+output "alb_target_group_arn" {
+  description = "ARN of the ALB target group"
+  value       = module.alb.target_group_arn
+}
+
+output "application_url" {
+  description = "Application URL via Application Load Balancer"
+  value       = module.alb.application_url
+}
+
+output "custom_domain_url" {
+  description = "Custom domain URL if configured"
+  value       = module.alb.custom_domain_url
+}
+
 # Deployment Commands and Information
 output "kubectl_config_command" {
   description = "Command to configure kubectl for EKS cluster access"
   value       = "aws eks update-kubeconfig --region ${var.aws_region} --name ${module.eks.cluster_name}"
-}
-
-output "application_url" {
-  description = "Application URL after load balancer deployment"
-  value       = "http://${module.eks.load_balancer_hostname}"
 }
 
 # # Deployment Instructions

@@ -8,6 +8,7 @@
 
 # Go Build artifacts
 tasky
+tasky-fixed
 oryxBuildBinary
 
 # Test binary, built with `go test -c`
@@ -19,13 +20,15 @@ oryxBuildBinary
 # Dependency directories (remove the comment below to include it)
 vendor/
 
-
 .idea
 setup_test.sh
 Makefile
 deploy
 test
 tmp
+
+# AWS Session Manager Plugin
+session-manager-plugin.deb
 
 # The terraform/.terraform directory should NOT be committed.
 # This directory contains local state, provider plugins, and other environment-specific files.
@@ -34,6 +37,9 @@ terraform/.terraform
 *.tfvars
 terraform.tfstate
 terraform.tfstate.backup
+terraform.tfplan
+*.tfplan
+terraform/.terraform.tfstate.lock.info
 
 # DO commit .terraform.lock.hcl
 # This file locks Terraform provider versions for reproducible builds across your team and CI/CD.

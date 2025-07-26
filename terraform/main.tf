@@ -60,15 +60,16 @@ module "s3_backup" {
 module "mongodb_ec2" {
   source = "./modules/mongodb-ec2"
 
-  project_name       = var.project_name
-  environment        = var.environment
-  stack_version      = var.stack_version
-  vpc_id             = module.vpc.vpc_id
-  private_subnet_ids = module.vpc.private_subnet_ids
-  instance_type      = var.mongodb_instance_type
-  mongodb_username   = var.mongodb_username
-  mongodb_password   = var.mongodb_password
-  backup_bucket_name = module.s3_backup.bucket_name
+  project_name          = var.project_name
+  environment           = var.environment
+  stack_version         = var.stack_version
+  vpc_id                = module.vpc.vpc_id
+  private_subnet_ids    = module.vpc.private_subnet_ids
+  instance_type         = var.mongodb_instance_type
+  mongodb_username      = var.mongodb_username
+  mongodb_password      = var.mongodb_password
+  mongodb_database_name = var.mongodb_database_name
+  backup_bucket_name    = module.s3_backup.bucket_name
 
   tags = local.common_tags
 }
@@ -89,6 +90,28 @@ module "eks" {
   node_max_size             = var.eks_node_max_size
   node_min_size             = var.eks_node_min_size
   mongodb_security_group_id = module.mongodb_ec2.security_group_id
+
+  tags = local.common_tags
+}
+
+# ALB Module - Application Load Balancer
+# Provides cost-effective cloud-native load balancer for web applications
+module "alb" {
+  source = "./modules/alb"
+
+  project_name           = var.project_name
+  environment            = var.environment
+  stack_version          = var.stack_version
+  vpc_id                 = module.vpc.vpc_id
+  public_subnet_ids      = module.vpc.public_subnet_ids
+  eks_security_group_ids = [module.eks.node_group_security_group_id, module.eks.cluster_security_group_id]
+  health_check_path      = var.alb_health_check_path
+  ssl_certificate_arn    = var.alb_ssl_certificate_arn
+  enable_access_logs     = var.alb_enable_access_logs
+  access_logs_bucket     = var.alb_enable_access_logs ? module.s3_backup.bucket_name : null
+  create_dns_record      = var.alb_create_dns_record
+  domain_name            = var.alb_domain_name
+  hosted_zone_id         = var.alb_hosted_zone_id
 
   tags = local.common_tags
 }

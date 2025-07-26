@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Terraform Plan Visualization</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .graph { text-align: center; margin: 20px 0; }
+        img { max-width: 100%; height: auto; border: 1px solid #ccc; }
+        .download-links { margin: 10px 0; }
+        .download-links a { margin: 0 10px; padding: 5px 10px; background: #007cba; color: white; text-decoration: none; border-radius: 3px; }
+        .download-links a:hover { background: #005a87; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Terraform Plan Visualization</h1>
+        
+        <div class="section">
+            <h2>📊 Main Infrastructure Graph</h2>
+            <div class="graph">
+                <img src="terraform-graph.svg" alt="Terraform Graph" onerror="this.src='terraform-graph.png'">
+            </div>
+            <div class="download-links">
+                <a href="terraform-graph.svg" download>Download SVG</a>
+                <a href="terraform-graph.png" download>Download PNG</a>
+                <a href="terraform-graph.pdf" download>Download PDF</a>
+                <a href="terraform-graph.dot" download>Download DOT</a>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📋 Plan Changes Graph</h2>
+            <div class="graph">
+                <img src="terraform-plan.svg" alt="Terraform Plan Graph" onerror="this.src='terraform-plan.png'">
+            </div>
+            <div class="download-links">
+                <a href="terraform-plan.svg" download>Download SVG</a>
+                <a href="terraform-plan.png" download>Download PNG</a>
+                <a href="terraform-plan-graph.dot" download>Download DOT</a>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🚀 Apply Operations Graph</h2>
+            <div class="graph">
+                <img src="terraform-apply.svg" alt="Terraform Apply Graph" onerror="this.src='terraform-apply.png'">
+            </div>
+            <div class="download-links">
+                <a href="terraform-apply.svg" download>Download SVG</a>
+                <a href="terraform-apply.png" download>Download PNG</a>
+                <a href="terraform-apply-graph.dot" download>Download DOT</a>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎨 Enhanced Graph</h2>
+            <div class="graph">
+                <img src="enhanced-graph.svg" alt="Enhanced Terraform Graph" onerror="this.src='enhanced-graph.png'">
+            </div>
+            <div class="download-links">
+                <a href="enhanced-graph.svg" download>Download SVG</a>
+                <a href="enhanced-graph.png" download>Download PNG</a>
+                <a href="enhanced-graph.dot" download>Download DOT</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

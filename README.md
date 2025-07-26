@@ -7,7 +7,13 @@
 
 ## 📖 Overview
 
-This repository delivers a **three-tier web application architecture** as part of the Insight Technical Architect evaluation. It implements an AWS-native deployment of the Tasky application using complete Infrastructure-as-Code (IaC) with Terraform.
+**Tasky** is a modern task management web application built with Go, featuring user authentication, task creation/management, and persistent data storage. This repository demonstrates enterprise-grade infrastructure automation by implementing a complete AWS three-tier architecture deployment using Infrastructure-as-Code (IaC) principles.
+
+### About Tasky Application
+- **Technology Stack**: Go backend, HTML/CSS/JavaScript frontend, MongoDB database
+- **Features**: User registration/authentication, task CRUD operations, responsive web interface
+- **Architecture**: RESTful API design with JWT-based authentication and MongoDB data persistence
+- **Containerization**: Docker-ready with multi-stage builds and security best practices
 
 ## 🌐 Architecture
 
@@ -30,80 +36,45 @@ This repository delivers a **three-tier web application architecture** as part o
 - **Infrastructure**: Complete Terraform automation with ~50+ AWS resources
 
 ### 🗺️ Architecture Diagram
-![AWS Architecture Diagram](diagrams/aws_architecture_diagram1.png)
+![AWS Architecture Diagram](diagrams/enhanced-graph.svg)
 
-## 🚀 Quick Start
+## 🚀 Infrastructure Automation Methods
 
-### Prerequisites
-- **AWS Account** with billing enabled and appropriate permissions
-- **AWS CLI v2** installed and configured (`aws configure`)
-- **Terraform v1.0+** installed  
-- **kubectl** installed
-- **Docker** installed
+This project implements **DevOps automation principles** through two primary deployment approaches, emphasizing the CALMS framework (Culture, Automation, Lean, Measurement, Sharing) and Infrastructure-as-Code best practices.
 
-### 1. Configure AWS Credentials
-```bash
-# Configure AWS credentials (required)
-aws configure
+### Method A: Local Development & IDE Deployment
 
-# Verify configuration  
-aws sts get-caller-identity
-```
+**Purpose**: Developer-centric workflow for rapid iteration, testing, and manual infrastructure provisioning.
 
-**Required AWS IAM Permissions**:
-- EC2 full access
-- EKS full access  
-- S3 full access
-- IAM full access
-- VPC full access
-- CloudWatch logs access
+**Workflow**:
+1. **Local Development**: Full Docker Compose stack for application development
+2. **Infrastructure Provisioning**: Manual Terraform execution from IDE/terminal
+3. **Application Deployment**: Direct kubectl commands for container orchestration
+4. **Validation**: Manual testing and verification procedures
 
-### 2. Deploy Infrastructure
-```bash
-# Clone repository
-git clone https://github.com/rmcveyhsawaknow/tasky-pivot-for-insight.git
-cd tasky-pivot-for-insight
+**Best Use Cases**:
+- Feature development and testing
+- Infrastructure experimentation and tuning
+- Troubleshooting and debugging
+- Learning and skill development
 
-# Configure Terraform variables
-cd terraform/
-cp terraform.tfvars.example terraform.tfvars
-nano terraform.tfvars  # Edit with your AWS settings
+### Method B: CI/CD via GitHub Actions
 
-# Deploy infrastructure (~15-20 minutes)
-terraform init
-terraform plan
-terraform apply
-```
+**Purpose**: Production-ready automated pipeline following GitOps principles for reliable, repeatable deployments.
 
-### 3. Configure kubectl and Deploy Application
-```bash
-# Configure kubectl for EKS
-CLUSTER_NAME=$(terraform output -raw eks_cluster_name)
-AWS_REGION=$(terraform output -raw aws_region)
-aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
+**Workflow**:
+1. **Continuous Integration**: Automated testing, building, and security scanning
+2. **Infrastructure Deployment**: Terraform automation with state management
+3. **Application Deployment**: Automated Kubernetes deployments with rollback capabilities
+4. **Monitoring**: Automated health checks and deployment validation
 
-# Deploy application
-cd ../k8s/
-kubectl apply -f .
+**Best Use Cases**:
+- Production deployments
+- Team collaboration and consistent environments
+- Compliance and audit requirements
+- Scaling across multiple environments
 
-# Get application URL
-kubectl get svc tasky-service -n tasky
-```
-
-### 4. Verify Deployment
-```bash
-# Check application status
-kubectl get pods -n tasky
-
-# Test application access
-LB_URL=$(kubectl get svc tasky-service -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-curl -I http://$LB_URL
-
-# Verify exercise requirements
-kubectl exec -it deployment/tasky-app -n tasky -- cat /app/exercise.txt
-```
-
-**📖 For detailed step-by-step instructions, troubleshooting, and validation procedures, see: [docs/deployment-guide.md](docs/deployment-guide.md)**
+📖 **For complete deployment instructions using either method, see: [docs/deployment-guide.md](docs/deployment-guide.md)**
 
 ## 📂 Repository Structure
 ```
@@ -112,33 +83,66 @@ tasky-pivot-for-insight/
 │   ├── main.tf                # Main Terraform configuration
 │   ├── variables.tf           # Input variables
 │   ├── outputs.tf             # Output values
+│   ├── providers.tf           # Provider configurations
+│   ├── backend.tf             # Remote state configuration
+│   ├── versions.tf            # Version constraints
+│   ├── terraform.tfvars.example # Example configuration
 │   └── modules/               # Terraform modules
+│       ├── alb/               # Application Load Balancer module
 │       ├── eks/               # EKS cluster module
 │       ├── mongodb-ec2/       # MongoDB EC2 module
 │       ├── s3-backup/         # S3 backup bucket module
 │       └── vpc/               # VPC networking module
 ├── k8s/                       # Kubernetes manifests
-│   ├── deployment.yaml        # Tasky application deployment
-│   ├── service.yaml           # LoadBalancer service
+│   ├── namespace.yaml         # Namespace definition
 │   ├── rbac.yaml              # Service account & permissions
 │   ├── configmap.yaml         # Application configuration
 │   ├── secret.yaml            # MongoDB connection secrets
-│   └── namespace.yaml         # Namespace definition
+│   ├── deployment.yaml        # Tasky application deployment
+│   ├── ingress.yaml           # ALB Ingress resource
+│   └── service.yaml           # ClusterIP service
 ├── scripts/                   # Automation scripts
+│   ├── setup-codespace.sh     # Automated tool installation & setup
+│   ├── check-versions.sh      # Tool version verification
 │   ├── deploy.sh              # Application deployment script
-│   └── mongodb-backup.sh      # MongoDB backup script
+│   ├── mongodb-backup.sh      # MongoDB backup script
+│   ├── README.md              # Scripts documentation
+│   └── utils/                 # Utility tools
 ├── docs/                      # Documentation
 │   ├── deployment-guide.md    # Detailed deployment procedures
 │   ├── technical-specs.md     # Architecture specifications
 │   └── ops_git_flow.md        # GitOps workflow guide
-├── .github/workflows/         # CI/CD pipelines
+├── .github/                   # GitHub configuration
+│   ├── workflows/             # CI/CD pipelines
+│   └── instructions/          # Coding guidelines & standards
+├── assets/                    # Frontend static assets
+│   ├── css/                   # Stylesheets
+│   ├── js/                    # JavaScript files
+│   ├── img/                   # Images and icons
+│   ├── login.html             # Login page template
+│   └── todo.html              # Todo page template
+├── auth/                      # Authentication module
+│   └── auth.go                # JWT authentication logic
+├── controllers/               # Application controllers
+│   ├── todoController.go      # Todo CRUD operations
+│   └── userController.go      # User management
+├── database/                  # Database connectivity
+│   └── database.go            # MongoDB connection setup
+├── models/                    # Data models
+│   └── models.go              # User and Todo structures
+├── diagrams/                  # Architecture diagrams
 ├── main.go                    # Go application entry point
 ├── Dockerfile                 # Container image definition
 ├── docker-compose.yml         # Local development environment
+├── go.mod                     # Go module definition
+├── go.sum                     # Go module checksums
+├── .env.example               # Environment variables template
 └── exercise.txt               # Technical exercise requirements
 ```
 
-## 🐳 Local Development
+## 🐳 Local Application-Only Development
+
+For developing and testing the Tasky application without AWS infrastructure, use the local development stack:
 
 ### Environment Variables
 |Variable|Purpose|Example|
@@ -161,7 +165,7 @@ docker-compose logs tasky
 docker-compose down
 ```
 
-### Running with Go
+### Running with Go (Development Mode)
 ```bash
 # Install dependencies
 go mod tidy
@@ -174,13 +178,28 @@ cp .env.example .env
 go run main.go
 ```
 
+### Local Development Features
+- **Hot Reload**: Direct Go execution for rapid development cycles
+- **Isolated Environment**: MongoDB container with persistent volumes
+- **Port Forwarding**: Application accessible at `http://localhost:8080`
+- **Debug Support**: Full debugging capabilities with IDE integration
+
 ## 🎯 Technical Exercise Compliance
 
 ### ✅ Architecture Requirements
 - **Three-tier architecture**: Web (EKS) + Data (MongoDB EC2) + Storage (S3)
-- **Public access**: Web application via Application Load Balancer
+- **Public access**: Web application via cost-effective Application Load Balancer
+- **Cloud-native load balancer**: AWS ALB with Kubernetes Ingress Controller
+- **Custom domain ready**: Pre-configured for `ideatasky.ryanmcvey.me`
 - **Database**: MongoDB with authentication enabled
 - **Storage**: S3 bucket with public read access for backups
+
+### ✅ Load Balancer Implementation
+- **ALB vs NLB**: Cost-optimized Application Load Balancer chosen over Network Load Balancer
+- **ALB Controller**: AWS Load Balancer Controller with IRSA (IAM Roles for Service Accounts)
+- **Ingress Resource**: Kubernetes-native ingress with ALB annotations
+- **Health Checks**: Application-aware health checks for better reliability
+- **SSL Ready**: Pre-configured for HTTPS with certificate management
 
 ### ✅ Security & Configuration
 - **MongoDB Authentication**: Connection string-based auth implemented
@@ -190,10 +209,34 @@ go run main.go
 - **Legacy Requirements**: Amazon Linux 2 + MongoDB v4.0.x
 
 ### ✅ Infrastructure-as-Code
-- **Complete Terraform automation**: ~50+ AWS resources
-- **Modular design**: Reusable Terraform modules
+- **Complete Terraform automation**: ~50+ AWS resources including ALB module
+- **Modular design**: Reusable Terraform modules including dedicated ALB module
 - **State management**: Remote state with S3 backend support
-- **Variable configuration**: Customizable deployment parameters
+- **Variable configuration**: Customizable deployment parameters including domain settings
+
+## 🌐 Application Load Balancer Setup
+
+### Quick ALB Deployment
+```bash
+# Apply infrastructure with ALB
+cd terraform
+terraform apply
+
+# Install AWS Load Balancer Controller
+./scripts/setup-alb-controller.sh
+
+# Get ALB DNS name for domain configuration
+kubectl get ingress tasky-ingress -n tasky
+```
+
+### Custom Domain Configuration
+1. **Get ALB DNS**: `kubectl get ingress tasky-ingress -n tasky`
+2. **Cloudflare Setup**:
+   - Add CNAME: `ideatasky` → `<ALB-DNS-NAME>`
+   - Set to "DNS Only" (grey cloud)
+3. **Access**: `http://ideatasky.ryanmcvey.me`
+
+For detailed ALB setup instructions, see: [docs/alb-setup-guide.md](docs/alb-setup-guide.md)
 
 ## 🔄 CI/CD & GitOps
 
@@ -222,7 +265,7 @@ kubectl exec -it deployment/tasky-app -n tasky -- nc -zv $MONGODB_IP 27017
 
 # Verify S3 backup access
 S3_BUCKET=$(terraform output -raw s3_backup_bucket_name)
-curl -I https://$S3_BUCKET.s3.us-west-2.amazonaws.com/backups/
+curl -I https://$S3_BUCKET.s3.us-east-1.amazonaws.com/backups/
 ```
 
 ### Pre-Presentation Checklist

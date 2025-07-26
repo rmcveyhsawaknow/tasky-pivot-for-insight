@@ -94,7 +94,7 @@ terraform apply -auto-approve
 ### 2. Deploy Application
 ```bash
 # Configure kubectl
-aws eks update-kubeconfig --region us-west-2 --name tasky-dev-eks-cluster
+aws eks update-kubeconfig --region us-east-1 --name tasky-dev-eks-cluster
 
 # Deploy using script
 cd ../scripts/
@@ -116,7 +116,7 @@ kubectl get svc tasky-service -n tasky -o jsonpath='{.status.loadBalancer.ingres
 
 # Test MongoDB backup
 S3_BUCKET=$(cd terraform && terraform output -raw s3_backup_bucket_name)
-curl -I https://$S3_BUCKET.s3.us-west-2.amazonaws.com/backups/latest.tar.gz
+curl -I https://$S3_BUCKET.s3.us-east-1.amazonaws.com/backups/latest.tar.gz
 ```
 
 ## 🎯 Four Challenge Solutions Implemented
@@ -200,7 +200,7 @@ kubectl auth can-i '*' '*' --as=system:serviceaccount:tasky:tasky-admin
 
 # Test S3 public backup access
 S3_BUCKET=$(cd terraform && terraform output -raw s3_backup_bucket_name)
-curl -I https://$S3_BUCKET.s3.us-west-2.amazonaws.com/backups/latest.tar.gz
+curl -I https://$S3_BUCKET.s3.us-east-1.amazonaws.com/backups/latest.tar.gz
 ```
 
 ## 🎤 Presentation Ready Features

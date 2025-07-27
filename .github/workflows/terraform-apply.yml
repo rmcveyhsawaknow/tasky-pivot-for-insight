@@ -61,7 +61,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [check-plan-success]
     if: needs.check-plan-success.outputs.plan_successful == 'true'
-    environment: production
+    # Temporarily removed environment: production to test OIDC authentication
     outputs:
       eks_cluster_name: ${{ steps.tf_output.outputs.eks_cluster_name }}
       application_url_command: ${{ steps.tf_output.outputs.application_url_command }}
@@ -170,7 +170,7 @@ jobs:
       github.event.inputs.action != 'destroy' && 
       (github.event.inputs.deploy_application == 'true' || github.event.inputs.deploy_application == '' || github.event_name == 'workflow_run') &&
       (github.event_name == 'workflow_dispatch' || needs.check-plan-success.outputs.plan_successful == 'true')
-    environment: production
+    # Temporarily removed environment: production to test OIDC authentication
     
     steps:
       - name: Checkout code

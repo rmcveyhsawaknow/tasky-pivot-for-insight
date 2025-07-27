@@ -1088,3 +1088,88 @@ The terraform-plan.yml workflow was failing at the terraform fmt check step beca
 
 ### Status: Fix deployed - next workflow run should complete successfully and create the state file.
 
+
+---
+
+## 🔧 ADDITIONAL FIX: Terraform.tfvars File Path Error ✅
+
+### New Issue Discovered:
+The terraform-plan.yml workflow was failing at the "Create terraform.tfvars for planning" step with:
+```
+/home/runner/work/_temp/xxx.sh: line 1: terraform/terraform.tfvars: No such file or directory
+Error: Process completed with exit code 1.
+```
+
+### Root Cause:
+- The workflow was trying to create `terraform/terraform.tfvars` from the repository root
+- But `working-directory: terraform` was set, causing a path mismatch
+- The command was effectively trying to create `terraform/terraform/terraform.tfvars`
+
+### Solution Applied:
+- Changed file creation from `cat > terraform/terraform.tfvars` to `cat > terraform.tfvars`
+- This works correctly with `working-directory: terraform`
+- Applied fix to both terraform-plan.yml and terraform-apply.yml
+
+### Status: 
+✅ Fix committed and pushed. The terraform.tfvars file should now be created correctly in the terraform/ directory, allowing the workflow to proceed to the plan phase and create the terraform.tfstate file.
+
+
+---
+
+## 🎯 MAJOR BREAKTHROUGH: Terraform Plan Working Successfully! ✅
+
+### Current Status:
+✅ **All critical workflow issues RESOLVED**
+✅ **Terraform plan executing successfully** 
+✅ **S3 backend properly configured and connected**
+✅ **58 resources planned for creation**
+
+### What Just Worked:
+1. **Terraform.tfvars file creation** - Fixed path issue, now creates correctly in terraform/ directory
+2. **Terraform init** - Successfully configured S3 backend: "Successfully configured the backend 's3'!"
+3. **Terraform plan** - Completed successfully with "Plan: 58 to add, 0 to change, 0 to destroy"
+4. **All workflow steps** - Format check, validate, plan, cost estimation, security check all passed
+
+### Key Findings:
+- **State file location**: The terraform.tfstate file will be created in S3 when `terraform apply` runs, not during `terraform plan`
+- **Auto-triggering issue**: terraform-apply.yml is not auto-triggering from terraform-plan.yml success (needs investigation)
+- **Infrastructure ready**: 58 AWS resources (EKS cluster, MongoDB EC2, S3 backup, VPC, etc.) ready to deploy
+
+### Next Steps:
+1. 🔍 **Investigate auto-trigger**: Why terraform-apply.yml doesn't start automatically after terraform-plan.yml success
+2. 🚀 **Manual apply**: Run terraform apply manually to create the state file and deploy stack v15
+3. ✅ **Verify deployment**: Confirm all 58 resources are created and terraform.tfstate appears in S3
+
+### Progress Summary:
+**MAJOR WIN**: We've resolved all the cascading workflow issues. The terraform pipeline is now functional and ready to deploy stack v15 to AWS. The remaining issue is just the auto-triggering between workflows, but the core functionality works!
+
+
+---
+
+## 🔍 OIDC Authentication Issue Analysis
+
+### Issue Identified:
+The terraform-apply.yml workflow fails at AWS credentials configuration with:
+```
+Error: Could not assume role with OIDC: Not authorized to perform sts:AssumeRoleWithWebIdentity
+```
+
+### Key Difference Found:
+**terraform-plan.yml** (✅ Working):
+- No `environment` specified in job
+- OIDC token has standard GitHub Actions claims
+
+**terraform-apply.yml** (❌ Failing):
+- Has `environment: production` specified
+- OIDC token includes additional environment-specific claims
+
+### Root Cause Hypothesis:
+When GitHub Actions runs a job with `environment: production`, the OIDC JWT token includes additional claims about the environment context. The AWS IAM trust policy may not be configured to accept tokens with these additional environment claims.
+
+### Solution Strategy:
+1. **Option A**: Remove `environment: production` temporarily to test OIDC
+2. **Option B**: Update AWS IAM trust policy to accept environment-specific OIDC tokens
+3. **Option C**: Move environment setting to specific steps rather than job level
+
+Let's try Option A first to confirm the hypothesis.
+

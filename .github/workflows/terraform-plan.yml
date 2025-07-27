@@ -18,7 +18,7 @@ on:
   workflow_dispatch:
 
 env:
-  TF_VERSION: '1.6.0'
+  TF_VERSION: '1.7.5'
   AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
   PROJECT_NAME: ${{ vars.PROJECT_NAME || 'tasky' }}
   ENVIRONMENT: ${{ vars.ENVIRONMENT || 'dev' }}

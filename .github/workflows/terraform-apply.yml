@@ -37,19 +37,22 @@ jobs:
   check-plan-success:
     name: Check Plan Success
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_run'
+    if: always()
     outputs:
       plan_successful: ${{ steps.check.outputs.plan_successful }}
     steps:
-      - name: Check if Terraform Plan was successful
+      - name: Check if Terraform Plan was successful or manual trigger
         id: check
         run: |
-          if [[ "${{ github.event.workflow_run.conclusion }}" == "success" ]]; then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "plan_successful=true" >> $GITHUB_OUTPUT
+            echo "✅ Manual workflow trigger. Proceeding with apply..."
+          elif [[ "${{ github.event_name }}" == "workflow_run" && "${{ github.event.workflow_run.conclusion }}" == "success" ]]; then
             echo "plan_successful=true" >> $GITHUB_OUTPUT
             echo "✅ Terraform Plan completed successfully. Proceeding with apply..."
           else
             echo "plan_successful=false" >> $GITHUB_OUTPUT
-            echo "❌ Terraform Plan failed. Cannot proceed with apply."
+            echo "❌ Terraform Plan failed or invalid trigger. Cannot proceed with apply."
             exit 1
           fi
 
@@ -57,9 +60,7 @@ jobs:
     name: Terraform Apply
     runs-on: ubuntu-latest
     needs: [check-plan-success]
-    if: |
-      (github.event_name == 'workflow_dispatch') ||
-      (github.event_name == 'workflow_run' && needs.check-plan-success.outputs.plan_successful == 'true')
+    if: needs.check-plan-success.outputs.plan_successful == 'true'
     environment: production
     outputs:
       eks_cluster_name: ${{ steps.tf_output.outputs.eks_cluster_name }}

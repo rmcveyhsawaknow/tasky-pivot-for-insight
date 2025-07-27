@@ -1,63 +1,66 @@
-# Copilot Processing - Terraform Plan Analysis and Workflow Dependencies
+# Copilot Processing - Terraform Workflow Investigation
 
-## User Request Summary
-User wants to understand if terraform-plan completed correctly and suspects backend configuration issues. Also needs to correct workflow dependencies so terraform-apply runs after terraform-plan completion.
+## Current Issue Analysis
+User reports terraform-apply.yml workflow is not auto-starting after terraform-plan.yml completes, and when manually triggered, all jobs (Check Plan Success, Terraform Apply, Deploy Application) are being skipped.
 
-## Terraform Plan Analysis Results
+## Immediate Investigation Plan
 
-### Overall Status: ✅ MOSTLY SUCCESSFUL
+### Phase 1: Backend Configuration Analysis ✅
+- [x] Read and analyze backend.tf configuration
+- [x] Read terraform-apply.yml workflow to understand dependencies
+- [x] Check backend-prod.hcl configuration
+- [ ] Verify S3 bucket and state file existence
 
-**What Worked Correctly:**
-- ✅ OIDC authentication: Successfully authenticated as `GitHubActions` role
-- ✅ Terraform version: Using v1.7.5 (resolved previous version mismatch)
-- ✅ Terraform init: Successfully initialized with all providers
-- ✅ Terraform validate: Configuration is valid
-- ✅ Terraform plan: Generated complete plan with 58 resources to create
-- ✅ Backend connection: Connected to S3 backend successfully
+### Phase 2: Workflow Dependency Investigation  
+- [ ] Analyze terraform-plan.yml outputs and artifacts
+- [ ] Check terraform-apply.yml trigger conditions
+- [ ] Verify workflow_run dependencies and requirements
+- [ ] Identify why jobs are being skipped
 
-**Issues Identified:**
-1. ❌ **Terraform Format Check Failed**: `terraform fmt -check -recursive` failed with exit code 3
-   - Found formatting issue with `terraform.tfvars` file
-   - This is a blocking issue but workflow continued due to `continue-on-error: true`
+### Phase 3: State Management Verification
+- [ ] Check if terraform.tfstate file exists in S3 bucket
+- [ ] Verify backend initialization and state locking
+- [ ] Analyze relationship between plan file and apply workflow
 
-2. ⚠️ **Backend Configuration Warning**: 
-   ```
-   Warning: Missing backend configuration
-   -backend-config was used without a "backend" block in the configuration.
-   ```
-   - This is a warning, not an error
-   - Backend is working (using local backend + remote config override)
+### Phase 4: Configuration Fixes
+- [ ] Identify missing configurations or dependencies
+- [ ] Fix workflow triggers and dependencies
+- [ ] Ensure proper backend state management
+- [ ] Test workflow chain functionality
 
-### Backend Status Explanation
-**Why no new .tf files in S3:**
-- S3 bucket `tasky-terraform-state-152451250193` exists and is accessible
-- Terraform stores **state files** (`.tfstate`) in S3, not `.tf` source files
-- Source `.tf` files remain in the repository
-- Only state files and lock files are stored in S3 backend
-- No state file exists yet because `terraform apply` hasn't been run
+## Previous Analysis (Archived)
+Terraform plan was successful with 58 resources planned for creation. Backend configuration with S3 remote state is working correctly. STACK_VERSION updated consistently across both workflows (v15). Infrastructure includes EKS cluster, MongoDB EC2, S3 backup, and networking components. Estimated cost: $50-75/month.
 
-### Infrastructure Plan Summary
-- **58 resources** planned for creation
-- **VPC**: Complete 3-AZ setup with public/private subnets
-- **EKS cluster**: `tasky-dev-v15-eks-cluster`
-- **MongoDB**: EC2 instance with automated S3 backups
-- **S3**: Backup bucket with lifecycle policies
-- **ALB**: AWS Load Balancer Controller setup
-- **Estimated cost**: ~$50-75 USD/month
+---
 
-## Action Plan
+## Current Investigation Progress
 
-### Phase 1: Fix Terraform Formatting ⏳
+### Phase 1: Terraform Formatting ✅ COMPLETE
 - Run terraform fmt to fix formatting issues
 - Commit formatting fixes
 
-### Phase 2: Review Backend Configuration ⏳
+### Phase 2: Review Backend Configuration ✅ COMPLETE
 - Verify backend.tf and backend-prod.hcl files
 - Confirm S3 backend configuration is correct
 
-### Phase 3: Fix Workflow Dependencies ⏳
-- Ensure terraform-apply triggers only after successful terraform-plan
-- Update workflow triggers and dependencies
+### Phase 3: Fix Workflow Dependencies ✅ COMPLETE
+
+#### Root Cause Identified and Fixed
+The terraform-apply workflow jobs were being skipped due to a conditional logic error in the `check-plan-success` job:
+
+**Problem:**
+- `check-plan-success` job had condition: `if: github.event_name == 'workflow_run'`
+- When manually triggered with `workflow_dispatch`, this job would skip
+- Since `terraform-apply` job has `needs: [check-plan-success]`, it also skipped
+- All dependent jobs then skipped as well
+
+**Solution Applied:**
+- Changed `check-plan-success` condition to `if: always()`
+- Updated the logic to handle both `workflow_dispatch` and `workflow_run` events
+- Simplified `terraform-apply` conditional to only check `plan_successful == 'true'`
+
+**Files Modified:**
+- `.github/workflows/terraform-apply.yml`: Fixed conditional logic for both manual and automatic triggers
 
 ### Phase 4: Validate Complete Pipeline ⏳
 - Test end-to-end workflow execution

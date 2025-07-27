@@ -230,7 +230,7 @@ data "aws_iam_policy_document" "aws_load_balancer_controller_assume_role_policy"
 resource "aws_iam_role" "aws_load_balancer_controller" {
   assume_role_policy = data.aws_iam_policy_document.aws_load_balancer_controller_assume_role_policy.json
   name               = "${var.project_name}-${var.environment}-${var.stack_version}-aws-load-balancer-controller"
-  
+
   tags = merge(var.tags, {
     Name = "${var.project_name}-${var.environment}-${var.stack_version}-alb-controller-role"
   })

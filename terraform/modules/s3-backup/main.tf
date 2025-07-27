@@ -11,7 +11,7 @@ resource "random_string" "bucket_suffix" {
 # S3 Bucket for MongoDB backups
 resource "aws_s3_bucket" "backup" {
   bucket        = local.bucket_name
-  force_destroy = true  # Allow destruction even if bucket contains objects
+  force_destroy = true # Allow destruction even if bucket contains objects
 
   tags = merge(var.tags, {
     Name    = "${var.project_name}-${var.environment}-${var.stack_version}-mongodb-backup"
@@ -54,19 +54,19 @@ resource "aws_s3_bucket_policy" "backup_public_read" {
         Resource  = "${aws_s3_bucket.backup.arn}/*"
       },
       {
-        Sid       = "ALBAccessLogsDelivery"
-        Effect    = "Allow"
+        Sid    = "ALBAccessLogsDelivery"
+        Effect = "Allow"
         Principal = {
-          AWS = "arn:aws:iam::127311923021:root"  # ELB Service Account for us-east-1
+          AWS = "arn:aws:iam::127311923021:root" # ELB Service Account for us-east-1
         }
         Action   = "s3:PutObject"
         Resource = "${aws_s3_bucket.backup.arn}/*"
       },
       {
-        Sid       = "ALBAccessLogsAclCheck"
-        Effect    = "Allow"
+        Sid    = "ALBAccessLogsAclCheck"
+        Effect = "Allow"
         Principal = {
-          AWS = "arn:aws:iam::127311923021:root"  # ELB Service Account for us-east-1
+          AWS = "arn:aws:iam::127311923021:root" # ELB Service Account for us-east-1
         }
         Action   = "s3:GetBucketAcl"
         Resource = aws_s3_bucket.backup.arn

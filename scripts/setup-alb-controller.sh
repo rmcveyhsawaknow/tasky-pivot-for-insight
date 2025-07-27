@@ -322,19 +322,49 @@ EOF
     
     print_success "Application deployed"
     
-    print_status "Waiting for ingress to be ready..."
-    sleep 30
+    # Enhanced ALB URL checking and output
+    print_status "Checking ALB provisioning status..."
     
-    # Get ALB DNS name
+    # Give ALB a moment to be created
+    sleep 15
+    
+    # Try to get ALB DNS name (but don't wait indefinitely)
     ALB_DNS=$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || echo "")
     
     if [ -z "$ALB_DNS" ]; then
-        print_warning "ALB DNS name not available yet. Please check again in a few minutes:"
-        print_status "kubectl get ingress tasky-ingress -n tasky"
+        print_warning "ALB DNS name not yet available - this is normal for new deployments"
+        print_status "ALB provisioning can take 2-3 minutes to complete"
+        print_status ""
+        print_status "🔍 To check ALB status:"
+        print_status "   kubectl get ingress tasky-ingress -n tasky"
+        print_status ""
+        print_status "📋 To get the ALB URL when ready:"
+        print_status "   kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'"
+        print_status ""
+        print_status "🌐 Application will be accessible at: http://<alb-dns-name>"
     else
+        print_success "🎉 ALB is ready!"
         print_success "Application is accessible at: http://$ALB_DNS"
-        print_status "For custom domain, point ideatasky.ryanmcvey.me CNAME to: $ALB_DNS"
+        print_status ""
+        print_status "🔗 ALB DNS Name: $ALB_DNS"
+        print_status "🌐 Application URL: http://$ALB_DNS"
+        print_status "📝 Custom Domain: Point ideatasky.ryanmcvey.me CNAME to: $ALB_DNS"
+        
+        # Output for GitHub Actions (if running in CI)
+        if [ -n "${GITHUB_ENV:-}" ]; then
+            echo "ALB_DNS_NAME=$ALB_DNS" >> $GITHUB_ENV
+            echo "APPLICATION_URL=http://$ALB_DNS" >> $GITHUB_ENV
+            print_status "✅ ALB information exported to GitHub Actions environment"
+        fi
     fi
+    
+    # Always show deployment status
+    print_status ""
+    print_status "📊 Deployment Status Summary:"
+    print_status "├── Namespace: $(kubectl get namespace tasky -o jsonpath='{.status.phase}' 2>/dev/null || echo 'Not found')"
+    print_status "├── Deployment: $(kubectl get deployment tasky-deployment -n tasky -o jsonpath='{.status.readyReplicas}/{.status.replicas}' 2>/dev/null || echo '0/0') pods ready"
+    print_status "├── Service: $(kubectl get service tasky-service -n tasky -o jsonpath='{.spec.type}' 2>/dev/null || echo 'Not found')"
+    print_status "└── Ingress: $(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null | head -c 30 || echo 'Provisioning...')"
 }
 
 # Main execution
@@ -364,9 +394,15 @@ main() {
     wait_for_controller
     deploy_application
     
-    print_success "Setup complete!"
-    print_status "To get the ALB DNS name later, run:"
-    print_status "kubectl get ingress tasky-ingress -n tasky"
+    print_success "🎉 Setup complete!"
+    print_status ""
+    print_status "📋 Next Steps:"
+    print_status "1. Check ALB status: kubectl get ingress tasky-ingress -n tasky"
+    print_status "2. View application: kubectl get pods -n tasky" 
+    print_status "3. Get logs: kubectl logs -l app.kubernetes.io/name=tasky -n tasky"
+    print_status ""
+    print_status "⏱️  ALB provisioning typically takes 2-3 minutes"
+    print_status "🌐 Application will be accessible once ALB is ready"
 }
 
 # Run main function

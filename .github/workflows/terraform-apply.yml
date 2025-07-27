@@ -149,10 +149,11 @@ jobs:
           echo "s3_backup_url=$(terraform output -raw s3_backup_public_url)" >> $GITHUB_OUTPUT
           echo "s3_backup_latest_url=$(terraform output -raw s3_backup_public_url_latest_db)" >> $GITHUB_OUTPUT
           echo "mongodb_private_ip=$(terraform output -raw mongodb_private_ip)" >> $GITHUB_OUTPUT
-          echo "mongodb_username=$(terraform output -raw mongodb_username)" >> $GITHUB_OUTPUT
-          echo "mongodb_password=$(terraform output -raw mongodb_password)" >> $GITHUB_OUTPUT
+          # Use terraform output -json for sensitive values and extract with jq
+          echo "mongodb_username=$(terraform output -json mongodb_username | jq -r .)" >> $GITHUB_OUTPUT
+          echo "mongodb_password=$(terraform output -json mongodb_password | jq -r .)" >> $GITHUB_OUTPUT
           echo "mongodb_database_name=$(terraform output -raw mongodb_database_name)" >> $GITHUB_OUTPUT
-          echo "jwt_secret=$(terraform output -raw jwt_secret)" >> $GITHUB_OUTPUT
+          echo "jwt_secret=$(terraform output -json jwt_secret | jq -r .)" >> $GITHUB_OUTPUT
         working-directory: terraform
 
       - name: Infrastructure Summary

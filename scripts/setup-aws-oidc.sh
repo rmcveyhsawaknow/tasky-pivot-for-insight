@@ -9,6 +9,9 @@
 
 set -e
 
+# Disable AWS CLI pager to prevent script interruptions
+export AWS_PAGER=""
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'

@@ -136,7 +136,7 @@ TOTAL ANNUAL COST:     $2,775.84/year
 
 ## ⚙️ Setup & Configuration Scripts
 
-Initial environment setup and one-time configuration scripts for development environments, AWS integration, and GitHub Actions.
+Initial environment setup and one-time configuration scripts for development environments, AWS integration, and GitHub Actions. These scripts embody DevOps automation principles, eliminating manual toil and ensuring consistent, repeatable deployments across teams.
 
 ### [`setup-codespace.sh`](setup-codespace.sh)
 **Automated development environment setup**
@@ -153,6 +153,119 @@ Initial environment setup and one-time configuration scripts for development env
 ```
 
 **Features:**
+- ✅ Automated tool installation and configuration
+- 🔧 Environment validation and health checks
+- 📦 Dependency management for consistent environments
+- 🚀 Zero-configuration developer onboarding
+
+### [`setup-aws-oidc.sh`](setup-aws-oidc.sh) ✨ **Updated**
+**Secure AWS OIDC provider setup for GitHub Actions**
+
+**Purpose:**
+- Creates AWS OIDC identity provider for credential-less authentication
+- Sets up IAM roles with appropriate trust policies
+- Configures Terraform backend S3 bucket and DynamoDB table
+- Enables secure, automated deployments without long-lived credentials
+
+**Usage:**
+```bash
+./scripts/setup-aws-oidc.sh
+```
+
+**Recent Improvements:**
+- 🔧 **Fixed**: Added `AWS_PAGER=""` to prevent script interruptions
+- 🚀 **Enhanced**: Improved error handling and progress feedback
+- 🔍 **Reliable**: Eliminates pager-related hang issues in automated environments
+
+**Features:**
+- 🔐 Zero-credential GitHub Actions authentication
+- 🏗️ Automated Terraform backend provisioning
+- 📊 Comprehensive setup validation and verification
+- 🎯 Production-ready security configurations
+
+### [`generate-github-config.sh`](generate-github-config.sh) ✨ **New**
+**GitHub repository configuration value generator**
+
+**Purpose:**
+- Generates secure passwords and JWT secrets
+- Provides exact configuration values for manual GitHub setup
+- Works reliably in all environments including Codespaces
+- Alternative to automated GitHub CLI configuration
+
+**Usage:**
+```bash
+./scripts/generate-github-config.sh
+```
+
+**Features:**
+- 🔐 Cryptographically secure secret generation
+- 📋 Copy-paste ready configuration values
+- 🔗 Direct links to GitHub repository settings
+- 💻 Works in restricted environments (Codespaces, CI/CD)
+
+**Why This Approach:**
+- **Culture**: Promotes transparency with clear manual steps
+- **Automation**: Automates value generation while allowing manual verification
+- **Lean**: Eliminates waste from failed automated attempts
+- **Measurement**: Provides immediate feedback on configuration status
+- **Sharing**: Clear instructions enable team collaboration
+
+### [`setup-github-repo.sh`](setup-github-repo.sh) ⚠️ **Known Issues**
+**Automated GitHub repository configuration (Limited Functionality)**
+
+**Purpose:**
+- Attempts automated GitHub secrets and variables configuration
+- Falls back to manual instructions when API permissions are insufficient
+
+**Usage:**
+```bash
+./scripts/setup-github-repo.sh
+```
+
+**Known Limitations:**
+- ❌ Fails in GitHub Codespaces due to API token permissions
+- ❌ Requires elevated GitHub token permissions not available by default
+- ⚠️ **Recommendation**: Use `generate-github-config.sh` instead
+
+**Troubleshooting:**
+If this script fails with "Resource not accessible by integration" errors, this is expected behavior in Codespaces. The GitHub token provided automatically lacks the necessary permissions to manage repository secrets programmatically.
+
+### [`verify-oidc-setup.sh`](verify-oidc-setup.sh) ✨ **New**
+**AWS OIDC setup validation and verification**
+
+**Purpose:**
+- Validates all AWS resources created by OIDC setup
+- Provides GitHub configuration instructions
+- Troubleshoots common setup issues
+
+**Usage:**
+```bash
+./scripts/verify-oidc-setup.sh
+```
+
+**Features:**
+- ✅ IAM role validation
+- ✅ S3 bucket verification
+- ✅ DynamoDB table status check
+- 📋 GitHub configuration guidance
+
+### [`complete-oidc-setup.sh`](complete-oidc-setup.sh) ✨ **New**
+**Fallback OIDC setup completion script**
+
+**Purpose:**
+- Completes any remaining OIDC setup steps
+- Handles edge cases and incomplete setups
+- Provides comprehensive configuration output
+
+**Usage:**
+```bash
+./scripts/complete-oidc-setup.sh
+```
+
+**Features:**
+- 🔄 Completes interrupted setups
+- 📊 Comprehensive status reporting
+- 🎯 Production-ready configuration validation
 - ✅ Colorized output with clear status indicators
 - 🔧 Intelligent tool detection and version comparison
 - 📦 Automated installation with comprehensive error handling

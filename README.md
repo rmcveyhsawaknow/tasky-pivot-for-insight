@@ -96,9 +96,15 @@
 git clone https://github.com/rmcveyhsawaknow/tasky-pivot-for-insight.git
 cd tasky-pivot-for-insight
 
-# Setup AWS OIDC and GitHub repository (one-time)
+# Setup CodeSpace
+./scripts/setup-codespace.sh
+
+# Setup AWS OIDC (one-time)
 ./scripts/setup-aws-oidc.sh
-./scripts/setup-github-repo.sh
+
+# Generate GitHub repository configuration values
+./scripts/generate-github-config.sh
+# Note: Manually add the generated values to GitHub repository settings
 
 # Deploy via GitHub Actions
 git checkout -b deploy/quickstart
@@ -107,6 +113,8 @@ git push origin deploy/quickstart
 ```
 
 **⏱️ Total time: 15-20 minutes | 💰 Monthly cost: ~$230**
+
+**Note**: In Codespaces environments, `setup-github-repo.sh` may fail due to GitHub API permissions. Use `generate-github-config.sh` to generate configuration values for manual entry.
 
 See [📋 QUICKSTART.md](QUICKSTART.md) for detailed instructions.
 

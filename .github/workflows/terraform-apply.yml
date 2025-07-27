@@ -316,17 +316,50 @@ jobs:
 
       - name: Get ALB URL for Output
         run: |
-          echo "🔍 Getting ALB URL for workflow output..."
-          # Try to get ALB DNS name, but don't wait indefinitely
-          ALB_DNS=$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || echo "")
-          if [ -n "$ALB_DNS" ]; then
-            echo "✅ ALB DNS found: $ALB_DNS"
-            echo "APPLICATION_URL=http://$ALB_DNS" >> $GITHUB_ENV
-          else
-            echo "⚠️ ALB DNS not yet available - this is normal for new deployments"
-            echo "📋 Use this command to check ALB status later:"
+          echo "🔍 Checking for ALB URL (up to 20 attempts, 30 seconds apart)..."
+          echo "⏱️  Maximum wait time: 10 minutes"
+          echo ""
+          
+          ALB_DNS=""
+          for i in {1..20}; do
+            echo "🔄 Attempt $i/20: Checking ALB ingress status..."
+            
+            # Try to get ALB DNS name
+            ALB_DNS=$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || echo "")
+            
+            if [ -n "$ALB_DNS" ]; then
+              echo "✅ ALB DNS found: $ALB_DNS"
+              echo "🌐 Application URL: http://$ALB_DNS"
+              echo "APPLICATION_URL=http://$ALB_DNS" >> $GITHUB_ENV
+              echo "ALB_DNS_NAME=$ALB_DNS" >> $GITHUB_ENV
+              echo ""
+              echo "🎉 ALB is ready!"
+              break
+            else
+              echo "⏳ ALB not ready yet..."
+              
+              # Show ingress status for debugging
+              echo "📊 Current ingress status:"
+              kubectl get ingress tasky-ingress -n tasky -o wide 2>/dev/null || echo "   Ingress not found or not ready"
+              
+              if [ $i -lt 20 ]; then
+                echo "⏱️  Waiting 30 seconds before next check..."
+                echo ""
+                sleep 30
+              fi
+            fi
+          done
+          
+          # Final check and summary
+          if [ -z "$ALB_DNS" ]; then
+            echo "⚠️ ALB DNS not available after 10 minutes of checking"
+            echo "📋 Manual check commands:"
             echo "   kubectl get ingress tasky-ingress -n tasky"
+            echo "   kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'"
             echo "APPLICATION_URL=pending" >> $GITHUB_ENV
+            echo "ALB_DNS_NAME=pending" >> $GITHUB_ENV
+          else
+            echo "✅ Final ALB URL: http://$ALB_DNS"
           fi
 
       - name: Deployment Summary
@@ -334,11 +367,14 @@ jobs:
           echo "## 🎉 Deployment Complete!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🌐 Application Access:" >> $GITHUB_STEP_SUMMARY
-          if [ "$APPLICATION_URL" != "pending" ] && [ -n "$APPLICATION_URL" ]; then
+          if [ "$APPLICATION_URL" != "pending" ] && [ -n "$APPLICATION_URL" ] && [ "$APPLICATION_URL" != "" ]; then
             echo "- **Application URL**: [$APPLICATION_URL]($APPLICATION_URL)" >> $GITHUB_STEP_SUMMARY
+            echo "- **ALB DNS Name**: \`$ALB_DNS_NAME\`" >> $GITHUB_STEP_SUMMARY
+            echo "- **Status**: ✅ ALB is ready and accessible" >> $GITHUB_STEP_SUMMARY
           else
-            echo "- **Application URL**: ⏳ ALB provisioning in progress..." >> $GITHUB_STEP_SUMMARY
-            echo "- **Check ALB Status**: \`kubectl get ingress tasky-ingress -n tasky\`" >> $GITHUB_STEP_SUMMARY
+            echo "- **Application URL**: ⏳ ALB provisioning still in progress..." >> $GITHUB_STEP_SUMMARY
+            echo "- **Status**: 🔄 Check ALB status manually (see commands below)" >> $GITHUB_STEP_SUMMARY
+            echo "- **Note**: ALB provisioning can take up to 15 minutes in some cases" >> $GITHUB_STEP_SUMMARY
           fi
           echo "- **Custom Domain**: Point \`ideatasky.ryanmcvey.me\` CNAME to ALB DNS" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -353,15 +389,29 @@ jobs:
           echo "# Get application URL" >> $GITHUB_STEP_SUMMARY
           echo "${{ needs.terraform-apply.outputs.application_url_command }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+          echo "# Check ALB status" >> $GITHUB_STEP_SUMMARY
+          echo "kubectl get ingress tasky-ingress -n tasky" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "# Get ALB URL when ready" >> $GITHUB_STEP_SUMMARY  
+          echo "kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
           echo "# View application status" >> $GITHUB_STEP_SUMMARY
           echo "kubectl get pods -n tasky" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "# View ingress details" >> $GITHUB_STEP_SUMMARY
-          echo "kubectl get ingress tasky-ingress -n tasky" >> $GITHUB_STEP_SUMMARY
+          echo "kubectl describe ingress tasky-ingress -n tasky" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
       - name: Set Output Variables
         id: outputs
         run: |
           echo "application_url=$APPLICATION_URL" >> $GITHUB_OUTPUT
+          echo "alb_dns_name=$ALB_DNS_NAME" >> $GITHUB_OUTPUT
           echo "eks_cluster=${{ needs.terraform-apply.outputs.eks_cluster_name }}" >> $GITHUB_OUTPUT
+          
+          # Display final output summary
+          echo ""
+          echo "📋 Final Workflow Outputs:"
+          echo "   Application URL: $APPLICATION_URL"
+          echo "   ALB DNS Name: $ALB_DNS_NAME"
+          echo "   EKS Cluster: ${{ needs.terraform-apply.outputs.eks_cluster_name }}"

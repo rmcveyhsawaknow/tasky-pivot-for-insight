@@ -69,8 +69,16 @@ terraform fmt
 # Validate Terraform syntax
 terraform validate
 
-# Initialize and create a plan file for validation (won't apply)
-terraform init
+# Initialize with local backend for validation (won't apply)
+# Option 1: Use the provided script (recommended)
+cd ..
+./scripts/terraform-local-init.sh
+cd terraform
+
+# Option 2: Manual initialization 
+# terraform init
+
+# Create a plan file for validation (won't apply)
 terraform plan -out=validation.tfplan
 
 # Expected output: "Success! The configuration is valid."
@@ -94,7 +102,8 @@ ls -la tasky
 ./test-build.sh
 
 # Alternative manual validation (if test-build.sh is not available):
-# MONGODB_URI="mongodb://fake:fake@localhost:27017/fake" SECRET_KEY="fake123" timeout 5s ./tasky 2>&1 | grep -q "Connected to MONGO" && echo "✅ Build successful" || echo "❌ Build failed"
+# Test that the app can start and attempt MongoDB connection (will timeout with fake credentials)
+# go build -o tasky main.go && MONGODB_URI="mongodb://testuser:testpass@nonexistent:27017/testdb" SECRET_KEY="test123" timeout 2s ./tasky >/dev/null 2>&1; if [ $? -eq 124 ]; then echo "✅ Build successful - app started and attempted connection"; else echo "❌ Build failed - app startup error"; fi
 ```
 
 ### Step 1.3: Docker Image Build
@@ -180,7 +189,21 @@ fi
 chmod +x scripts/*.sh
 ```
 
-### Step 2.2: Configure Terraform Variables
+### Step 2.2: Backend Configuration Strategy
+
+This deployment uses a **flexible backend configuration** that works for both local development and CI/CD:
+
+**🏠 Local Development (What you're doing now):**
+- Uses local `terraform.tfstate` file 
+- No AWS S3 or DynamoDB dependencies
+- Simple initialization with `./scripts/terraform-local-init.sh`
+
+**🚀 CI/CD Deployment (GitHub Actions):**
+- Uses S3 remote backend with state locking
+- Automatic configuration via `terraform init -backend-config=backend-prod.hcl`
+- Team collaboration and state management
+
+### Step 2.3: Configure Terraform Variables
 
 ```bash
 # Copy example variables file
@@ -196,13 +219,17 @@ nano terraform.tfvars
 - `mongodb_password`: Strong password for MongoDB
 - `jwt_secret`: Secret key for JWT tokens
 
-### Step 2.3: Deploy Infrastructure with Terraform
+### Step 2.4: Deploy Infrastructure with Terraform
 
 > **💡 Best Practice**: Using Terraform plan files (`-out=terraform.tfplan`) ensures that the exact same plan that was reviewed is applied, preventing any unexpected changes between plan and apply operations.
 
 ```bash
-# Initialize Terraform
-terraform init
+# Initialize Terraform with local backend
+# Option 1: Use the provided script (recommended for local development)
+cd .. && ./scripts/terraform-local-init.sh && cd terraform
+
+# Option 2: Manual initialization (if you prefer direct commands)
+# terraform init
 
 # Review planned changes and save to file
 terraform plan -out=terraform.tfplan
@@ -252,61 +279,36 @@ kubectl get nodes
 
 ### Step 2.5: Deploy Application
 
-The deployment process uses AWS Application Load Balancer (ALB) for cost-effective, cloud-native load balancing with custom domain support.
+The deployment uses AWS Application Load Balancer (ALB) via Kubernetes Ingress Controller for modern, cloud-native load balancing. This approach provides cost-effective Layer 7 load balancing with automatic SSL termination and custom domain support.
 
-**Recommended: ALB-First Deployment (Cost-Optimized & Production-Ready)**
+**AWS Load Balancer Controller Deployment (Production-Ready)**
 
-This is the preferred deployment method for production workloads:
+This automated script handles the complete deployment:
 
 ```bash
-# Install AWS Load Balancer Controller and deploy application
+# Navigate to project root and run the setup script
 cd ..
 ./scripts/setup-alb-controller.sh
-
-# The setup script automatically:
-# ✅ Installs AWS Load Balancer Controller via Helm
-# ✅ Deploys the application with ALB Ingress configuration
-# ✅ Configures health checks and security groups
-# ✅ Sets up custom domain support for ideatasky.ryanmcvey.me
-# ✅ Provides cost-optimized Layer 7 load balancing
 ```
 
-**Alternative: Automated Deployment (Legacy Fallback)**
+**The setup script automatically performs these steps:**
+- ✅ Installs AWS Load Balancer Controller via Helm
+- ✅ Creates Kubernetes namespace, RBAC, secrets, and deployments
+- ✅ Deploys ALB Ingress with health checks and security configurations
+- ✅ Configures custom domain support for `ideatasky.ryanmcvey.me`
+- ✅ Updates MongoDB connection strings from Terraform outputs
+- ✅ Provides cost-optimized Layer 7 load balancing with automatic target registration
 
-Use this method for development or if ALB setup encounters issues:
-
-```bash
-# Use the enhanced deployment script (falls back to LoadBalancer if no ALB)
-cd ../scripts
-./deploy.sh
+**Expected Output:**
+```
+✅ AWS Load Balancer Controller installed
+✅ Application deployed
+✅ Application is accessible at: http://k8s-tasky-xxxxx.us-east-1.elb.amazonaws.com
 ```
 
-The script will automatically:
-- 🔍 Check for AWS Load Balancer Controller
-- ✅ Deploy ALB Ingress if controller is available  
-- 🔄 Fall back to LoadBalancer service if no ALB controller
-- 🌐 Provide appropriate URLs and configuration instructions
-
-**Manual Deployment (Advanced Users Only)**
-
+**If deployment encounters issues, run cleanup and retry:**
 ```bash
-# Apply Kubernetes manifests manually
-cd ../k8s
-
-# Create namespace and RBAC
-kubectl apply -f namespace.yaml
-kubectl apply -f rbac.yaml
-
-# Apply configuration and secrets
-kubectl apply -f configmap.yaml
-kubectl apply -f secret.yaml
-
-# Deploy application
-kubectl apply -f deployment.yaml
-kubectl apply -f service.yaml
-
-# Deploy ingress (requires ALB controller)
-kubectl apply -f ingress.yaml
+./scripts/setup-alb-controller.sh --cleanup
 ```
 
 ### Step 3: Verify Deployment
@@ -315,132 +317,83 @@ kubectl apply -f ingress.yaml
 # Check pod status
 kubectl get pods -n tasky
 
-# Check service status
-kubectl get svc -n tasky
-
-# For ALB deployments - Check ingress status
+# Check ingress status
 kubectl get ingress -n tasky
 
-# Get application URL (ALB)
-kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+# Get application URL
+ALB_URL=$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+echo "Application URL: http://$ALB_URL"
 
-# Get application URL (LoadBalancer - legacy)
-kubectl get svc tasky-service -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
-
-# Check for container connection issues to mongo db
-kubectl logs -f deployment/tasky-app -n tasky --tail=500
-# look for " 27017: connect: connection refused "
-
-#If you see this error in pod logs, it means the application cannot connect to MongoDB. After fixing MongoDB connectivity or updating secrets, perform a rolling restart of the Tasky application pods to reinitialize connections:
-
-kubectl rollout restart deployment/tasky-app -n tasky
-
+# Check application logs
+kubectl logs -f deployment/tasky-app -n tasky --tail=20
 ```
 
-Then check pod status and logs again:
-
+**If pods show connection issues to MongoDB:**
 ```bash
+# Restart deployment to reinitialize connections
+kubectl rollout restart deployment/tasky-app -n tasky
+
+# Verify pod status
 kubectl get pods -n tasky
-kubectl logs -f deployment/tasky-app -n tasky --tail=100
 ```
 ```
 
 ### Step 4: Test Application
 
 ```bash
-# For ALB deployments
-ALB_URL=$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null)
-if [ -n "$ALB_URL" ]; then
-    echo "Testing ALB deployment: http://$ALB_URL"
-    curl -I http://$ALB_URL
-else
-    # For LoadBalancer deployments (legacy)
-    LB_URL=$(kubectl get svc tasky-service -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null)
-    if [ -n "$LB_URL" ]; then
-        echo "Testing LoadBalancer deployment: http://$LB_URL"
-        curl -I http://$LB_URL
-    else
-        echo "No load balancer URL available yet. Check deployment status."
-    fi
-fi
+# Get ALB URL and test application
+ALB_URL=$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 
-# Custom domain testing (ALB only)
-# After configuring DNS: curl -I http://ideatasky.ryanmcvey.me
+# Test HTTP response
+curl -I http://$ALB_URL
 
-# Open in browser
-open http://$ALB_URL  # macOS (ALB)
-open http://$LB_URL   # macOS (LoadBalancer)
-# or
-start http://$ALB_URL  # Windows (ALB)
-start http://$LB_URL   # Windows (LoadBalancer)
+# Open in browser (macOS/Linux)
+open http://$ALB_URL
+
+# Test custom domain (after DNS configuration)
+curl -I http://ideatasky.ryanmcvey.me
 ```
 
-## Application Verification and URLs
+**Expected Response:**
+- HTTP 200 for working application
+- HTTP 404 if application is not serving on root path (check logs)
+
+## Application Access & Verification
 
 ### Get Current Application URL
 
 ```bash
-# Comprehensive URL detection script
-echo "=== Application URL Detection ==="
+# Quick URL access
+echo "Application URL: http://$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')"
 
-# Check for ALB deployment (preferred)
-ALB_URL=$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null)
-if [ -n "$ALB_URL" ]; then
-    echo "✅ ALB Deployment Detected"
-    echo "Primary URL: http://$ALB_URL"
-    echo "Custom Domain (after DNS setup): http://ideatasky.ryanmcvey.me"
-    
-    # Test ALB health
-    echo -n "ALB Health Check: "
-    curl -s -o /dev/null -w "%{http_code}" http://$ALB_URL && echo " ✅ OK" || echo " ❌ FAILED"
-else
-    echo "⚠️  ALB not detected, checking for LoadBalancer..."
-    
-    # Check for LoadBalancer deployment (fallback)
-    LB_URL=$(kubectl get svc tasky-service -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null)
-    if [ -n "$LB_URL" ]; then
-        echo "✅ LoadBalancer Deployment Detected"
-        echo "Application URL: http://$LB_URL"
-        
-        # Test LoadBalancer health
-        echo -n "LoadBalancer Health Check: "
-        curl -s -o /dev/null -w "%{http_code}" http://$LB_URL && echo " ✅ OK" || echo " ❌ FAILED"
-    else
-        echo "❌ No load balancer URL available"
-        echo "Check deployment status with: kubectl get pods,svc,ingress -n tasky"
-    fi
-fi
+# Test application health
+ALB_URL=$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+curl -s -o /dev/null -w "Status: %{http_code}" http://$ALB_URL && echo ""
 ```
 
 ### Complete Deployment Status
 
 ```bash
-# Full deployment verification
+# Comprehensive deployment verification
 echo "=== Tasky Deployment Status ==="
 
-echo "1. Namespace Status:"
-kubectl get namespace tasky
-
-echo "2. Pod Status:"
+echo "1. Pod Status:"
 kubectl get pods -n tasky -o wide
 
-echo "3. Service Status:"
-kubectl get svc -n tasky
+echo "2. Ingress Status:"
+kubectl get ingress -n tasky
 
-echo "4. Ingress Status (ALB):"
-kubectl get ingress -n tasky 2>/dev/null || echo "No ingress found (LoadBalancer deployment)"
+echo "3. ALB Controller Status:"
+kubectl get pods -n kube-system | grep aws-load-balancer-controller
 
-echo "5. Recent Pod Logs:"
-kubectl logs --tail=10 deployment/tasky-deployment -n tasky
+echo "4. Application URL:"
+ALB_URL=$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+echo "http://$ALB_URL"
 
-echo "6. Resource Usage:"
-kubectl top pods -n tasky 2>/dev/null || echo "Metrics server not available"
-
-echo "7. ALB Controller Status:"
-kubectl get pods -n kube-system | grep aws-load-balancer-controller || echo "ALB Controller not installed"
+echo "5. Recent Application Logs:"
+kubectl logs --tail=100 deployment/tasky-app -n tasky
 ```
-
-### Custom Domain Setup (ALB Only)
+### Custom Domain Setup
 
 After ALB deployment, configure your custom domain:
 
@@ -450,197 +403,130 @@ ALB_DNS=$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadB
 echo "ALB DNS: $ALB_DNS"
 ```
 
-2. **Configure Cloudflare CNAME:**
-- Login to Cloudflare dashboard
-- Select domain: `ryanmcvey.me`
-- Add CNAME record:
-  - **Name:** `ideatasky`
-  - **Content:** `$ALB_DNS` (the value from above)
-  - **Proxy status:** ✅ Proxied (for additional security/performance)
+2. **Configure DNS CNAME:**
+- Add CNAME record: `ideatasky.ryanmcvey.me` → `$ALB_DNS`
+- Wait 2-5 minutes for DNS propagation
 
 3. **Test custom domain:**
 ```bash
-# Wait 2-5 minutes for DNS propagation, then test
 curl -I http://ideatasky.ryanmcvey.me
-nslookup ideatasky.ryanmcvey.me
 ```
-
 ## Post-Deployment Configuration
 
-### Update MongoDB Connection String
+### Update MongoDB Connection (if needed)
 
-If the automatic MongoDB IP detection didn't work:
+If automatic MongoDB IP detection didn't work:
 
-1. Get MongoDB private IP:
 ```bash
+# Get MongoDB private IP from Terraform
 cd terraform
 MONGODB_IP=$(terraform output -raw mongodb_private_ip)
-echo "MongoDB IP: $MONGODB_IP"
-```
+MONGODB_USER=$(terraform output -raw mongodb_username)
+MONGODB_PASS=$(terraform output -raw mongodb_password)
+MONGODB_DB=$(terraform output -raw mongodb_database_name)
 
-2. Update the secret:
-```bash
-# Create new connection string
-MONGODB_URI="mongodb://taskyadmin:TaskySecure123!@$MONGODB_IP:27017/tasky"
-MONGODB_URI_B64=$(echo -n "$MONGODB_URI" | base64)
-
-# Update secret
-kubectl patch secret tasky-secrets -n tasky -p="{\"data\":{\"mongodb-uri\":\"$MONGODB_URI_B64\"}}"
+# Create new connection string and update secret
+MONGODB_URI="mongodb://$MONGODB_USER:$MONGODB_PASS@$MONGODB_IP:27017/$MONGODB_DB"
+kubectl patch secret tasky-secrets -n tasky -p="{\"data\":{\"mongodb-uri\":\"$(echo -n $MONGODB_URI | base64)\"}}"
 
 # Restart deployment to pick up new secret
 kubectl rollout restart deployment/tasky-app -n tasky
 ```
 
-### Verify MongoDB Status and Backup
-
-#### Quick MongoDB Status Check
+### MongoDB Health Check
 
 ```bash
-# Get MongoDB instance information
+# Quick MongoDB status check from Terraform
 cd terraform
 INSTANCE_ID=$(terraform output -raw mongodb_instance_id)
 MONGODB_IP=$(terraform output -raw mongodb_private_ip)
+
+echo "MongoDB Instance: $INSTANCE_ID"
+echo "MongoDB IP: $MONGODB_IP"
+
+# Connect to MongoDB instance via SSM
+aws ssm start-session --target $INSTANCE_ID
+
+# On the EC2 instance, check MongoDB status:
+# sudo systemctl status mongod
+# sudo netstat -tlnp | grep 27017
+# mongo --host 127.0.0.1:27017 -u $MONGODB_USER -p $MONGODB_PASS
+```
+
+### S3 Backup Verification
+
+```bash
+# Check S3 backup bucket
+cd terraform
 S3_BUCKET=$(terraform output -raw s3_backup_bucket_name)
+AWS_REGION=$(terraform output -raw aws_region)
 
-echo "MongoDB Instance ID: $INSTANCE_ID"
-echo "MongoDB Private IP: $MONGODB_IP"
-echo "S3 Backup Bucket: $S3_BUCKET"
-```
-
-#### Connect to MongoDB Instance and Check Database Status
-
-```bash
-# Connect to MongoDB EC2 instance
-aws ssm start-session --target $INSTANCE_ID
-```
-
-**Once connected to the EC2 instance, run these commands:**
-
-```bash
-# Check MongoDB service status
-sudo systemctl status mongod
-
-# Check if MongoDB is listening on port 27017
-sudo netstat -tlnp | grep 27017
-
-# Check MongoDB configuration
-sudo cat /etc/mongod.conf | grep -A 5 -B 5 "bindIp\|port"
-
-# Check MongoDB logs for any errors
-sudo tail -20 /var/log/mongodb/mongod.log
-
-# Connect to MongoDB with authentication and run database queries
-mongo --host 127.0.0.1:27017 -u taskyadmin -p asimplepassfromtfvars --authenticationDatabase go-mongodbfromtfvars
-
-# Once in MongoDB shell, run these queries:
-```
-
-**MongoDB Shell Commands (run after connecting with mongo command above):**
-
-```javascript
-// Show current database
-db;
-
-// Switch to tasky database
-use go-mongodb;
-
-// Show all databases and their sizes
-db.adminCommand("listDatabases");
-
-// Show all collections (tables) in current database
-show collections;
-
-// Get collection statistics
-db.stats();
-
-// Check if users collection exists and count documents
-db.users.count();
-
-// Check if todos collection exists and count documents
-db.todos.count();
-
-// Show indexes on collections
-db.users.getIndexes();
-db.todos.getIndexes();
-
-// Get detailed collection stats
-db.users.stats();
-db.todos.stats();
-
-// Sample a few documents from each collection (if they exist)
-db.users.findOne();
-db.todos.findOne();
-
-// Check authentication status
-db.runCommand({connectionStatus: 1});
-
-// Show current user privileges
-db.runCommand({usersInfo: "taskyadmin", showPrivileges: true});
-
-// Exit MongoDB shell
-exit;
-```
-
-**Additional System Checks (run in EC2 instance shell):**
-
-```bash
-# Check disk space
-df -h
-
-# Check data directory size
-sudo du -sh /data/db
-
-# Check MongoDB process
-ps aux | grep mongod
-
-# Check MongoDB version
-mongod --version
-
-# Check if backup script exists and is executable
-ls -la /opt/mongodb-backup/backup.sh
-
-# Check backup cron job
-sudo cat /etc/crontab | grep backup
-
-# Exit from EC2 instance
-exit
-```
-
-#### MongoDB Backup Verification
-
-```bash
-# Manually trigger backup (from EC2 instance)
-aws ssm start-session --target $INSTANCE_ID
-
-# On EC2 instance, manually run backup
-sudo /opt/mongodb-backup/backup.sh
-
-# Exit EC2 instance
-exit
-
-# Check S3 for backups (from local terminal)
+# List backups
 aws s3 ls s3://$S3_BUCKET/backups/
 
-# Test public access to latest backup
-curl -I https://$S3_BUCKET.s3.$AWS_REGION.amazonaws.com/backups/latest.tar.gz
-
-# Download and verify backup content (optional)
-wget https://$S3_BUCKET.s3.$AWS_REGION.amazonaws.com/backups/latest.tar.gz
-tar -tzf latest.tar.gz | head -10
+# Test public access to backups
+curl -I https://$S3_BUCKET.s3.$AWS_REGION.amazonaws.com/backups/
 ```
 
-#### MongoDB Health Check Script
+## Troubleshooting
 
-Create a comprehensive health check script:
+### Common Issues
+
+1. **503 Service Unavailable**
+   - Check pod logs: `kubectl logs -f deployment/tasky-app -n tasky`
+   - Verify MongoDB connection in pod logs
+   - Restart deployment: `kubectl rollout restart deployment/tasky-app -n tasky`
+
+2. **ALB not provisioning**
+   - Check ALB controller: `kubectl get pods -n kube-system | grep aws-load-balancer-controller`
+   - Check ingress events: `kubectl describe ingress tasky-ingress -n tasky`
+
+3. **MongoDB connection failed**
+   - Verify MongoDB IP in secret: `kubectl get secret tasky-secrets -n tasky -o yaml`
+   - Check security groups allow port 27017
+   - Verify MongoDB is running: Use SSM to connect to EC2 instance
+
+### Quick Fixes
 
 ```bash
-# Create MongoDB health check script (run from local terminal)
-cat > check_mongodb_health.sh << 'EOF'
-#!/bin/bash
+# Restart everything
+kubectl rollout restart deployment/tasky-app -n tasky
 
-# Get Terraform outputs
-cd terraform
-INSTANCE_ID=$(terraform output -raw mongodb_instance_id)
+# Check all resources
+kubectl get all,ingress,secrets -n tasky
+
+# View recent logs
+kubectl logs --tail=50 deployment/tasky-app -n tasky
+```
+
+---
+
+## Summary
+
+**What was deployed:**
+- ✅ AWS EKS cluster with ALB Ingress Controller
+- ✅ MongoDB 4.0.x on EC2 with authentication
+- ✅ S3 bucket with public backup access
+- ✅ Tasky application with cluster-admin RBAC
+- ✅ Cloud-native ALB for public access
+
+**Access Points:**
+- **Application URL**: Use `kubectl get ingress tasky-ingress -n tasky` to get ALB URL
+- **Custom Domain**: `http://ideatasky.ryanmcvey.me` (after DNS configuration)
+- **MongoDB**: Private IP accessible from EKS pods only
+- **Backups**: Public S3 bucket for MongoDB backups
+
+**Key Commands:**
+```bash
+# Get application URL
+kubectl get ingress tasky-ingress -n tasky
+
+# Check status
+kubectl get pods,svc,ingress -n tasky
+
+# View logs
+kubectl logs -f deployment/tasky-app -n tasky
+```
 MONGODB_IP=$(terraform output -raw mongodb_private_ip)
 
 echo "=== MongoDB Health Check ==="

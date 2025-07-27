@@ -106,39 +106,79 @@ output "s3_backup_public_url" {
   value       = module.s3_backup.public_url
 }
 
+output "s3_backup_public_url_latest_db" {
+  description = "Direct public URL to the latest MongoDB backup file"
+  value       = "${module.s3_backup.public_url}/backups/latest.tar.gz"
+}
+
 # ==============================================================================
-# APPLICATION LOAD BALANCER OUTPUTS
+# APPLICATION LOAD BALANCER OUTPUTS (KUBERNETES MANAGED)
 # ==============================================================================
+# Note: ALB is now managed by Kubernetes AWS Load Balancer Controller via ingress.yaml
+# Use kubectl commands to get the actual ALB information:
+# kubectl get ingress tasky-ingress -n tasky
 
-output "alb_dns_name" {
-  description = "DNS name of the Application Load Balancer"
-  value       = module.alb.alb_dns_name
-}
+# Commenting out standalone ALB outputs - now managed by Kubernetes
+# output "alb_dns_name" {
+#   description = "DNS name of the Application Load Balancer"
+#   value       = module.alb.alb_dns_name
+# }
 
-output "alb_hosted_zone_id" {
-  description = "Hosted zone ID of the Application Load Balancer"
-  value       = module.alb.alb_hosted_zone_id
-}
+# output "alb_hosted_zone_id" {
+#   description = "Hosted zone ID of the Application Load Balancer"
+#   value       = module.alb.alb_hosted_zone_id
+# }
 
-output "alb_target_group_arn" {
-  description = "ARN of the ALB target group"
-  value       = module.alb.target_group_arn
-}
+# output "alb_target_group_arn" {
+#   description = "ARN of the ALB target group"
+#   value       = module.alb.target_group_arn
+# }
 
-output "application_url" {
-  description = "Application URL via Application Load Balancer"
-  value       = module.alb.application_url
-}
+# output "application_url" {
+#   description = "Application URL via Application Load Balancer"
+#   value       = module.alb.application_url
+# }
 
-output "custom_domain_url" {
-  description = "Custom domain URL if configured"
-  value       = module.alb.custom_domain_url
-}
+# output "custom_domain_url" {
+#   description = "Custom domain URL if configured"
+#   value       = module.alb.custom_domain_url
+# }
 
 # Deployment Commands and Information
 output "kubectl_config_command" {
   description = "Command to configure kubectl for EKS cluster access"
   value       = "aws eks update-kubeconfig --region ${var.aws_region} --name ${module.eks.cluster_name}"
+}
+
+# Application Access Commands (Kubernetes-managed ALB)
+output "application_url_command" {
+  description = "Command to get the actual application URL from Kubernetes ingress"
+  value       = "kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'"
+}
+
+output "application_access_instructions" {
+  description = "Instructions to access the application"
+  value       = <<-EOT
+    To access the Tasky application:
+    
+    1. Configure kubectl:
+       ${local.kubectl_command}
+    
+    2. Get the application URL:
+       kubectl get ingress tasky-ingress -n tasky
+       
+    3. Or get direct URL:
+       echo "http://$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')"
+       
+    4. Custom domain (if configured):
+       http://ideatasky.ryanmcvey.me
+       
+    Note: The ALB is managed by Kubernetes AWS Load Balancer Controller, not Terraform directly.
+  EOT
+}
+
+locals {
+  kubectl_command = "aws eks update-kubeconfig --region ${var.aws_region} --name ${module.eks.cluster_name}"
 }
 
 # # Deployment Instructions

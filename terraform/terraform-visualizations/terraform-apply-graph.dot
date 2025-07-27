@@ -4,19 +4,6 @@ digraph {
 	subgraph "root" {
 		"[root] data.aws_availability_zones.available (expand)" [label = "data.aws_availability_zones.available", shape = "box"]
 		"[root] data.aws_caller_identity.current (expand)" [label = "data.aws_caller_identity.current", shape = "box"]
-		"[root] module.alb.aws_lb.main" [label = "module.alb.aws_lb.main", shape = "box"]
-		"[root] module.alb.aws_lb.main (expand)" [label = "module.alb.aws_lb.main", shape = "box"]
-		"[root] module.alb.aws_lb_listener.http" [label = "module.alb.aws_lb_listener.http", shape = "box"]
-		"[root] module.alb.aws_lb_listener.http (expand)" [label = "module.alb.aws_lb_listener.http", shape = "box"]
-		"[root] module.alb.aws_lb_listener.https (expand)" [label = "module.alb.aws_lb_listener.https", shape = "box"]
-		"[root] module.alb.aws_lb_target_group.app" [label = "module.alb.aws_lb_target_group.app", shape = "box"]
-		"[root] module.alb.aws_lb_target_group.app (expand)" [label = "module.alb.aws_lb_target_group.app", shape = "box"]
-		"[root] module.alb.aws_route53_record.app (expand)" [label = "module.alb.aws_route53_record.app", shape = "box"]
-		"[root] module.alb.aws_security_group.alb" [label = "module.alb.aws_security_group.alb", shape = "box"]
-		"[root] module.alb.aws_security_group.alb (expand)" [label = "module.alb.aws_security_group.alb", shape = "box"]
-		"[root] module.alb.aws_security_group_rule.alb_to_eks (expand)" [label = "module.alb.aws_security_group_rule.alb_to_eks", shape = "box"]
-		"[root] module.alb.aws_security_group_rule.alb_to_eks[0]" [label = "module.alb.aws_security_group_rule.alb_to_eks", shape = "box"]
-		"[root] module.alb.aws_security_group_rule.alb_to_eks[1]" [label = "module.alb.aws_security_group_rule.alb_to_eks", shape = "box"]
 		"[root] module.eks.aws_eks_addon.coredns" [label = "module.eks.aws_eks_addon.coredns", shape = "box"]
 		"[root] module.eks.aws_eks_addon.coredns (expand)" [label = "module.eks.aws_eks_addon.coredns", shape = "box"]
 		"[root] module.eks.aws_eks_addon.ebs_csi" [label = "module.eks.aws_eks_addon.ebs_csi", shape = "box"]
@@ -39,15 +26,10 @@ digraph {
 		"[root] module.eks.aws_iam_role.eks_cluster (expand)" [label = "module.eks.aws_iam_role.eks_cluster", shape = "box"]
 		"[root] module.eks.aws_iam_role.eks_node_group" [label = "module.eks.aws_iam_role.eks_node_group", shape = "box"]
 		"[root] module.eks.aws_iam_role.eks_node_group (expand)" [label = "module.eks.aws_iam_role.eks_node_group", shape = "box"]
-		"[root] module.eks.aws_iam_role_policy_attachment.aws_load_balancer_controller_attach" [label = "module.eks.aws_iam_role_policy_attachment.aws_load_balancer_controller_attach", shape = "box"]
 		"[root] module.eks.aws_iam_role_policy_attachment.aws_load_balancer_controller_attach (expand)" [label = "module.eks.aws_iam_role_policy_attachment.aws_load_balancer_controller_attach", shape = "box"]
-		"[root] module.eks.aws_iam_role_policy_attachment.eks_cluster_policy" [label = "module.eks.aws_iam_role_policy_attachment.eks_cluster_policy", shape = "box"]
 		"[root] module.eks.aws_iam_role_policy_attachment.eks_cluster_policy (expand)" [label = "module.eks.aws_iam_role_policy_attachment.eks_cluster_policy", shape = "box"]
-		"[root] module.eks.aws_iam_role_policy_attachment.eks_cni_policy" [label = "module.eks.aws_iam_role_policy_attachment.eks_cni_policy", shape = "box"]
 		"[root] module.eks.aws_iam_role_policy_attachment.eks_cni_policy (expand)" [label = "module.eks.aws_iam_role_policy_attachment.eks_cni_policy", shape = "box"]
-		"[root] module.eks.aws_iam_role_policy_attachment.eks_container_registry_policy" [label = "module.eks.aws_iam_role_policy_attachment.eks_container_registry_policy", shape = "box"]
 		"[root] module.eks.aws_iam_role_policy_attachment.eks_container_registry_policy (expand)" [label = "module.eks.aws_iam_role_policy_attachment.eks_container_registry_policy", shape = "box"]
-		"[root] module.eks.aws_iam_role_policy_attachment.eks_worker_node_policy" [label = "module.eks.aws_iam_role_policy_attachment.eks_worker_node_policy", shape = "box"]
 		"[root] module.eks.aws_iam_role_policy_attachment.eks_worker_node_policy (expand)" [label = "module.eks.aws_iam_role_policy_attachment.eks_worker_node_policy", shape = "box"]
 		"[root] module.eks.aws_security_group.eks_additional" [label = "module.eks.aws_security_group.eks_additional", shape = "box"]
 		"[root] module.eks.aws_security_group.eks_additional (expand)" [label = "module.eks.aws_security_group.eks_additional", shape = "box"]
@@ -65,7 +47,6 @@ digraph {
 		"[root] module.mongodb_ec2.aws_iam_instance_profile.mongodb (expand)" [label = "module.mongodb_ec2.aws_iam_instance_profile.mongodb", shape = "box"]
 		"[root] module.mongodb_ec2.aws_iam_role.mongodb" [label = "module.mongodb_ec2.aws_iam_role.mongodb", shape = "box"]
 		"[root] module.mongodb_ec2.aws_iam_role.mongodb (expand)" [label = "module.mongodb_ec2.aws_iam_role.mongodb", shape = "box"]
-		"[root] module.mongodb_ec2.aws_iam_role_policy_attachment.mongodb_admin" [label = "module.mongodb_ec2.aws_iam_role_policy_attachment.mongodb_admin", shape = "box"]
 		"[root] module.mongodb_ec2.aws_iam_role_policy_attachment.mongodb_admin (expand)" [label = "module.mongodb_ec2.aws_iam_role_policy_attachment.mongodb_admin", shape = "box"]
 		"[root] module.mongodb_ec2.aws_instance.mongodb" [label = "module.mongodb_ec2.aws_instance.mongodb", shape = "box"]
 		"[root] module.mongodb_ec2.aws_instance.mongodb (expand)" [label = "module.mongodb_ec2.aws_instance.mongodb", shape = "box"]
@@ -74,15 +55,10 @@ digraph {
 		"[root] module.mongodb_ec2.data.aws_ami.amazon_linux_2 (expand)" [label = "module.mongodb_ec2.data.aws_ami.amazon_linux_2", shape = "box"]
 		"[root] module.s3_backup.aws_s3_bucket.backup" [label = "module.s3_backup.aws_s3_bucket.backup", shape = "box"]
 		"[root] module.s3_backup.aws_s3_bucket.backup (expand)" [label = "module.s3_backup.aws_s3_bucket.backup", shape = "box"]
-		"[root] module.s3_backup.aws_s3_bucket_lifecycle_configuration.backup" [label = "module.s3_backup.aws_s3_bucket_lifecycle_configuration.backup", shape = "box"]
 		"[root] module.s3_backup.aws_s3_bucket_lifecycle_configuration.backup (expand)" [label = "module.s3_backup.aws_s3_bucket_lifecycle_configuration.backup", shape = "box"]
-		"[root] module.s3_backup.aws_s3_bucket_policy.backup_public_read" [label = "module.s3_backup.aws_s3_bucket_policy.backup_public_read", shape = "box"]
 		"[root] module.s3_backup.aws_s3_bucket_policy.backup_public_read (expand)" [label = "module.s3_backup.aws_s3_bucket_policy.backup_public_read", shape = "box"]
-		"[root] module.s3_backup.aws_s3_bucket_public_access_block.backup" [label = "module.s3_backup.aws_s3_bucket_public_access_block.backup", shape = "box"]
 		"[root] module.s3_backup.aws_s3_bucket_public_access_block.backup (expand)" [label = "module.s3_backup.aws_s3_bucket_public_access_block.backup", shape = "box"]
-		"[root] module.s3_backup.aws_s3_bucket_versioning.backup" [label = "module.s3_backup.aws_s3_bucket_versioning.backup", shape = "box"]
 		"[root] module.s3_backup.aws_s3_bucket_versioning.backup (expand)" [label = "module.s3_backup.aws_s3_bucket_versioning.backup", shape = "box"]
-		"[root] module.s3_backup.random_string.bucket_suffix" [label = "module.s3_backup.random_string.bucket_suffix", shape = "box"]
 		"[root] module.s3_backup.random_string.bucket_suffix (expand)" [label = "module.s3_backup.random_string.bucket_suffix", shape = "box"]
 		"[root] module.vpc.aws_eip.nat (expand)" [label = "module.vpc.aws_eip.nat", shape = "box"]
 		"[root] module.vpc.aws_eip.nat[0]" [label = "module.vpc.aws_eip.nat", shape = "box"]
@@ -101,13 +77,7 @@ digraph {
 		"[root] module.vpc.aws_route_table.public" [label = "module.vpc.aws_route_table.public", shape = "box"]
 		"[root] module.vpc.aws_route_table.public (expand)" [label = "module.vpc.aws_route_table.public", shape = "box"]
 		"[root] module.vpc.aws_route_table_association.private (expand)" [label = "module.vpc.aws_route_table_association.private", shape = "box"]
-		"[root] module.vpc.aws_route_table_association.private[0]" [label = "module.vpc.aws_route_table_association.private", shape = "box"]
-		"[root] module.vpc.aws_route_table_association.private[1]" [label = "module.vpc.aws_route_table_association.private", shape = "box"]
-		"[root] module.vpc.aws_route_table_association.private[2]" [label = "module.vpc.aws_route_table_association.private", shape = "box"]
 		"[root] module.vpc.aws_route_table_association.public (expand)" [label = "module.vpc.aws_route_table_association.public", shape = "box"]
-		"[root] module.vpc.aws_route_table_association.public[0]" [label = "module.vpc.aws_route_table_association.public", shape = "box"]
-		"[root] module.vpc.aws_route_table_association.public[1]" [label = "module.vpc.aws_route_table_association.public", shape = "box"]
-		"[root] module.vpc.aws_route_table_association.public[2]" [label = "module.vpc.aws_route_table_association.public", shape = "box"]
 		"[root] module.vpc.aws_security_group.vpc_endpoints" [label = "module.vpc.aws_security_group.vpc_endpoints", shape = "box"]
 		"[root] module.vpc.aws_security_group.vpc_endpoints (expand)" [label = "module.vpc.aws_security_group.vpc_endpoints", shape = "box"]
 		"[root] module.vpc.aws_subnet.private (expand)" [label = "module.vpc.aws_subnet.private", shape = "box"]
@@ -153,108 +123,15 @@ digraph {
 		"[root] data.aws_caller_identity.current (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
 		"[root] local.common_tags (expand)" -> "[root] var.environment (validation)"
 		"[root] local.common_tags (expand)" -> "[root] var.stack_version (validation)"
+		"[root] local.kubectl_command (expand)" -> "[root] module.eks.output.cluster_name (expand)"
 		"[root] local.name_prefix (expand)" -> "[root] var.environment (validation)"
 		"[root] local.name_prefix (expand)" -> "[root] var.project_name (validation)"
 		"[root] local.name_prefix (expand)" -> "[root] var.stack_version (validation)"
-		"[root] module.alb (close)" -> "[root] module.alb.aws_lb_listener.http"
-		"[root] module.alb (close)" -> "[root] module.alb.aws_lb_listener.https (expand)"
-		"[root] module.alb (close)" -> "[root] module.alb.aws_route53_record.app (expand)"
-		"[root] module.alb (close)" -> "[root] module.alb.aws_security_group_rule.alb_to_eks[0]"
-		"[root] module.alb (close)" -> "[root] module.alb.aws_security_group_rule.alb_to_eks[1]"
-		"[root] module.alb (close)" -> "[root] module.alb.output.alb_arn (expand)"
-		"[root] module.alb (close)" -> "[root] module.alb.output.alb_dns_name (expand)"
-		"[root] module.alb (close)" -> "[root] module.alb.output.alb_hosted_zone_id (expand)"
-		"[root] module.alb (close)" -> "[root] module.alb.output.alb_security_group_id (expand)"
-		"[root] module.alb (close)" -> "[root] module.alb.output.application_url (expand)"
-		"[root] module.alb (close)" -> "[root] module.alb.output.custom_domain_url (expand)"
-		"[root] module.alb (close)" -> "[root] module.alb.output.health_check_path (expand)"
-		"[root] module.alb (close)" -> "[root] module.alb.output.target_group_arn (expand)"
-		"[root] module.alb (close)" -> "[root] module.alb.output.target_group_arn_suffix (expand)"
-		"[root] module.alb.aws_lb.main (expand)" -> "[root] module.alb.aws_security_group.alb"
-		"[root] module.alb.aws_lb.main (expand)" -> "[root] module.alb.var.access_logs_bucket (expand)"
-		"[root] module.alb.aws_lb.main (expand)" -> "[root] module.alb.var.enable_access_logs (expand)"
-		"[root] module.alb.aws_lb.main (expand)" -> "[root] module.alb.var.public_subnet_ids (validation)"
-		"[root] module.alb.aws_lb.main" -> "[root] module.alb.aws_lb.main (expand)"
-		"[root] module.alb.aws_lb_listener.http (expand)" -> "[root] module.alb.aws_lb.main"
-		"[root] module.alb.aws_lb_listener.http (expand)" -> "[root] module.alb.aws_lb_target_group.app"
-		"[root] module.alb.aws_lb_listener.http (expand)" -> "[root] module.alb.var.ssl_certificate_arn (expand)"
-		"[root] module.alb.aws_lb_listener.http" -> "[root] module.alb.aws_lb_listener.http (expand)"
-		"[root] module.alb.aws_lb_listener.https (expand)" -> "[root] module.alb.aws_lb.main"
-		"[root] module.alb.aws_lb_listener.https (expand)" -> "[root] module.alb.aws_lb_target_group.app"
-		"[root] module.alb.aws_lb_listener.https (expand)" -> "[root] module.alb.var.ssl_certificate_arn (expand)"
-		"[root] module.alb.aws_lb_target_group.app (expand)" -> "[root] module.alb.var.environment (validation)"
-		"[root] module.alb.aws_lb_target_group.app (expand)" -> "[root] module.alb.var.health_check_path (validation)"
-		"[root] module.alb.aws_lb_target_group.app (expand)" -> "[root] module.alb.var.project_name (validation)"
-		"[root] module.alb.aws_lb_target_group.app (expand)" -> "[root] module.alb.var.stack_version (expand)"
-		"[root] module.alb.aws_lb_target_group.app (expand)" -> "[root] module.alb.var.tags (expand)"
-		"[root] module.alb.aws_lb_target_group.app (expand)" -> "[root] module.alb.var.vpc_id (validation)"
-		"[root] module.alb.aws_lb_target_group.app" -> "[root] module.alb.aws_lb_target_group.app (expand)"
-		"[root] module.alb.aws_route53_record.app (expand)" -> "[root] module.alb.aws_lb.main"
-		"[root] module.alb.aws_route53_record.app (expand)" -> "[root] module.alb.var.create_dns_record (expand)"
-		"[root] module.alb.aws_route53_record.app (expand)" -> "[root] module.alb.var.domain_name (expand)"
-		"[root] module.alb.aws_route53_record.app (expand)" -> "[root] module.alb.var.hosted_zone_id (expand)"
-		"[root] module.alb.aws_security_group.alb (expand)" -> "[root] module.alb.var.environment (validation)"
-		"[root] module.alb.aws_security_group.alb (expand)" -> "[root] module.alb.var.project_name (validation)"
-		"[root] module.alb.aws_security_group.alb (expand)" -> "[root] module.alb.var.stack_version (expand)"
-		"[root] module.alb.aws_security_group.alb (expand)" -> "[root] module.alb.var.tags (expand)"
-		"[root] module.alb.aws_security_group.alb (expand)" -> "[root] module.alb.var.vpc_id (validation)"
-		"[root] module.alb.aws_security_group.alb" -> "[root] module.alb.aws_security_group.alb (expand)"
-		"[root] module.alb.aws_security_group_rule.alb_to_eks (expand)" -> "[root] module.alb.aws_security_group.alb"
-		"[root] module.alb.aws_security_group_rule.alb_to_eks (expand)" -> "[root] module.alb.var.eks_security_group_ids (expand)"
-		"[root] module.alb.aws_security_group_rule.alb_to_eks[0]" -> "[root] module.alb.aws_security_group_rule.alb_to_eks (expand)"
-		"[root] module.alb.aws_security_group_rule.alb_to_eks[1]" -> "[root] module.alb.aws_security_group_rule.alb_to_eks (expand)"
-		"[root] module.alb.output.alb_arn (expand)" -> "[root] module.alb.aws_lb.main"
-		"[root] module.alb.output.alb_dns_name (expand)" -> "[root] module.alb.aws_lb.main"
-		"[root] module.alb.output.alb_hosted_zone_id (expand)" -> "[root] module.alb.aws_lb.main"
-		"[root] module.alb.output.alb_security_group_id (expand)" -> "[root] module.alb.aws_security_group.alb"
-		"[root] module.alb.output.application_url (expand)" -> "[root] module.alb.aws_lb.main"
-		"[root] module.alb.output.application_url (expand)" -> "[root] module.alb.var.ssl_certificate_arn (expand)"
-		"[root] module.alb.output.custom_domain_url (expand)" -> "[root] module.alb.var.create_dns_record (expand)"
-		"[root] module.alb.output.custom_domain_url (expand)" -> "[root] module.alb.var.domain_name (expand)"
-		"[root] module.alb.output.custom_domain_url (expand)" -> "[root] module.alb.var.ssl_certificate_arn (expand)"
-		"[root] module.alb.output.health_check_path (expand)" -> "[root] module.alb.aws_lb_target_group.app"
-		"[root] module.alb.output.target_group_arn (expand)" -> "[root] module.alb.aws_lb_target_group.app"
-		"[root] module.alb.output.target_group_arn_suffix (expand)" -> "[root] module.alb.aws_lb_target_group.app"
-		"[root] module.alb.var.access_logs_bucket (expand)" -> "[root] module.alb (expand)"
-		"[root] module.alb.var.access_logs_bucket (expand)" -> "[root] module.s3_backup.output.bucket_name (expand)"
-		"[root] module.alb.var.access_logs_bucket (expand)" -> "[root] var.alb_enable_access_logs"
-		"[root] module.alb.var.create_dns_record (expand)" -> "[root] module.alb (expand)"
-		"[root] module.alb.var.create_dns_record (expand)" -> "[root] var.alb_create_dns_record"
-		"[root] module.alb.var.domain_name (expand)" -> "[root] module.alb (expand)"
-		"[root] module.alb.var.domain_name (expand)" -> "[root] var.alb_domain_name (validation)"
-		"[root] module.alb.var.eks_security_group_ids (expand)" -> "[root] module.alb (expand)"
-		"[root] module.alb.var.eks_security_group_ids (expand)" -> "[root] module.eks.output.cluster_security_group_id (expand)"
-		"[root] module.alb.var.eks_security_group_ids (expand)" -> "[root] module.eks.output.node_group_security_group_id (expand)"
-		"[root] module.alb.var.enable_access_logs (expand)" -> "[root] module.alb (expand)"
-		"[root] module.alb.var.enable_access_logs (expand)" -> "[root] var.alb_enable_access_logs"
-		"[root] module.alb.var.environment (expand)" -> "[root] module.alb (expand)"
-		"[root] module.alb.var.environment (expand)" -> "[root] var.environment (validation)"
-		"[root] module.alb.var.environment (validation)" -> "[root] module.alb.var.environment (expand)"
-		"[root] module.alb.var.health_check_path (expand)" -> "[root] module.alb (expand)"
-		"[root] module.alb.var.health_check_path (expand)" -> "[root] var.alb_health_check_path (validation)"
-		"[root] module.alb.var.health_check_path (validation)" -> "[root] module.alb.var.health_check_path (expand)"
-		"[root] module.alb.var.hosted_zone_id (expand)" -> "[root] module.alb (expand)"
-		"[root] module.alb.var.hosted_zone_id (expand)" -> "[root] var.alb_hosted_zone_id"
-		"[root] module.alb.var.project_name (expand)" -> "[root] module.alb (expand)"
-		"[root] module.alb.var.project_name (expand)" -> "[root] var.project_name (validation)"
-		"[root] module.alb.var.project_name (validation)" -> "[root] module.alb.var.project_name (expand)"
-		"[root] module.alb.var.public_subnet_ids (expand)" -> "[root] module.alb (expand)"
-		"[root] module.alb.var.public_subnet_ids (expand)" -> "[root] module.vpc.output.public_subnet_ids (expand)"
-		"[root] module.alb.var.public_subnet_ids (validation)" -> "[root] module.alb.var.public_subnet_ids (expand)"
-		"[root] module.alb.var.ssl_certificate_arn (expand)" -> "[root] module.alb (expand)"
-		"[root] module.alb.var.ssl_certificate_arn (expand)" -> "[root] var.alb_ssl_certificate_arn"
-		"[root] module.alb.var.stack_version (expand)" -> "[root] module.alb (expand)"
-		"[root] module.alb.var.stack_version (expand)" -> "[root] var.stack_version (validation)"
-		"[root] module.alb.var.tags (expand)" -> "[root] local.common_tags (expand)"
-		"[root] module.alb.var.tags (expand)" -> "[root] module.alb (expand)"
-		"[root] module.alb.var.vpc_id (expand)" -> "[root] module.alb (expand)"
-		"[root] module.alb.var.vpc_id (expand)" -> "[root] module.vpc.output.vpc_id (expand)"
-		"[root] module.alb.var.vpc_id (validation)" -> "[root] module.alb.var.vpc_id (expand)"
 		"[root] module.eks (close)" -> "[root] module.eks.aws_eks_addon.coredns"
 		"[root] module.eks (close)" -> "[root] module.eks.aws_eks_addon.ebs_csi"
 		"[root] module.eks (close)" -> "[root] module.eks.aws_eks_addon.kube_proxy"
 		"[root] module.eks (close)" -> "[root] module.eks.aws_eks_addon.vpc_cni"
-		"[root] module.eks (close)" -> "[root] module.eks.aws_iam_role_policy_attachment.aws_load_balancer_controller_attach"
+		"[root] module.eks (close)" -> "[root] module.eks.aws_iam_role_policy_attachment.aws_load_balancer_controller_attach (expand)"
 		"[root] module.eks (close)" -> "[root] module.eks.aws_security_group_rule.mongodb_from_eks_additional"
 		"[root] module.eks (close)" -> "[root] module.eks.aws_security_group_rule.mongodb_from_eks_cluster"
 		"[root] module.eks (close)" -> "[root] module.eks.output.aws_load_balancer_controller_role_arn (expand)"
@@ -273,15 +150,15 @@ digraph {
 		"[root] module.eks.aws_eks_addon.kube_proxy" -> "[root] module.eks.aws_eks_addon.kube_proxy (expand)"
 		"[root] module.eks.aws_eks_addon.vpc_cni (expand)" -> "[root] module.eks.aws_eks_cluster.main"
 		"[root] module.eks.aws_eks_addon.vpc_cni" -> "[root] module.eks.aws_eks_addon.vpc_cni (expand)"
-		"[root] module.eks.aws_eks_cluster.main (expand)" -> "[root] module.eks.aws_iam_role_policy_attachment.eks_cluster_policy"
+		"[root] module.eks.aws_eks_cluster.main (expand)" -> "[root] module.eks.aws_iam_role_policy_attachment.eks_cluster_policy (expand)"
 		"[root] module.eks.aws_eks_cluster.main (expand)" -> "[root] module.eks.aws_security_group.eks_additional"
 		"[root] module.eks.aws_eks_cluster.main (expand)" -> "[root] module.eks.var.private_subnet_ids (expand)"
 		"[root] module.eks.aws_eks_cluster.main (expand)" -> "[root] module.eks.var.public_subnet_ids (expand)"
 		"[root] module.eks.aws_eks_cluster.main" -> "[root] module.eks.aws_eks_cluster.main (expand)"
 		"[root] module.eks.aws_eks_node_group.main (expand)" -> "[root] module.eks.aws_eks_cluster.main"
-		"[root] module.eks.aws_eks_node_group.main (expand)" -> "[root] module.eks.aws_iam_role_policy_attachment.eks_cni_policy"
-		"[root] module.eks.aws_eks_node_group.main (expand)" -> "[root] module.eks.aws_iam_role_policy_attachment.eks_container_registry_policy"
-		"[root] module.eks.aws_eks_node_group.main (expand)" -> "[root] module.eks.aws_iam_role_policy_attachment.eks_worker_node_policy"
+		"[root] module.eks.aws_eks_node_group.main (expand)" -> "[root] module.eks.aws_iam_role_policy_attachment.eks_cni_policy (expand)"
+		"[root] module.eks.aws_eks_node_group.main (expand)" -> "[root] module.eks.aws_iam_role_policy_attachment.eks_container_registry_policy (expand)"
+		"[root] module.eks.aws_eks_node_group.main (expand)" -> "[root] module.eks.aws_iam_role_policy_attachment.eks_worker_node_policy (expand)"
 		"[root] module.eks.aws_eks_node_group.main (expand)" -> "[root] module.eks.var.node_desired_size (expand)"
 		"[root] module.eks.aws_eks_node_group.main (expand)" -> "[root] module.eks.var.node_instance_types (expand)"
 		"[root] module.eks.aws_eks_node_group.main (expand)" -> "[root] module.eks.var.node_max_size (expand)"
@@ -311,15 +188,10 @@ digraph {
 		"[root] module.eks.aws_iam_role.eks_node_group" -> "[root] module.eks.aws_iam_role.eks_node_group (expand)"
 		"[root] module.eks.aws_iam_role_policy_attachment.aws_load_balancer_controller_attach (expand)" -> "[root] module.eks.aws_iam_policy.aws_load_balancer_controller"
 		"[root] module.eks.aws_iam_role_policy_attachment.aws_load_balancer_controller_attach (expand)" -> "[root] module.eks.aws_iam_role.aws_load_balancer_controller"
-		"[root] module.eks.aws_iam_role_policy_attachment.aws_load_balancer_controller_attach" -> "[root] module.eks.aws_iam_role_policy_attachment.aws_load_balancer_controller_attach (expand)"
 		"[root] module.eks.aws_iam_role_policy_attachment.eks_cluster_policy (expand)" -> "[root] module.eks.aws_iam_role.eks_cluster"
-		"[root] module.eks.aws_iam_role_policy_attachment.eks_cluster_policy" -> "[root] module.eks.aws_iam_role_policy_attachment.eks_cluster_policy (expand)"
 		"[root] module.eks.aws_iam_role_policy_attachment.eks_cni_policy (expand)" -> "[root] module.eks.aws_iam_role.eks_node_group"
-		"[root] module.eks.aws_iam_role_policy_attachment.eks_cni_policy" -> "[root] module.eks.aws_iam_role_policy_attachment.eks_cni_policy (expand)"
 		"[root] module.eks.aws_iam_role_policy_attachment.eks_container_registry_policy (expand)" -> "[root] module.eks.aws_iam_role.eks_node_group"
-		"[root] module.eks.aws_iam_role_policy_attachment.eks_container_registry_policy" -> "[root] module.eks.aws_iam_role_policy_attachment.eks_container_registry_policy (expand)"
 		"[root] module.eks.aws_iam_role_policy_attachment.eks_worker_node_policy (expand)" -> "[root] module.eks.aws_iam_role.eks_node_group"
-		"[root] module.eks.aws_iam_role_policy_attachment.eks_worker_node_policy" -> "[root] module.eks.aws_iam_role_policy_attachment.eks_worker_node_policy (expand)"
 		"[root] module.eks.aws_security_group.eks_additional (expand)" -> "[root] module.eks.var.environment (expand)"
 		"[root] module.eks.aws_security_group.eks_additional (expand)" -> "[root] module.eks.var.mongodb_security_group_id (expand)"
 		"[root] module.eks.aws_security_group.eks_additional (expand)" -> "[root] module.eks.var.project_name (expand)"
@@ -368,7 +240,7 @@ digraph {
 		"[root] module.eks.var.tags (expand)" -> "[root] module.eks (expand)"
 		"[root] module.eks.var.vpc_id (expand)" -> "[root] module.eks (expand)"
 		"[root] module.eks.var.vpc_id (expand)" -> "[root] module.vpc.output.vpc_id (expand)"
-		"[root] module.mongodb_ec2 (close)" -> "[root] module.mongodb_ec2.aws_iam_role_policy_attachment.mongodb_admin"
+		"[root] module.mongodb_ec2 (close)" -> "[root] module.mongodb_ec2.aws_iam_role_policy_attachment.mongodb_admin (expand)"
 		"[root] module.mongodb_ec2 (close)" -> "[root] module.mongodb_ec2.output.cloudwatch_log_group_arn (expand)"
 		"[root] module.mongodb_ec2 (close)" -> "[root] module.mongodb_ec2.output.cloudwatch_log_group_name (expand)"
 		"[root] module.mongodb_ec2 (close)" -> "[root] module.mongodb_ec2.output.iam_role_arn (expand)"
@@ -395,7 +267,6 @@ digraph {
 		"[root] module.mongodb_ec2.aws_iam_role.mongodb (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
 		"[root] module.mongodb_ec2.aws_iam_role.mongodb" -> "[root] module.mongodb_ec2.aws_iam_role.mongodb (expand)"
 		"[root] module.mongodb_ec2.aws_iam_role_policy_attachment.mongodb_admin (expand)" -> "[root] module.mongodb_ec2.aws_iam_role.mongodb"
-		"[root] module.mongodb_ec2.aws_iam_role_policy_attachment.mongodb_admin" -> "[root] module.mongodb_ec2.aws_iam_role_policy_attachment.mongodb_admin (expand)"
 		"[root] module.mongodb_ec2.aws_instance.mongodb (expand)" -> "[root] module.mongodb_ec2.aws_iam_instance_profile.mongodb"
 		"[root] module.mongodb_ec2.aws_instance.mongodb (expand)" -> "[root] module.mongodb_ec2.aws_security_group.mongodb"
 		"[root] module.mongodb_ec2.aws_instance.mongodb (expand)" -> "[root] module.mongodb_ec2.data.aws_ami.amazon_linux_2 (expand)"
@@ -411,10 +282,11 @@ digraph {
 		"[root] module.mongodb_ec2.aws_security_group.mongodb" -> "[root] module.mongodb_ec2.aws_security_group.mongodb (expand)"
 		"[root] module.mongodb_ec2.data.aws_ami.amazon_linux_2 (expand)" -> "[root] module.mongodb_ec2 (expand)"
 		"[root] module.mongodb_ec2.data.aws_ami.amazon_linux_2 (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
-		"[root] module.mongodb_ec2.local.user_data (expand)" -> "[root] module.mongodb_ec2.var.backup_bucket_name (expand)"
-		"[root] module.mongodb_ec2.local.user_data (expand)" -> "[root] module.mongodb_ec2.var.mongodb_database_name (expand)"
-		"[root] module.mongodb_ec2.local.user_data (expand)" -> "[root] module.mongodb_ec2.var.mongodb_password (expand)"
-		"[root] module.mongodb_ec2.local.user_data (expand)" -> "[root] module.mongodb_ec2.var.mongodb_username (expand)"
+		"[root] module.mongodb_ec2.local.user_data (expand)" -> "[root] module.mongodb_ec2.local.user_data_template (expand)"
+		"[root] module.mongodb_ec2.local.user_data_template (expand)" -> "[root] module.mongodb_ec2.var.backup_bucket_name (expand)"
+		"[root] module.mongodb_ec2.local.user_data_template (expand)" -> "[root] module.mongodb_ec2.var.mongodb_database_name (expand)"
+		"[root] module.mongodb_ec2.local.user_data_template (expand)" -> "[root] module.mongodb_ec2.var.mongodb_password (expand)"
+		"[root] module.mongodb_ec2.local.user_data_template (expand)" -> "[root] module.mongodb_ec2.var.mongodb_username (expand)"
 		"[root] module.mongodb_ec2.output.cloudwatch_log_group_arn (expand)" -> "[root] module.mongodb_ec2.aws_cloudwatch_log_group.mongodb"
 		"[root] module.mongodb_ec2.output.cloudwatch_log_group_name (expand)" -> "[root] module.mongodb_ec2.aws_cloudwatch_log_group.mongodb"
 		"[root] module.mongodb_ec2.output.iam_role_arn (expand)" -> "[root] module.mongodb_ec2.aws_iam_role.mongodb"
@@ -449,9 +321,9 @@ digraph {
 		"[root] module.mongodb_ec2.var.tags (expand)" -> "[root] module.mongodb_ec2 (expand)"
 		"[root] module.mongodb_ec2.var.vpc_id (expand)" -> "[root] module.mongodb_ec2 (expand)"
 		"[root] module.mongodb_ec2.var.vpc_id (expand)" -> "[root] module.vpc.output.vpc_id (expand)"
-		"[root] module.s3_backup (close)" -> "[root] module.s3_backup.aws_s3_bucket_lifecycle_configuration.backup"
-		"[root] module.s3_backup (close)" -> "[root] module.s3_backup.aws_s3_bucket_policy.backup_public_read"
-		"[root] module.s3_backup (close)" -> "[root] module.s3_backup.aws_s3_bucket_versioning.backup"
+		"[root] module.s3_backup (close)" -> "[root] module.s3_backup.aws_s3_bucket_lifecycle_configuration.backup (expand)"
+		"[root] module.s3_backup (close)" -> "[root] module.s3_backup.aws_s3_bucket_policy.backup_public_read (expand)"
+		"[root] module.s3_backup (close)" -> "[root] module.s3_backup.aws_s3_bucket_versioning.backup (expand)"
 		"[root] module.s3_backup (close)" -> "[root] module.s3_backup.output.bucket_arn (expand)"
 		"[root] module.s3_backup (close)" -> "[root] module.s3_backup.output.bucket_name (expand)"
 		"[root] module.s3_backup (close)" -> "[root] module.s3_backup.output.public_url (expand)"
@@ -460,14 +332,10 @@ digraph {
 		"[root] module.s3_backup.aws_s3_bucket.backup (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"]"
 		"[root] module.s3_backup.aws_s3_bucket.backup" -> "[root] module.s3_backup.aws_s3_bucket.backup (expand)"
 		"[root] module.s3_backup.aws_s3_bucket_lifecycle_configuration.backup (expand)" -> "[root] module.s3_backup.aws_s3_bucket.backup"
-		"[root] module.s3_backup.aws_s3_bucket_lifecycle_configuration.backup" -> "[root] module.s3_backup.aws_s3_bucket_lifecycle_configuration.backup (expand)"
-		"[root] module.s3_backup.aws_s3_bucket_policy.backup_public_read (expand)" -> "[root] module.s3_backup.aws_s3_bucket_public_access_block.backup"
-		"[root] module.s3_backup.aws_s3_bucket_policy.backup_public_read" -> "[root] module.s3_backup.aws_s3_bucket_policy.backup_public_read (expand)"
+		"[root] module.s3_backup.aws_s3_bucket_policy.backup_public_read (expand)" -> "[root] module.s3_backup.aws_s3_bucket_public_access_block.backup (expand)"
 		"[root] module.s3_backup.aws_s3_bucket_public_access_block.backup (expand)" -> "[root] module.s3_backup.aws_s3_bucket.backup"
-		"[root] module.s3_backup.aws_s3_bucket_public_access_block.backup" -> "[root] module.s3_backup.aws_s3_bucket_public_access_block.backup (expand)"
 		"[root] module.s3_backup.aws_s3_bucket_versioning.backup (expand)" -> "[root] module.s3_backup.aws_s3_bucket.backup"
-		"[root] module.s3_backup.aws_s3_bucket_versioning.backup" -> "[root] module.s3_backup.aws_s3_bucket_versioning.backup (expand)"
-		"[root] module.s3_backup.local.bucket_name (expand)" -> "[root] module.s3_backup.random_string.bucket_suffix"
+		"[root] module.s3_backup.local.bucket_name (expand)" -> "[root] module.s3_backup.random_string.bucket_suffix (expand)"
 		"[root] module.s3_backup.local.bucket_name (expand)" -> "[root] module.s3_backup.var.environment (expand)"
 		"[root] module.s3_backup.local.bucket_name (expand)" -> "[root] module.s3_backup.var.project_name (expand)"
 		"[root] module.s3_backup.local.bucket_name (expand)" -> "[root] module.s3_backup.var.stack_version (expand)"
@@ -476,7 +344,6 @@ digraph {
 		"[root] module.s3_backup.output.public_url (expand)" -> "[root] module.s3_backup.aws_s3_bucket.backup"
 		"[root] module.s3_backup.random_string.bucket_suffix (expand)" -> "[root] module.s3_backup (expand)"
 		"[root] module.s3_backup.random_string.bucket_suffix (expand)" -> "[root] provider[\"registry.terraform.io/hashicorp/random\"]"
-		"[root] module.s3_backup.random_string.bucket_suffix" -> "[root] module.s3_backup.random_string.bucket_suffix (expand)"
 		"[root] module.s3_backup.var.environment (expand)" -> "[root] module.s3_backup (expand)"
 		"[root] module.s3_backup.var.environment (expand)" -> "[root] var.environment (validation)"
 		"[root] module.s3_backup.var.project_name (expand)" -> "[root] module.s3_backup (expand)"
@@ -485,12 +352,8 @@ digraph {
 		"[root] module.s3_backup.var.stack_version (expand)" -> "[root] var.stack_version (validation)"
 		"[root] module.s3_backup.var.tags (expand)" -> "[root] local.common_tags (expand)"
 		"[root] module.s3_backup.var.tags (expand)" -> "[root] module.s3_backup (expand)"
-		"[root] module.vpc (close)" -> "[root] module.vpc.aws_route_table_association.private[0]"
-		"[root] module.vpc (close)" -> "[root] module.vpc.aws_route_table_association.private[1]"
-		"[root] module.vpc (close)" -> "[root] module.vpc.aws_route_table_association.private[2]"
-		"[root] module.vpc (close)" -> "[root] module.vpc.aws_route_table_association.public[0]"
-		"[root] module.vpc (close)" -> "[root] module.vpc.aws_route_table_association.public[1]"
-		"[root] module.vpc (close)" -> "[root] module.vpc.aws_route_table_association.public[2]"
+		"[root] module.vpc (close)" -> "[root] module.vpc.aws_route_table_association.private (expand)"
+		"[root] module.vpc (close)" -> "[root] module.vpc.aws_route_table_association.public (expand)"
 		"[root] module.vpc (close)" -> "[root] module.vpc.output.ec2_vpc_endpoint_id (expand)"
 		"[root] module.vpc (close)" -> "[root] module.vpc.output.internet_gateway_id (expand)"
 		"[root] module.vpc (close)" -> "[root] module.vpc.output.nat_gateway_ids (expand)"
@@ -529,16 +392,10 @@ digraph {
 		"[root] module.vpc.aws_route_table_association.private (expand)" -> "[root] module.vpc.aws_subnet.private[0]"
 		"[root] module.vpc.aws_route_table_association.private (expand)" -> "[root] module.vpc.aws_subnet.private[1]"
 		"[root] module.vpc.aws_route_table_association.private (expand)" -> "[root] module.vpc.aws_subnet.private[2]"
-		"[root] module.vpc.aws_route_table_association.private[0]" -> "[root] module.vpc.aws_route_table_association.private (expand)"
-		"[root] module.vpc.aws_route_table_association.private[1]" -> "[root] module.vpc.aws_route_table_association.private (expand)"
-		"[root] module.vpc.aws_route_table_association.private[2]" -> "[root] module.vpc.aws_route_table_association.private (expand)"
 		"[root] module.vpc.aws_route_table_association.public (expand)" -> "[root] module.vpc.aws_route_table.public"
 		"[root] module.vpc.aws_route_table_association.public (expand)" -> "[root] module.vpc.aws_subnet.public[0]"
 		"[root] module.vpc.aws_route_table_association.public (expand)" -> "[root] module.vpc.aws_subnet.public[1]"
 		"[root] module.vpc.aws_route_table_association.public (expand)" -> "[root] module.vpc.aws_subnet.public[2]"
-		"[root] module.vpc.aws_route_table_association.public[0]" -> "[root] module.vpc.aws_route_table_association.public (expand)"
-		"[root] module.vpc.aws_route_table_association.public[1]" -> "[root] module.vpc.aws_route_table_association.public (expand)"
-		"[root] module.vpc.aws_route_table_association.public[2]" -> "[root] module.vpc.aws_route_table_association.public (expand)"
 		"[root] module.vpc.aws_security_group.vpc_endpoints (expand)" -> "[root] module.vpc.aws_vpc.main"
 		"[root] module.vpc.aws_security_group.vpc_endpoints" -> "[root] module.vpc.aws_security_group.vpc_endpoints (expand)"
 		"[root] module.vpc.aws_subnet.private (expand)" -> "[root] module.vpc.aws_vpc.main"
@@ -597,12 +454,8 @@ digraph {
 		"[root] module.vpc.var.tags (expand)" -> "[root] module.vpc (expand)"
 		"[root] module.vpc.var.vpc_cidr (expand)" -> "[root] module.vpc (expand)"
 		"[root] module.vpc.var.vpc_cidr (expand)" -> "[root] var.vpc_cidr"
-		"[root] output.alb_dns_name (expand)" -> "[root] module.alb.output.alb_dns_name (expand)"
-		"[root] output.alb_hosted_zone_id (expand)" -> "[root] module.alb.output.alb_hosted_zone_id (expand)"
-		"[root] output.alb_target_group_arn (expand)" -> "[root] module.alb.output.target_group_arn (expand)"
-		"[root] output.application_url (expand)" -> "[root] module.alb.output.application_url (expand)"
+		"[root] output.application_access_instructions (expand)" -> "[root] local.kubectl_command (expand)"
 		"[root] output.aws_region (expand)" -> "[root] var.aws_region (validation)"
-		"[root] output.custom_domain_url (expand)" -> "[root] module.alb.output.custom_domain_url (expand)"
 		"[root] output.eks_aws_load_balancer_controller_role_arn (expand)" -> "[root] module.eks.output.aws_load_balancer_controller_role_arn (expand)"
 		"[root] output.eks_cluster_endpoint (expand)" -> "[root] module.eks.output.cluster_endpoint (expand)"
 		"[root] output.eks_cluster_name (expand)" -> "[root] module.eks.output.cluster_name (expand)"
@@ -621,50 +474,38 @@ digraph {
 		"[root] output.mongodb_username (expand)" -> "[root] var.mongodb_username"
 		"[root] output.s3_backup_bucket_name (expand)" -> "[root] module.s3_backup.output.bucket_name (expand)"
 		"[root] output.s3_backup_public_url (expand)" -> "[root] module.s3_backup.output.public_url (expand)"
+		"[root] output.s3_backup_public_url_latest_db (expand)" -> "[root] module.s3_backup.output.public_url (expand)"
 		"[root] output.vpc_id (expand)" -> "[root] module.vpc.output.vpc_id (expand)"
 		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] data.aws_caller_identity.current (expand)"
-		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.alb.aws_lb_listener.http"
-		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.alb.aws_lb_listener.https (expand)"
-		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.alb.aws_route53_record.app (expand)"
-		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.alb.aws_security_group_rule.alb_to_eks[0]"
-		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.alb.aws_security_group_rule.alb_to_eks[1]"
 		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.eks.aws_eks_addon.coredns"
 		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.eks.aws_eks_addon.ebs_csi"
 		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.eks.aws_eks_addon.kube_proxy"
 		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.eks.aws_eks_addon.vpc_cni"
-		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.eks.aws_iam_role_policy_attachment.aws_load_balancer_controller_attach"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.eks.aws_iam_role_policy_attachment.aws_load_balancer_controller_attach (expand)"
 		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.eks.aws_security_group_rule.mongodb_from_eks_additional"
 		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.eks.aws_security_group_rule.mongodb_from_eks_cluster"
 		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.mongodb_ec2.aws_cloudwatch_log_group.mongodb"
-		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.mongodb_ec2.aws_iam_role_policy_attachment.mongodb_admin"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.mongodb_ec2.aws_iam_role_policy_attachment.mongodb_admin (expand)"
 		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.mongodb_ec2.aws_instance.mongodb"
-		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.s3_backup.aws_s3_bucket_lifecycle_configuration.backup"
-		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.s3_backup.aws_s3_bucket_policy.backup_public_read"
-		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.s3_backup.aws_s3_bucket_versioning.backup"
-		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.vpc.aws_route_table_association.private[0]"
-		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.vpc.aws_route_table_association.private[1]"
-		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.vpc.aws_route_table_association.private[2]"
-		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.vpc.aws_route_table_association.public[0]"
-		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.vpc.aws_route_table_association.public[1]"
-		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.vpc.aws_route_table_association.public[2]"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.s3_backup.aws_s3_bucket_lifecycle_configuration.backup (expand)"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.s3_backup.aws_s3_bucket_policy.backup_public_read (expand)"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.s3_backup.aws_s3_bucket_versioning.backup (expand)"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.vpc.aws_route_table_association.private (expand)"
+		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.vpc.aws_route_table_association.public (expand)"
 		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.vpc.aws_vpc_endpoint.ec2"
 		"[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)" -> "[root] module.vpc.aws_vpc_endpoint.s3"
 		"[root] provider[\"registry.terraform.io/hashicorp/aws\"]" -> "[root] local.common_tags (expand)"
 		"[root] provider[\"registry.terraform.io/hashicorp/aws\"]" -> "[root] var.aws_region (validation)"
-		"[root] provider[\"registry.terraform.io/hashicorp/random\"] (close)" -> "[root] module.s3_backup.random_string.bucket_suffix"
+		"[root] provider[\"registry.terraform.io/hashicorp/random\"] (close)" -> "[root] module.s3_backup.random_string.bucket_suffix (expand)"
 		"[root] provider[\"registry.terraform.io/hashicorp/tls\"] (close)" -> "[root] module.eks.data.tls_certificate.eks"
 		"[root] root" -> "[root] local.name_prefix (expand)"
-		"[root] root" -> "[root] module.alb (close)"
 		"[root] root" -> "[root] module.eks (close)"
 		"[root] root" -> "[root] module.mongodb_ec2 (close)"
 		"[root] root" -> "[root] module.s3_backup (close)"
 		"[root] root" -> "[root] module.vpc (close)"
-		"[root] root" -> "[root] output.alb_dns_name (expand)"
-		"[root] root" -> "[root] output.alb_hosted_zone_id (expand)"
-		"[root] root" -> "[root] output.alb_target_group_arn (expand)"
-		"[root] root" -> "[root] output.application_url (expand)"
+		"[root] root" -> "[root] output.application_access_instructions (expand)"
+		"[root] root" -> "[root] output.application_url_command (expand)"
 		"[root] root" -> "[root] output.aws_region (expand)"
-		"[root] root" -> "[root] output.custom_domain_url (expand)"
 		"[root] root" -> "[root] output.eks_aws_load_balancer_controller_role_arn (expand)"
 		"[root] root" -> "[root] output.eks_cluster_endpoint (expand)"
 		"[root] root" -> "[root] output.eks_cluster_name (expand)"
@@ -683,10 +524,17 @@ digraph {
 		"[root] root" -> "[root] output.mongodb_username (expand)"
 		"[root] root" -> "[root] output.s3_backup_bucket_name (expand)"
 		"[root] root" -> "[root] output.s3_backup_public_url (expand)"
+		"[root] root" -> "[root] output.s3_backup_public_url_latest_db (expand)"
 		"[root] root" -> "[root] output.vpc_id (expand)"
 		"[root] root" -> "[root] provider[\"registry.terraform.io/hashicorp/aws\"] (close)"
 		"[root] root" -> "[root] provider[\"registry.terraform.io/hashicorp/random\"] (close)"
 		"[root] root" -> "[root] provider[\"registry.terraform.io/hashicorp/tls\"] (close)"
+		"[root] root" -> "[root] var.alb_create_dns_record"
+		"[root] root" -> "[root] var.alb_domain_name (validation)"
+		"[root] root" -> "[root] var.alb_enable_access_logs"
+		"[root] root" -> "[root] var.alb_health_check_path (validation)"
+		"[root] root" -> "[root] var.alb_hosted_zone_id"
+		"[root] root" -> "[root] var.alb_ssl_certificate_arn"
 		"[root] root" -> "[root] var.availability_zones"
 		"[root] var.alb_domain_name (validation)" -> "[root] var.alb_domain_name"
 		"[root] var.alb_health_check_path (validation)" -> "[root] var.alb_health_check_path"

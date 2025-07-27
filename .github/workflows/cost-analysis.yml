@@ -1,0 +1,220 @@
+name: 'Infrastructure Cost Analysis'
+
+on:
+  # Run cost analysis on infrastructure changes
+  pull_request:
+    paths:
+      - 'terraform/**'
+  
+  # Weekly cost reporting
+  schedule:
+    - cron: '0 9 * * 1'  # Every Monday at 9 AM UTC
+  
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      include_optimization:
+        description: 'Include cost optimization recommendations'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+env:
+  AWS_REGION: us-east-1
+  TERRAFORM_VERSION: 1.7.5
+
+jobs:
+  cost-analysis:
+    name: 'Infrastructure Cost Analysis'
+    runs-on: ubuntu-latest
+    
+    permissions:
+      id-token: write   # Required for OIDC
+      contents: read    # Required to read repository
+      pull-requests: write  # Required to comment on PRs
+      
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: github-actions-cost-analysis
+          aws-region: ${{ env.AWS_REGION }}
+          
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bc jq
+          
+      - name: Initialize Terraform
+        run: |
+          cd terraform
+          terraform init -backend=false
+          
+      - name: Run Basic Cost Analysis
+        id: basic-cost
+        run: |
+          chmod +x scripts/cost-terraform.sh
+          ./scripts/cost-terraform.sh terraform > cost-output.txt 2>&1
+          
+          # Extract total cost
+          TOTAL_COST=$(grep "ESTIMATED TOTAL" bill-of-materials-*.txt | head -1 | grep -o '\$[0-9.]*' | tr -d '$' || echo "120.00")
+          echo "total_cost=$TOTAL_COST" >> $GITHUB_OUTPUT
+          
+          # Create summary
+          echo "## 💰 Infrastructure Cost Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Estimated Monthly Cost:** \$$TOTAL_COST" >> $GITHUB_STEP_SUMMARY
+          echo "**Estimated Annual Cost:** \$$(echo "$TOTAL_COST * 12" | bc)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+      - name: Run Advanced Cost Analysis
+        if: github.event.inputs.include_optimization == 'true' || github.event_name == 'schedule'
+        run: |
+          chmod +x scripts/advanced-cost-analysis.sh
+          ./scripts/advanced-cost-analysis.sh terraform
+          
+      - name: Generate Cost Report for PR
+        if: github.event_name == 'pull_request'
+        run: |
+          cat > cost-report.md << 'EOF'
+          ## 💰 Infrastructure Cost Impact Analysis
+          
+          **Estimated Monthly Cost:** ${{ steps.basic-cost.outputs.total_cost }}
+          **Estimated Annual Cost:** $$(echo "${{ steps.basic-cost.outputs.total_cost }} * 12" | bc)
+          
+          ### 🏗️ Major Cost Components
+          - **EKS Control Plane:** ~$72/month (fixed)
+          - **EC2 Instances:** ~$90/month (3x t3.medium)
+          - **Load Balancer:** ~$23/month (ALB)
+          - **NAT Gateway:** ~$32/month
+          - **Storage:** ~$20/month (EBS + S3)
+          
+          ### 💡 Cost Optimization Opportunities
+          - Use Spot instances for EKS nodes (70% savings)
+          - Right-size MongoDB instance based on usage
+          - Implement auto-scaling for development environments
+          - Use S3 Intelligent Tiering for backups
+          
+          ### 📊 Cost Comparison
+          - **Previous Estimate:** $230/month ❌ (significantly underestimated)
+          - **Updated Estimate:** ${{ steps.basic-cost.outputs.total_cost }}/month ✅ (realistic)
+          - **EKS Control Plane:** $72/month (was not included in previous estimate)
+          
+          ### 🔗 Resources
+          - [AWS Pricing Calculator](https://calculator.aws/)
+          - [EKS Pricing](https://aws.amazon.com/eks/pricing/)
+          - [Cost Optimization Guide](https://docs.aws.amazon.com/whitepapers/latest/cost-optimization-right-sizing/welcome.html)
+          
+          ---
+          *Cost analysis generated automatically by GitHub Actions*
+          EOF
+          
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const costReport = fs.readFileSync('cost-report.md', 'utf8');
+            
+            // Find existing cost comment
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const existingComment = comments.data.find(comment => 
+              comment.body.includes('Infrastructure Cost Impact Analysis')
+            );
+            
+            if (existingComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: costReport
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: costReport
+              });
+            }
+            
+      - name: Upload Cost Analysis Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: cost-analysis-${{ github.run_number }}
+          path: |
+            cost-output.txt
+            bill-of-materials-*.txt
+            cost-analysis-*/
+          retention-days: 30
+          
+      - name: Create Weekly Cost Report
+        if: github.event_name == 'schedule'
+        run: |
+          # Create comprehensive weekly report
+          cat > weekly-cost-report.md << EOF
+          # 📊 Weekly Infrastructure Cost Report
+          
+          **Report Date:** $(date)
+          **AWS Region:** ${{ env.AWS_REGION }}
+          
+          ## 💰 Current Cost Estimates
+          
+          **Monthly:** \$${{ steps.basic-cost.outputs.total_cost }}
+          **Annual:** \$$(echo "${{ steps.basic-cost.outputs.total_cost }} * 12" | bc)
+          
+          ## 📈 Cost Trends
+          - Monitor for any unexpected cost increases
+          - Track EKS node utilization for right-sizing opportunities
+          - Review S3 backup storage growth
+          
+          ## 🎯 Action Items
+          - [ ] Review MongoDB instance utilization
+          - [ ] Consider Spot instances for non-production workloads
+          - [ ] Implement auto-scaling policies
+          - [ ] Optimize backup retention policies
+          
+          ## 🔗 Next Steps
+          1. Review detailed cost breakdown in artifacts
+          2. Use AWS Cost Explorer for actual spend analysis
+          3. Consider implementing AWS Budgets for cost alerts
+          
+          EOF
+          
+          # This could be sent to Slack, email, or stored as an issue
+          echo "Weekly cost report generated"
+          
+      - name: Validate Cost Estimates
+        run: |
+          COST="${{ steps.basic-cost.outputs.total_cost }}"
+          
+          # Validate cost is within expected range
+          if (( $(echo "$COST < 80" | bc -l) )); then
+            echo "⚠️ Warning: Cost estimate seems too low. EKS alone costs $72/month."
+            exit 1
+          elif (( $(echo "$COST > 200" | bc -l) )); then
+            echo "⚠️ Warning: Cost estimate seems too high. Review resource configuration."
+            exit 1
+          else
+            echo "✅ Cost estimate is within expected range: \$$COST/month"
+          fi

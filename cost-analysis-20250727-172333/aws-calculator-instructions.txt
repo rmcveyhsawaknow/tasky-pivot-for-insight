@@ -1,0 +1,43 @@
+AWS Cost Calculator Configuration
+=================================
+
+To use the AWS Cost Calculator (https://calculator.aws/):
+
+1. Go to: https://calculator.aws/
+2. Add the following services:
+
+EKS Service:
+- Service: Amazon Elastic Kubernetes Service (EKS)
+- Clusters: 1
+- Hours per month: 720
+
+EC2 Instances:
+- Service: Amazon EC2
+- Instance type: t3.medium
+- Number of instances: 3 (1 MongoDB + 2 EKS nodes)
+- Usage: 720 hours/month
+
+Application Load Balancer:
+- Service: Elastic Load Balancing
+- Type: Application Load Balancer
+- Number: 1
+- Hours per month: 720
+
+NAT Gateway:
+- Service: Amazon VPC
+- NAT Gateways: 1
+- Hours per month: 720
+
+EBS Volumes:
+- Service: Amazon EBS
+- Volume type: gp3
+- Storage amount: 80 GB total
+- Snapshot storage: 10 GB (estimated)
+
+S3 Storage:
+- Service: Amazon S3
+- Storage class: S3 Standard
+- Storage amount: 10 GB (estimated)
+
+Expected Total: $248.60/month
+

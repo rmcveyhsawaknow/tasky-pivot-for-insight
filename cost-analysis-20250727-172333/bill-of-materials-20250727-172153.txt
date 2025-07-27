@@ -1,0 +1,105 @@
+=======================================================
+TASKY INFRASTRUCTURE - BILL OF MATERIALS
+=======================================================
+Generated: Sun Jul 27 17:22:02 UTC 2025
+Region: us-east-1
+Terraform Directory: terraform
+
+=======================================================
+AWS RESOURCES BREAKDOWN
+=======================================================
+
+COMPUTE RESOURCES:
+==================
+- aws_eks_addon (coredns): N/A x1
+- aws_eks_addon (ebs_csi): N/A x1
+- aws_eks_addon (kube_proxy): N/A x1
+- aws_eks_addon (vpc_cni): N/A x1
+- aws_eks_cluster (main): N/A x1
+- aws_eks_node_group (main): N/A x1
+- aws_instance (mongodb): t3.medium x1
+
+LOAD BALANCING:
+===============
+
+NETWORKING:
+===========
+- aws_internet_gateway (main)
+- aws_nat_gateway (main)
+- aws_nat_gateway (main)
+- aws_nat_gateway (main)
+- aws_subnet (private)
+- aws_subnet (private)
+- aws_subnet (private)
+- aws_subnet (public)
+- aws_subnet (public)
+- aws_subnet (public)
+- aws_vpc (main)
+- aws_vpc_endpoint (ec2)
+- aws_vpc_endpoint (s3)
+
+STORAGE:
+========
+- aws_s3_bucket (backup)
+- aws_s3_bucket_lifecycle_configuration (backup)
+- aws_s3_bucket_policy (backup_public_read)
+- aws_s3_bucket_public_access_block (backup)
+- aws_s3_bucket_versioning (backup)
+
+DATABASE:
+=========
+
+=======================================================
+ESTIMATED MONTHLY COSTS (USD)
+=======================================================
+
+MAJOR COST COMPONENTS:
+- EKS Cluster Control Plane: $72.00/month
+- MongoDB EC2 Instance (t3.medium): $30.00/month
+- EKS Node Group (2x t3.medium): $60.00/month
+- Application Load Balancer: $22.50/month
+- NAT Gateway: $32.40/month
+- S3 Bucket (backups): $5.00/month
+- EBS Volumes: $10.00/month
+
+ESTIMATED TOTAL: $231.90/month
+
+=======================================================
+NOTES:
+=======================================================
+- Costs are estimates based on us-east-1 pricing
+- Actual costs may vary based on usage patterns
+- Data transfer costs not included
+- Backup storage costs may vary based on retention
+- EKS cluster cost is fixed at $72/month regardless of usage
+- EC2 and ALB costs are based on 24/7 operation
+
+=======================================================
+COST OPTIMIZATION RECOMMENDATIONS:
+=======================================================
+- Use Spot instances for EKS nodes (50-70% savings)
+- Implement auto-scaling for EKS nodes
+- Use S3 Intelligent Tiering for backups
+- Consider using EKS Fargate for specific workloads
+- Monitor and right-size instances based on actual usage
+
+=======================================================
+COST COMPARISON: Traditional vs Cloud-Native ALB
+=======================================================
+
+BEFORE (Dual ALB Setup):
+- Terraform-managed ALB: $22.50/month
+- Kubernetes-managed ALB: $22.50/month
+- Total ALB costs: $45.00/month
+
+AFTER (Cloud-Native Setup):
+- Kubernetes-managed ALB only: $22.50/month
+- Monthly savings: $22.50
+- Annual savings: $270.00
+
+ARCHITECTURE BENEFITS:
+- 50% reduction in ALB costs
+- Simplified infrastructure management
+- Better integration with Kubernetes services
+- Automatic target group management
+

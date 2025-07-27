@@ -171,7 +171,7 @@ jobs:
 
       - name: Upload Credentials Artifact
         if: github.event.inputs.action != 'destroy'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: terraform-credentials
           path: terraform/terraform-credentials.env
@@ -228,7 +228,7 @@ jobs:
           kubectl cluster-info
 
       - name: Download Credentials Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: terraform-credentials
           path: ./

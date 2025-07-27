@@ -1,0 +1,30 @@
+AWS INFRASTRUCTURE BILL OF MATERIALS
+====================================
+Project: tasky
+Region: us-east-1
+Generated: Sun Jul 27 17:26:32 UTC 2025
+
+DEPLOYED RESOURCES:
+- EKS Clusters: 1
+- EC2 Instances: 3
+- Application Load Balancers: 1
+- NAT Gateways: 3
+
+MONTHLY COST ESTIMATE: $296.12
+ANNUAL COST ESTIMATE: $3553.44
+
+RESOURCE DETAILS:
+---------------------------------------------------------------
+|                      DescribeInstances                      |
++----------------------+------------+-------------------------+
+|  i-0cbeafc0d48a960ce |  t3.medium |  tasky-dev-v14-mongodb  |
+|  i-04e47207974ae8a82 |  t3.medium |  None                   |
+|  i-075f1819c56e102e4 |  t3.medium |  None                   |
++----------------------+------------+-------------------------+
+
+OPTIMIZATION RECOMMENDATIONS:
+- Use Spot instances for non-production workloads
+- Implement auto-scaling for variable workloads
+- Use Reserved Instances for predictable workloads
+- Monitor usage patterns for right-sizing opportunities
+

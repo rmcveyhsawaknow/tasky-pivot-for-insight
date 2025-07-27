@@ -206,6 +206,28 @@ main() {
         fi
     fi
     
+    # Install bc (basic calculator) - required for cost analysis scripts
+    log_info "Installing bc (basic calculator)..."
+    if command_exists bc; then
+        bc_version=$(bc --version | head -n1 | awk '{print $2}' 2>/dev/null || echo "installed")
+        log_info "bc already installed: $bc_version"
+        tools_status+=("bc:existing:$bc_version")
+    else
+        log_info "bc not found, installing..."
+        sudo apt-get update
+        sudo apt-get install -y bc
+        
+        # Verify installation
+        if command_exists bc; then
+            bc_version=$(bc --version | head -n1 | awk '{print $2}' 2>/dev/null || echo "installed")
+            log_success "bc installed successfully: $bc_version"
+            tools_status+=("bc:installed:$bc_version")
+        else
+            log_error "bc installation failed!"
+            tools_status+=("bc:failed:N/A")
+        fi
+    fi
+    
     log_header "Phase 3: Final Version Check"
     
     # Display all tool versions
@@ -266,10 +288,16 @@ main() {
         # Note: session-manager-plugin doesn't have a standard --version flag
     fi
     
+    # bc (basic calculator)
+    if command_exists bc; then
+        echo -e "\n${YELLOW}bc (Basic Calculator):${NC}"
+        bc --version | head -n1 || echo "bc is installed and available"
+    fi
+    
     log_header "Setup Complete"
     
     # Check if all critical tools are available
-    critical_tools=("aws" "terraform" "kubectl" "docker" "git" "session-manager-plugin")
+    critical_tools=("aws" "terraform" "kubectl" "docker" "git" "session-manager-plugin" "bc")
     missing_tools=()
     
     for tool in "${critical_tools[@]}"; do

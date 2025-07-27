@@ -141,17 +141,24 @@ This project implements **DevOps automation principles** through multiple deploy
 
 **Purpose**: Developer-centric workflow for rapid iteration, testing, and manual infrastructure provisioning.
 
+**Key Components**:
+- **Local Backend**: Uses `terraform-local-init.sh` for simple local state management
+- **Manual Control**: Step-by-step infrastructure provisioning with full visibility
+- **Development Stack**: Docker Compose for local application testing
+
 **Workflow**:
-1. **Local Development**: Full Docker Compose stack for application development
-2. **Infrastructure Provisioning**: Manual Terraform execution from IDE/terminal
-3. **Application Deployment**: Direct kubectl commands for container orchestration
-4. **Validation**: Manual testing and verification procedures
+1. **Environment Setup**: Run `./scripts/setup-codespace.sh` for tool installation
+2. **Local Backend Init**: Use `./scripts/terraform-local-init.sh` for simple Terraform initialization
+3. **Infrastructure Provisioning**: Manual Terraform execution from IDE/terminal with local state
+4. **Application Deployment**: Direct kubectl commands for container orchestration
+5. **Validation**: Manual testing and verification procedures
 
 **Best Use Cases**:
 - Feature development and testing
 - Infrastructure experimentation and tuning
 - Troubleshooting and debugging
 - Learning and skill development
+- Situations where you need local state management without S3 dependencies
 
 📖 **For complete deployment instructions using either method, see: [docs/deployment-guide.md](docs/deployment-guide.md)**
 
@@ -258,10 +265,16 @@ AWS cost estimation and monitoring tools to help manage and optimize infrastruct
 Initial environment setup and one-time configuration scripts for AWS and GitHub integration.
 
 #### [`setup-codespace.sh`](scripts/setup-codespace.sh)
-**Purpose**: Automated development environment setup for GitHub Codespaces or fresh Linux systems  
-**Features**: AWS CLI v2 installation, Terraform v1.0+ setup, tool version verification  
+**Purpose**: Automated development environment setup with all required tools  
+**Features**: AWS CLI v2, Terraform v1.0+, kubectl installation and configuration  
 **Usage**: `./scripts/setup-codespace.sh`  
 **Benefits**: Colorized output, intelligent version detection, idempotent execution
+
+#### [`terraform-local-init.sh`](scripts/terraform-local-init.sh)
+**Purpose**: Simple Terraform initialization for local development with local backend  
+**Features**: Local state management, formatting, clear next steps guidance  
+**Usage**: `./scripts/terraform-local-init.sh`  
+**Benefits**: No S3 dependencies, fast initialization, development-focused workflow
 
 #### [`setup-aws-oidc.sh`](scripts/setup-aws-oidc.sh)
 **Purpose**: One-time AWS OIDC provider and IAM role configuration for GitHub Actions  

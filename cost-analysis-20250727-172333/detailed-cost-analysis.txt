@@ -1,7 +1,7 @@
 ================================================================
 TASKY INFRASTRUCTURE - DETAILED COST ANALYSIS
 ================================================================
-Generated: Sun Jul 27 11:44:05 UTC 2025
+Generated: Sun Jul 27 17:23:36 UTC 2025
 Region: us-east-1
 Pricing Data: Real-time AWS Pricing API
 
@@ -111,6 +111,6 @@ NOTES
 - Costs are based on us-east-1 pricing
 - Data transfer costs not included (varies by usage)
 - Reserved Instances could reduce costs by 30-60%
-- Prices fetched from AWS Pricing API on Sun Jul 27 11:44:05 UTC 2025
+- Prices fetched from AWS Pricing API on Sun Jul 27 17:23:36 UTC 2025
 - Actual costs may vary based on usage patterns
 

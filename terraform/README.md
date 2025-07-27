@@ -222,28 +222,57 @@ After successful deployment, Terraform provides:
 
 For development and testing, Terraform state is stored locally in `terraform.tfstate`.
 
-### Remote State (Recommended)
+### Backend Configuration
 
-For production use, configure remote state storage:
+This Terraform configuration supports both local and remote backend storage:
 
-1. Create S3 bucket for state storage
-2. Create DynamoDB table for state locking
-3. Uncomment and configure `backend.tf`
-4. Run `terraform init -reconfigure`
+#### Local Development (Default)
+For local development and testing, the configuration uses local state storage:
 
-Example remote backend configuration:
+```bash
+# Recommended: Use the provided initialization script
+./scripts/terraform-local-init.sh
 
-```hcl
-terraform {
-  backend "s3" {
-    bucket         = "your-terraform-state-bucket"
-    key            = "tasky/terraform.tfstate"
-    region         = "us-east-1"
-    dynamodb_table = "terraform-state-lock"
-    encrypt        = true
-  }
-}
+# Alternative: Manual initialization
+cd terraform
+terraform init
 ```
+
+**What the script does:**
+- ✅ Formats Terraform files (`terraform fmt`)
+- ✅ Initializes with local backend (`terraform init`)
+- ✅ Provides helpful next steps and validation commands
+- ✅ Clear indication of local vs CI/CD backend usage
+
+This creates a local `terraform.tfstate` file in your terraform directory.
+
+#### CI/CD Deployment (Remote Backend)
+For CI/CD deployments, the configuration uses S3 remote backend with state locking:
+
+```bash
+# Used by GitHub Actions automatically
+terraform init -backend-config=backend-prod.hcl
+```
+
+The remote backend configuration includes:
+- **S3 Bucket**: `tasky-terraform-state-{ACCOUNT_ID}`
+- **DynamoDB Table**: `terraform-state-lock` 
+- **Encryption**: Enabled
+- **State Locking**: Enabled
+
+#### Backend Configuration Benefits
+
+**Local Development:**
+- ✅ Simple setup - no AWS configuration needed
+- ✅ Fast initialization 
+- ✅ Perfect for testing and experimentation
+- ✅ No dependencies on remote resources
+
+**CI/CD Deployment:**
+- ✅ Team collaboration with shared state
+- ✅ State locking prevents concurrent modifications
+- ✅ Encryption at rest and in transit
+- ✅ State versioning and history
 
 ## Deployment Validation
 

@@ -1,28 +1,41 @@
 # ==============================================================================
 # TERRAFORM BACKEND CONFIGURATION
 # ==============================================================================
-# This file configures remote state storage for Terraform
-# Update the bucket name after running setup-aws-oidc.sh
+# This file supports both local and remote backend configurations:
+# - LOCAL DEVELOPMENT: Uses local state (default when no backend config provided)
+# - CI/CD DEPLOYMENT: Uses S3 remote backend (configured via backend-config)
 # ==============================================================================
 
 terraform {
-  # Remote backend for state storage and locking
-  backend "s3" {
-    # Replace ACCOUNT_ID with your AWS account ID after running setup-aws-oidc.sh
-    bucket         = "tasky-terraform-state-ACCOUNT_ID"
-    key            = "tasky/terraform.tfstate"
-    region         = "us-east-1"
-    
-    # State locking and consistency
-    dynamodb_table = "terraform-state-lock"
-    encrypt        = true
-    
-    # Versioning for state history
-    versioning = true
-  }
+  # Backend configuration is intentionally left empty for flexibility
+  # This allows the same code to work with both local and remote backends
+
+  # Local development: Uses local terraform.tfstate (default behavior)
+  # CI/CD deployment: Uses S3 backend via -backend-config flag
+
+  # The backend configuration is provided at runtime via:
+  # terraform init -backend-config=backend-prod.hcl (for CI/CD)
+  # terraform init (for local development)
 }
 
-# Note: To use this backend:
-# 1. Run scripts/setup-aws-oidc.sh to create the S3 bucket and DynamoDB table
-# 2. Replace ACCOUNT_ID in the bucket name with your actual AWS account ID
-# 3. Run terraform init to migrate your state to the remote backend
+# ==========================================
+# BACKEND CONFIGURATION FILES EXPLANATION
+# ==========================================
+# 
+# For LOCAL development (this repository):
+#   - No additional configuration needed
+#   - Simply run: terraform init
+#   - Uses local terraform.tfstate file
+#   - Perfect for testing and development
+#
+# For CI/CD deployment (GitHub Actions):
+#   - Uses backend-prod.hcl configuration file
+#   - Run: terraform init -backend-config=backend-prod.hcl
+#   - Enables team collaboration and state locking
+#   - Required for production deployments
+#
+# This approach provides:
+#   ✅ Simple local development
+#   ✅ Robust CI/CD pipeline support  
+#   ✅ No conditional logic needed
+#   ✅ Clear separation of concerns

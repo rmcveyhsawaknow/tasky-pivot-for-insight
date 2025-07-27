@@ -68,10 +68,17 @@ extract_terraform_resources() {
         terraform init -backend=false
     fi
     
-    # Generate plan
+    # Generate plan and capture JSON
     echo "Generating Terraform plan..."
-    terraform plan -out=cost-analysis.tfplan &> /dev/null
-    terraform show -json cost-analysis.tfplan > "$OUTPUT_FILE"
+    if terraform plan -out=cost-analysis.tfplan &> /dev/null; then
+        terraform show -json cost-analysis.tfplan > "../$OUTPUT_FILE"
+    else
+        echo "Plan generation failed, using current state..."
+        terraform show -json > "../$OUTPUT_FILE" 2>/dev/null || echo "{}" > "../$OUTPUT_FILE"
+    fi
+    
+    # Return to original directory
+    cd - > /dev/null
     
     echo -e "${GREEN}✅ Terraform analysis complete${NC}"
     echo ""
@@ -96,49 +103,77 @@ AWS RESOURCES BREAKDOWN
 EOF
 
     # Extract key resources from Terraform plan
-    RESOURCES=$(jq -r '.planned_values.root_module.resources[]? | select(.type != null) | "\(.type)|\(.name)|\(.values.instance_type // .values.node_instance_types[0] // "N/A")|\(.values.capacity // .values.desired_capacity // "1")"' "$TERRAFORM_DIR/$OUTPUT_FILE" 2>/dev/null || echo "")
+    RESOURCES=$(jq -r '.planned_values.root_module.resources[]? | select(.type != null) | "\(.type)|\(.name)|\(.values.instance_type // .values.node_instance_types[0] // "N/A")|\(.values.capacity // .values.desired_capacity // "1")"' "$OUTPUT_FILE" 2>/dev/null || echo "")
     
     if [ -z "$RESOURCES" ]; then
         # Fallback: try to get from state if plan fails
         echo "Falling back to Terraform state analysis..."
-        terraform -chdir="$TERRAFORM_DIR" show -json > "$OUTPUT_FILE" 2>/dev/null || true
-        RESOURCES=$(jq -r '.values?.root_module?.resources[]? | select(.type != null) | "\(.type)|\(.name)|\(.values.instance_type // .values.node_instance_types[0] // "N/A")|\(.values.capacity // .values.desired_capacity // "1")"' "$TERRAFORM_DIR/$OUTPUT_FILE" 2>/dev/null || echo "")
+        RESOURCES=$(jq -r '.values?.root_module?.resources[]? | select(.type != null) | "\(.type)|\(.name)|\(.values.instance_type // .values.node_instance_types[0] // "N/A")|\(.values.capacity // .values.desired_capacity // "1")"' "$OUTPUT_FILE" 2>/dev/null || echo "")
+    fi
+    
+    # Debug: Show what resources were found
+    if [ -n "$RESOURCES" ]; then
+        echo "Found resources: $(echo "$RESOURCES" | wc -l) items"
+    else
+        echo "No resources found in Terraform data"
+        # Try alternative extraction methods
+        RESOURCES=$(jq -r 'try (.planned_values.root_module.child_modules[]?.resources[]? // .values.root_module.child_modules[]?.resources[]? // empty) | select(.type != null) | "\(.type)|\(.name)|\(.values.instance_type // "N/A")|1"' "$OUTPUT_FILE" 2>/dev/null || echo "")
     fi
     
     # Process each resource type
     echo "COMPUTE RESOURCES:" >> "$BOM_FILE"
     echo "==================" >> "$BOM_FILE"
-    echo "$RESOURCES" | grep "aws_instance\|aws_eks\|aws_autoscaling" | while IFS='|' read -r type name instance_type capacity; do
-        echo "- $type ($name): $instance_type x$capacity" >> "$BOM_FILE"
-    done
+    if [ -n "$RESOURCES" ]; then
+        echo "$RESOURCES" | grep -E "aws_instance|aws_eks|aws_autoscaling" | while IFS='|' read -r type name instance_type capacity; do
+            [ -n "$type" ] && echo "- $type ($name): $instance_type x$capacity" >> "$BOM_FILE"
+        done || echo "- No compute resources found" >> "$BOM_FILE"
+    else
+        echo "- No compute resources found" >> "$BOM_FILE"
+    fi
     echo "" >> "$BOM_FILE"
     
     echo "LOAD BALANCING:" >> "$BOM_FILE"
     echo "===============" >> "$BOM_FILE"
-    echo "$RESOURCES" | grep "aws_lb\|aws_alb" | while IFS='|' read -r type name instance_type capacity; do
-        echo "- $type ($name)" >> "$BOM_FILE"
-    done
+    if [ -n "$RESOURCES" ]; then
+        echo "$RESOURCES" | grep -E "aws_lb|aws_alb" | while IFS='|' read -r type name instance_type capacity; do
+            [ -n "$type" ] && echo "- $type ($name)" >> "$BOM_FILE"
+        done || echo "- No load balancers found" >> "$BOM_FILE"
+    else
+        echo "- No load balancers found" >> "$BOM_FILE"
+    fi
     echo "" >> "$BOM_FILE"
     
     echo "NETWORKING:" >> "$BOM_FILE"
     echo "===========" >> "$BOM_FILE"
-    echo "$RESOURCES" | grep "aws_vpc\|aws_subnet\|aws_nat_gateway\|aws_internet_gateway" | while IFS='|' read -r type name instance_type capacity; do
-        echo "- $type ($name)" >> "$BOM_FILE"
-    done
+    if [ -n "$RESOURCES" ]; then
+        echo "$RESOURCES" | grep -E "aws_vpc|aws_subnet|aws_nat_gateway|aws_internet_gateway" | while IFS='|' read -r type name instance_type capacity; do
+            [ -n "$type" ] && echo "- $type ($name)" >> "$BOM_FILE"
+        done || echo "- No networking resources found" >> "$BOM_FILE"
+    else
+        echo "- No networking resources found" >> "$BOM_FILE"
+    fi
     echo "" >> "$BOM_FILE"
     
     echo "STORAGE:" >> "$BOM_FILE"
     echo "========" >> "$BOM_FILE"
-    echo "$RESOURCES" | grep "aws_s3\|aws_ebs" | while IFS='|' read -r type name instance_type capacity; do
-        echo "- $type ($name)" >> "$BOM_FILE"
-    done
+    if [ -n "$RESOURCES" ]; then
+        echo "$RESOURCES" | grep -E "aws_s3|aws_ebs" | while IFS='|' read -r type name instance_type capacity; do
+            [ -n "$type" ] && echo "- $type ($name)" >> "$BOM_FILE"
+        done || echo "- No storage resources found" >> "$BOM_FILE"
+    else
+        echo "- No storage resources found" >> "$BOM_FILE"
+    fi
     echo "" >> "$BOM_FILE"
     
     echo "DATABASE:" >> "$BOM_FILE"
     echo "=========" >> "$BOM_FILE"
-    echo "$RESOURCES" | grep "aws_db\|aws_rds\|aws_elasticache" | while IFS='|' read -r type name instance_type capacity; do
-        echo "- $type ($name): $instance_type" >> "$BOM_FILE"
-    done
+    if [ -n "$RESOURCES" ]; then
+        echo "$RESOURCES" | grep -E "aws_db|aws_rds|aws_elasticache" | while IFS='|' read -r type name instance_type capacity; do
+            [ -n "$type" ] && echo "- $type ($name): $instance_type" >> "$BOM_FILE"
+        done || echo "- No database resources found" >> "$BOM_FILE"
+    else
+        echo "- No database resources found" >> "$BOM_FILE"
+    fi
     echo "" >> "$BOM_FILE"
 }
 
@@ -159,7 +194,8 @@ EOF
     echo "- EKS Cluster Control Plane: \$${EKS_PRICE}/month" >> "$BOM_FILE"
     
     # EC2 pricing for MongoDB (assuming t3.medium)
-    MONGODB_PRICE=$(aws pricing get-products \
+    # Fallback to known t3.medium price if AWS pricing API fails
+    MONGODB_PRICE_RAW=$(aws pricing get-products \
         --service-code AmazonEC2 \
         --region "$REGION" \
         --filters "Type=TERM_MATCH,Field=instanceType,Value=t3.medium" \
@@ -170,12 +206,16 @@ EOF
         --query 'PriceList[0]' \
         --output text 2>/dev/null | jq -r '.terms.OnDemand | to_entries[0].value.priceDimensions | to_entries[0].value.pricePerUnit.USD' 2>/dev/null || echo "0.0416")
     
-    MONGODB_MONTHLY=$(echo "$MONGODB_PRICE * 24 * 30" | bc -l 2>/dev/null || echo "30.00")
+    # Clean the price value and ensure it's a valid number
+    MONGODB_PRICE=$(printf "%.4f" "${MONGODB_PRICE_RAW}" 2>/dev/null || echo "0.0416")
+    
+    # Calculate monthly cost with proper formatting
+    MONGODB_MONTHLY=$(python3 -c "print(f'{float('$MONGODB_PRICE') * 24 * 30:.2f}')" 2>/dev/null || echo "30.00")
     echo "- MongoDB EC2 Instance (t3.medium): \$${MONGODB_MONTHLY}/month" >> "$BOM_FILE"
     
     # EKS Node Group pricing (assuming t3.medium)
-    NODE_GROUP_PRICE=$(echo "$MONGODB_PRICE * 2 * 24 * 30" | bc -l 2>/dev/null || echo "60.00")  # 2 nodes
-    echo "- EKS Node Group (2x t3.medium): \$${NODE_GROUP_PRICE}/month" >> "$BOM_FILE"
+    NODE_GROUP_MONTHLY=$(python3 -c "print(f'{float('$MONGODB_PRICE') * 2 * 24 * 30:.2f}')" 2>/dev/null || echo "60.00")  # 2 nodes
+    echo "- EKS Node Group (2x t3.medium): \$${NODE_GROUP_MONTHLY}/month" >> "$BOM_FILE"
     
     # ALB pricing
     ALB_PRICE="22.50"  # $0.0225/hour * 24 * 30
@@ -194,7 +234,7 @@ EOF
     echo "- EBS Volumes: \$${EBS_PRICE}/month" >> "$BOM_FILE"
     
     # Calculate total
-    TOTAL=$(echo "$EKS_PRICE + $MONGODB_MONTHLY + $NODE_GROUP_PRICE + $ALB_PRICE + $NAT_PRICE + $S3_PRICE + $EBS_PRICE" | bc -l 2>/dev/null || echo "200.00")
+    TOTAL=$(python3 -c "print(f'{float('$EKS_PRICE') + float('$MONGODB_MONTHLY') + float('$NODE_GROUP_MONTHLY') + float('$ALB_PRICE') + float('$NAT_PRICE') + float('$S3_PRICE') + float('$EBS_PRICE'):.2f}')" 2>/dev/null || echo "200.00")
     
     cat >> "$BOM_FILE" << EOF
 

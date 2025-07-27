@@ -69,8 +69,16 @@ terraform fmt
 # Validate Terraform syntax
 terraform validate
 
-# Initialize and create a plan file for validation (won't apply)
-terraform init
+# Initialize with local backend for validation (won't apply)
+# Option 1: Use the provided script (recommended)
+cd ..
+./scripts/terraform-local-init.sh
+cd terraform
+
+# Option 2: Manual initialization 
+# terraform init
+
+# Create a plan file for validation (won't apply)
 terraform plan -out=validation.tfplan
 
 # Expected output: "Success! The configuration is valid."
@@ -181,7 +189,21 @@ fi
 chmod +x scripts/*.sh
 ```
 
-### Step 2.2: Configure Terraform Variables
+### Step 2.2: Backend Configuration Strategy
+
+This deployment uses a **flexible backend configuration** that works for both local development and CI/CD:
+
+**🏠 Local Development (What you're doing now):**
+- Uses local `terraform.tfstate` file 
+- No AWS S3 or DynamoDB dependencies
+- Simple initialization with `./scripts/terraform-local-init.sh`
+
+**🚀 CI/CD Deployment (GitHub Actions):**
+- Uses S3 remote backend with state locking
+- Automatic configuration via `terraform init -backend-config=backend-prod.hcl`
+- Team collaboration and state management
+
+### Step 2.3: Configure Terraform Variables
 
 ```bash
 # Copy example variables file
@@ -197,13 +219,17 @@ nano terraform.tfvars
 - `mongodb_password`: Strong password for MongoDB
 - `jwt_secret`: Secret key for JWT tokens
 
-### Step 2.3: Deploy Infrastructure with Terraform
+### Step 2.4: Deploy Infrastructure with Terraform
 
 > **💡 Best Practice**: Using Terraform plan files (`-out=terraform.tfplan`) ensures that the exact same plan that was reviewed is applied, preventing any unexpected changes between plan and apply operations.
 
 ```bash
-# Initialize Terraform
-terraform init
+# Initialize Terraform with local backend
+# Option 1: Use the provided script (recommended for local development)
+cd .. && ./scripts/terraform-local-init.sh && cd terraform
+
+# Option 2: Manual initialization (if you prefer direct commands)
+# terraform init
 
 # Review planned changes and save to file
 terraform plan -out=terraform.tfplan
@@ -365,7 +391,7 @@ ALB_URL=$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadB
 echo "http://$ALB_URL"
 
 echo "5. Recent Application Logs:"
-kubectl logs --tail=10 deployment/tasky-app -n tasky
+kubectl logs --tail=100 deployment/tasky-app -n tasky
 ```
 ### Custom Domain Setup
 

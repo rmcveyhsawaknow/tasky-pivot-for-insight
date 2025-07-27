@@ -76,7 +76,7 @@ jobs:
           EOF
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend-config=backend-prod.hcl
         working-directory: terraform
 
       - name: Terraform Plan

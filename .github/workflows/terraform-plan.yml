@@ -1,6 +1,13 @@
 name: Terraform Plan
 
 on:
+  push:
+    branches: ['deploy/*']
+    paths:
+      - 'terraform/**'
+      - 'k8s/**'
+      - '.github/workflows/terraform-*.yml'
+      - 'scripts/setup-alb-controller.sh'
   pull_request:
     branches: ['deploy/*']
     paths:

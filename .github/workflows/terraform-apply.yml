@@ -98,6 +98,9 @@ jobs:
           mongodb_database_name = "${{ vars.MONGODB_DATABASE_NAME || 'go-mongodb' }}"
           jwt_secret = "${{ secrets.JWT_SECRET }}"
           EOF
+          # Format the generated file immediately  
+          terraform fmt terraform.tfvars
+        working-directory: terraform
 
       - name: Terraform Init
         run: terraform init -backend-config=backend-prod.hcl

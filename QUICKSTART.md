@@ -234,4 +234,4 @@ terraform destroy -auto-approve
 
 **🎉 Congratulations! You now have a fully automated, production-ready Tasky deployment!**
 
-**Total deployment time: ~20 minutes | Infrastructure cost: ~$25/month**
+**Total deployment time: ~20 minutes | Infrastructure cost: ~$230/month**

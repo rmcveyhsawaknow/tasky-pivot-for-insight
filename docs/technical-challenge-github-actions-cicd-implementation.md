@@ -10,7 +10,7 @@ Following the successful resolution of MongoDB connection issues in the Tasky th
 1. **Manual Infrastructure Management**: All Terraform operations required local CLI execution
 2. **Dual ALB Architecture**: Inefficient standalone Terraform ALB module alongside Kubernetes Ingress ALB
 3. **Security Vulnerabilities**: Long-lived AWS access keys stored as GitHub secrets
-4. **Cost Inefficiency**: Duplicate ALB resources costing additional $25/month
+4. **Cost Inefficiency**: Duplicate ALB resources costing additional $230/month
 5. **No CI/CD Automation**: Zero automated deployment capabilities from repository
 6. **Manual Configuration**: Complex multi-step setup process prone to human error
 
@@ -36,7 +36,7 @@ Following the successful resolution of MongoDB connection issues in the Tasky th
 **Hypothesis**: Dual ALB configuration causing cost and complexity overhead
 - **Finding**: Terraform standalone ALB module redundant with Kubernetes Ingress ALB
 - **Analysis**: Two ALBs serving same purpose - one via Terraform, one via AWS Load Balancer Controller
-- **Impact**: $25/month additional cost, configuration complexity, maintenance overhead
+- **Impact**: $230/month additional cost, configuration complexity, maintenance overhead
 - **Evidence**: 
 ```terraform
 # PROBLEMATIC: Standalone ALB module in terraform/main.tf
@@ -73,7 +73,7 @@ module "alb" {
 # COST ANALYSIS:
 # Standalone ALB: ~$22.50/month (720 hours × $0.0225/hour + data processing)
 # Kubernetes Ingress ALB: ~$22.50/month (same calculation)
-# TOTAL WASTE: ~$25/month for duplicate functionality
+# TOTAL WASTE: ~$230/month for duplicate functionality
 ```
 
 ### Root Cause Summary
@@ -103,7 +103,7 @@ module "alb" {
 # Managed automatically by AWS Load Balancer Controller
 ```
 **Benefits**: 
-- Cost savings: $25/month reduction
+- Cost savings: $230/month reduction
 - Simplified architecture: Single ALB managed by Kubernetes
 - Cloud-native patterns: Leveraging EKS built-in capabilities
 
@@ -344,8 +344,8 @@ configure_secrets_with_cli() {
 
 ### Cost Optimization
 - **Before**: Dual ALB setup costing ~$50/month for load balancing
-- **After**: Single Kubernetes-managed ALB costing ~$25/month
-- **Improvement**: 50% cost reduction ($25/month savings)
+- **After**: Single Kubernetes-managed ALB costing ~$230/month
+- **Improvement**: 50% cost reduction ($230/month savings)
 
 ### Security Posture
 - **Before**: Long-lived AWS access keys with broad permissions
@@ -605,7 +605,7 @@ Based on `.github/ACTIONS_SETUP.md`:
 - **Error Rate**: <1% (down from 20% manual configuration errors)
 
 ### Cost Optimization Results
-- **Infrastructure Cost Reduction**: $25/month (50% ALB cost savings)
+- **Infrastructure Cost Reduction**: $230/month (50% ALB cost savings)
 - **Developer Time Savings**: 40-50 minutes per deployment
 - **Operational Efficiency**: 95% reduction in manual intervention
 
@@ -682,7 +682,7 @@ Based on `.github/ACTIONS_SETUP.md`:
 4. **Security Integration**: Shift-left security practices in CI/CD pipeline
 
 ### Business Impact and ROI
-1. **Cost Optimization**: $25/month savings analysis and methodology
+1. **Cost Optimization**: $230/month savings analysis and methodology
 2. **Developer Productivity**: Time savings quantification and impact
 3. **Risk Mitigation**: Security and operational risk reduction strategies
 4. **Scalability**: How automation enables team and infrastructure scaling

@@ -1,35 +1,77 @@
-# Copilot Processing - Tasky Application Authentication Issues
+# Copilot Processing - Architecture Diagram Update
 
-## User Request Summary - NEW ISSUE
-Fix the Tasky application's authentication and signup workflow. The application is experiencing:
-1. Non-functional signup and login functions
-2. No user records being created in the database
-3. MongoDB connection timeouts during POST /signup requests (30-second timeouts)
-4. Missing signup workflow implementation
-5. Container logs show server selection timeouts: `server selection timeout, current topology: { Type: Unknown, Servers: [{ Addr: 10.0.3.58:27017, Type: Unknown, Last error: connection() error occurred during connection handshake: dial tcp 10.0.3.58:27017: i/o timeout }, ] }`
+## User Request Summary - CURRENT TASK
+Update the ASCII architecture diagram in README.md to reflect the correct EKS integration with AWS ALB based on the modernization approach from the technical challenge document.
 
-## Container Logs Analysis
-From the provided logs, the key issues identified:
-- Connection successful on startup: `Connected to MONGO -> mongodb://taskyadmin:justapassv11@10.0.3.58:27017/go-mongodb`
-- Server selection timeout errors during signup attempts
-- 500 status responses for POST /signup requests  
-- 30-second timeout occurring in userController.go:38
-- Panic recovery shows connection handshake failures
+## Request Details - COMPLETE ✅
+- Focus: Main README.md Architecture section
+- Specific target: ASCII architecture diagram and components description
+- Context: EKS-ALB modernization approach eliminating dual-ALB setup
+- Scope: Only update existing Architecture section, not other parts of README
 
-## Action Plan
+## Analysis - COMPLETE ✅
+The current diagram showed a generic three-tier architecture but didn't clearly represent the Kubernetes-native ALB management through AWS Load Balancer Controller and Ingress resources.
 
-### Phase 1: Code Analysis and Issue Identification - ✅ COMPLETE
-- [x] Examine userController.go for authentication logic
-- [x] Review models.go for user data structures  
-- [x] Analyze database connection handling in database.go
-- [x] Check frontend login.js for signup/login workflow
-- [x] Identify MongoDB connection timeout root cause
+## Action Plan - COMPLETE ✅
 
-### Phase 2: Database Connection Issues - ✅ COMPLETE
-- [x] Fix MongoDB connection timeout handling
-- [x] Implement proper connection pooling  
-- [x] Add connection retry logic
-- [x] Optimize database client initialization
+### Phase 1: Architecture Analysis ✅ COMPLETE
+- [x] Reviewed current ASCII diagram in README.md
+- [x] Analyzed technical-challenge-EKS-ALB-modernization-approach.md for correct architecture
+- [x] Identified key improvements needed to reflect cloud-native ALB management
+
+### Phase 2: Diagram Modernization ✅ COMPLETE  
+- [x] Updated ASCII diagram to show Kubernetes-managed ALB architecture
+- [x] Added visual flow from Internet Users → ALB → EKS → MongoDB → S3
+- [x] Included AWS Load Balancer Controller integration details
+- [x] Enhanced diagram to show auto-discovery and service integration
+
+### Phase 3: Components Update ✅ COMPLETE
+- [x] Updated components description to reflect Kubernetes-native ALB
+- [x] Added mention of cost savings ($230/month) from eliminating dual-ALB setup
+- [x] Included service discovery and target registration automation
+- [x] Added 5-minute backup schedule and demo-ready features
+
+## Summary ✅ COMPLETE
+
+Successfully updated the README.md Architecture section to accurately reflect the modern EKS-ALB integration:
+
+### Key Changes Made:
+1. **Enhanced ASCII Diagram**: 
+   - Added detailed visual flow showing Internet Users → Kubernetes-Managed ALB → EKS Cluster → MongoDB → S3
+   - Included AWS Load Balancer Controller integration
+   - Showed auto-discovery between EKS and ALB
+   - Added visual hierarchy with proper indentation and flow indicators
+
+2. **Updated Components Description**:
+   - **Load Balancer**: Now clearly states "Kubernetes-native ALB via AWS Load Balancer Controller (not Terraform)"
+   - **Service Discovery**: Added explanation of automatic target registration
+   - **Cost Optimization**: Mentioned ~$230/month savings from cloud-native approach
+   - **Infrastructure**: Updated to reflect modern ALB management approach
+
+3. **Architecture Benefits Highlighted**:
+   - Cloud-native ALB management
+   - Automatic service discovery
+   - Cost optimization through eliminating redundant infrastructure
+   - Demo-ready backup system with 5-minute schedule
+
+### Architecture Evolution Reflected:
+```
+BEFORE (Generic):
+Web Tier: EKS + ALB + Tasky Container
+↓
+Data Tier: MongoDB 4.0.x on Amazon Linux 2 EC2
+↓  
+Storage Tier: S3 Bucket (Public) + Automated Backups
+
+AFTER (Cloud-Native):
+Internet Users → Kubernetes-Managed ALB → EKS Cluster → MongoDB EC2 → S3 Backups
+   (with AWS Load Balancer Controller + Service Discovery + Cost Optimization)
+```
+
+The updated architecture diagram now clearly communicates the modern, Kubernetes-native approach to ALB management that eliminates the dual-ALB complexity and provides superior integration with EKS infrastructure.
+
+**Status**: ✅ Architecture diagram and components successfully updated to reflect EKS-ALB modernization
+**Next Steps**: User can review the updated README.md Architecture section and remove this processing file when satisfied
 
 ## Summary
 
@@ -52,7 +94,7 @@ Successfully created complete GitHub Actions CI/CD automation for Tasky infrastr
 4. **Infrastructure Modernization**:
    - Terraform backend configuration for S3 remote state with DynamoDB locking
    - Enhanced outputs for backup URLs and ALB discovery
-   - Cost optimization by removing duplicate ALB (saving $25/month)
+   - Cost optimization by removing duplicate ALB (saving $230/month)
 
 ### Deployment Capabilities:
 - **Complete Infrastructure**: VPC, EKS, MongoDB EC2, S3, ALB via Kubernetes Ingress

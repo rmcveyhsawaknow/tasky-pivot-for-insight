@@ -1,0 +1,116 @@
+================================================================
+TASKY INFRASTRUCTURE - DETAILED COST ANALYSIS
+================================================================
+Generated: Sun Jul 27 11:44:05 UTC 2025
+Region: us-east-1
+Pricing Data: Real-time AWS Pricing API
+
+================================================================
+COMPUTE SERVICES
+================================================================
+EKS Control Plane:
+  - Service: Amazon EKS
+  - Rate: $0.10/hour
+  - Monthly: $72.00
+  - Notes: Fixed cost regardless of cluster size
+
+MongoDB EC2 Instance:
+  - Instance Type: t3.medium
+  - Rate: $0.05/hour
+  - Monthly: $36.00
+  - Notes: Amazon Linux 2, 24/7 operation
+
+EKS Node Group:
+  - Instance Type: 2x t3.medium
+  - Rate: $0.05/hour each
+  - Monthly: $72.00
+  - Notes: Auto Scaling Group, min 1, max 3 nodes
+
+================================================================
+NETWORKING SERVICES
+================================================================
+Application Load Balancer:
+  - Service: ALB
+  - Rate: $0.0225/hour
+  - Monthly: $16.20
+  - Notes: Internet-facing, managed by Kubernetes
+
+NAT Gateway:
+  - Service: VPC NAT Gateway
+  - Rate: $0.045/hour
+  - Monthly: $32.40
+  - Notes: Required for private subnet internet access
+
+================================================================
+STORAGE SERVICES
+================================================================
+EBS Volumes:
+  - MongoDB Data: 20GB gp3
+  - Root Volumes: 3x 20GB gp3
+  - Estimated Monthly: $15.00
+  - Notes: Based on $0.08/GB/month for gp3
+
+S3 Bucket:
+  - Backup Storage: ~10GB (estimated)
+  - Estimated Monthly: $5.00
+  - Notes: Standard storage + requests
+
+================================================================
+COST SUMMARY
+================================================================
+Total Monthly Cost: $248.60
+Total Annual Cost:  $2983.20
+
+Cost Breakdown by Category:
+- Compute (EKS + EC2): $180.00 (72%)
+- Networking (ALB + NAT): $48.60 (20%)
+- Storage (EBS + S3): $20.00 (8%)
+
+================================================================
+COST OPTIMIZATION OPPORTUNITIES
+================================================================
+1. EKS Node Groups - Use Spot Instances:
+   - Current Cost: $72.00/month
+   - With Spot (70% discount): $21.60/month
+   - Monthly Savings: $50.40
+
+2. MongoDB Instance - Right-sizing:
+   - Current: t3.medium ($36.00/month)
+   - Alternative: t3.small ($36.00/month)
+   - Potential Savings: $0.00/month
+
+3. Development Environment Scheduling:
+   - Stop non-prod resources outside business hours
+   - Potential Savings: 60-70% for dev/test environments
+
+4. S3 Backup Optimization:
+   - Use S3 Intelligent Tiering
+   - Implement lifecycle policies
+   - Potential Savings: 20-40% on backup storage
+
+================================================================
+COMPARISON WITH CLOUD ALTERNATIVES
+================================================================
+Azure Equivalent (estimated):
+- AKS Cluster: $72/month (similar to EKS)
+- Virtual Machines: Similar pricing to EC2
+- Load Balancer: ~$230/month
+- Storage: Comparable to AWS
+- Estimated Total: $261.03/month (+5%)
+
+Google Cloud Equivalent (estimated):
+- GKE Cluster: $72/month (similar to EKS)
+- Compute Engine: 5-10% less than EC2
+- Load Balancer: ~$18/month
+- Storage: Comparable to AWS
+- Estimated Total: $236.17/month (-5%)
+
+================================================================
+NOTES
+================================================================
+- Costs are based on us-east-1 pricing
+- Data transfer costs not included (varies by usage)
+- Reserved Instances could reduce costs by 30-60%
+- Prices fetched from AWS Pricing API on Sun Jul 27 11:44:05 UTC 2025
+- Actual costs may vary based on usage patterns
+

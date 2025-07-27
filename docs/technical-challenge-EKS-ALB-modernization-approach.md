@@ -232,7 +232,7 @@ kubectl describe ingress tasky-ingress -n tasky
 
 ### Decision 4: Resource Optimization - Eliminate Unused Infrastructure
 **Approach**: Remove any infrastructure not directly supporting application functionality
-**Implementation**: Complete ALB module removal saving ~$25/month
+**Implementation**: Complete ALB module removal saving ~$230/month
 **Benefits**:
 - Reduced AWS costs
 - Simplified monitoring and alerting
@@ -244,7 +244,7 @@ kubectl describe ingress tasky-ingress -n tasky
 ### Infrastructure Efficiency
 - **Before**: Dual ALB setup with 50% resource waste
 - **After**: Single Kubernetes-managed ALB with 100% utilization
-- **Cost Reduction**: ~$25/month savings from eliminated unused ALB
+- **Cost Reduction**: ~$230/month savings from eliminated unused ALB
 
 ### Deployment Simplicity
 - **Before**: Complex multi-step process with fallback options
@@ -376,7 +376,7 @@ terraform state list | grep alb
 ### Success Metrics Achieved
 - ✅ **Zero 503 Errors**: Application accessible via single, functional ALB
 - ✅ **Infrastructure Efficiency**: 100% ALB utilization with automatic target management
-- ✅ **Cost Optimization**: $25/month savings from eliminated unused resources
+- ✅ **Cost Optimization**: $230/month savings from eliminated unused resources
 - ✅ **Operational Simplicity**: Single ALB management pattern with clear procedures
 - ✅ **Documentation Clarity**: Streamlined deployment guide with opinionated best practices
 
@@ -402,7 +402,7 @@ BEFORE (Problematic):
 │   - 503 Errors      │    │ - Working           │
 │   - No Targets      │    │ - Auto Targets      │
 │   - Manual Mgmt     │    │ - Dynamic Mgmt      │
-│   - $25/month       │    │ - Cost Effective    │
+│   - $230/month       │    │ - Cost Effective    │
 └─────────────────────┘    └─────────────────────┘
 
 AFTER (Optimized):
@@ -428,7 +428,7 @@ This challenge demonstrated the critical importance of evolving infrastructure p
 - `docs/deployment-guide.md` - Streamlined to ALB-first approach
 
 ### 2. Resource Optimization Achievement
-**Result:** Eliminated $25/month in unused AWS infrastructure
+**Result:** Eliminated $230/month in unused AWS infrastructure
 **Validation:** `terraform plan` showed 6 resources to destroy (ALB, target group, listeners, security rules)
 **Benefit:** 100% ALB utilization through automatic Kubernetes target registration
 

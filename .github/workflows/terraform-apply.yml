@@ -198,6 +198,10 @@ jobs:
           kubectl cluster-info
 
       - name: Setup ALB Controller and Deploy Application
+        env:
+          CLUSTER_NAME: ${{ needs.terraform-apply.outputs.eks_cluster_name }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+          # Note: SERVICE_ACCOUNT_ROLE_ARN will be handled by the script using cluster name
         run: |
           chmod +x scripts/setup-alb-controller.sh
           ./scripts/setup-alb-controller.sh

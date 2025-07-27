@@ -85,27 +85,45 @@ check_prerequisites() {
     print_success "All prerequisites are installed"
 }
 
-# Get cluster information from Terraform outputs
+# Get cluster information from environment variables or Terraform outputs
 get_cluster_info() {
-    print_status "Getting cluster information from Terraform outputs..."
+    print_status "Getting cluster information..."
     
-    cd terraform
-    
-    # Get cluster name and region
-    CLUSTER_NAME=$(terraform output -raw eks_cluster_name 2>/dev/null || echo "")
-    AWS_REGION=$(terraform output -raw aws_region 2>/dev/null || echo "us-east-1")
-    SERVICE_ACCOUNT_ROLE_ARN=$(terraform output -raw eks_aws_load_balancer_controller_role_arn 2>/dev/null || echo "")
-    
-    cd ..
+    # First try to get from environment variables (GitHub Actions workflow)
+    if [ -n "$CLUSTER_NAME" ] && [ -n "$AWS_REGION" ]; then
+        print_status "Using cluster information from environment variables"
+        # SERVICE_ACCOUNT_ROLE_ARN will be constructed from cluster name
+        SERVICE_ACCOUNT_ROLE_ARN="arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):role/${CLUSTER_NAME}-aws-load-balancer-controller"
+    else
+        # Fallback to Terraform outputs (local development)
+        print_status "Getting cluster information from Terraform outputs..."
+        
+        cd terraform
+        
+        # Get cluster name and region
+        CLUSTER_NAME=$(terraform output -raw eks_cluster_name 2>/dev/null || echo "")
+        AWS_REGION=$(terraform output -raw aws_region 2>/dev/null || echo "us-east-1")
+        SERVICE_ACCOUNT_ROLE_ARN=$(terraform output -raw eks_aws_load_balancer_controller_role_arn 2>/dev/null || echo "")
+        
+        cd ..
+    fi
     
     if [ -z "$CLUSTER_NAME" ]; then
-        print_error "Could not get cluster name from Terraform outputs"
+        print_error "Could not get cluster name from environment variables or Terraform outputs"
         exit 1
     fi
     
+    # If SERVICE_ACCOUNT_ROLE_ARN is still empty, try to construct it
     if [ -z "$SERVICE_ACCOUNT_ROLE_ARN" ]; then
-        print_error "Could not get service account role ARN from Terraform outputs"
-        exit 1
+        print_warning "Service account role ARN not found, attempting to construct from cluster name..."
+        ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "")
+        if [ -n "$ACCOUNT_ID" ]; then
+            SERVICE_ACCOUNT_ROLE_ARN="arn:aws:iam::${ACCOUNT_ID}:role/${CLUSTER_NAME}-aws-load-balancer-controller"
+            print_status "Constructed role ARN: $SERVICE_ACCOUNT_ROLE_ARN"
+        else
+            print_error "Could not get AWS account ID to construct service account role ARN"
+            exit 1
+        fi
     fi
     
     print_success "Cluster info retrieved: $CLUSTER_NAME in $AWS_REGION"

@@ -1173,3 +1173,60 @@ When GitHub Actions runs a job with `environment: production`, the OIDC JWT toke
 
 Let's try Option A first to confirm the hypothesis.
 
+
+---
+
+## 🔧 OIDC Authentication Fix Applied ✅
+
+### Changes Made:
+1. **Removed `environment: production`** from both `terraform-apply` and `deploy-application` jobs
+2. **Added explanatory comments** indicating this is a test for OIDC authentication
+3. **Committed and pushed changes** to trigger testing
+
+### Status:
+- ✅ terraform-plan.yml triggered and completed successfully 
+- 🔍 terraform-apply.yml auto-triggering still not working (separate issue)
+- 🧪 Need to test OIDC authentication manually
+
+### Next Steps:
+1. **Manual Test**: Trigger terraform-apply workflow manually via GitHub web interface to test OIDC fix
+2. **Verify**: Check if AWS credentials configuration now works without environment context
+3. **Auto-trigger Fix**: Investigate why workflow_run trigger isn't working between plan and apply
+
+### Expected Outcome:
+If the hypothesis is correct, removing `environment: production` should resolve the OIDC authentication error and allow the terraform-apply workflow to proceed past the AWS credentials configuration step.
+
+### Test Instructions:
+Go to GitHub Actions → terraform-apply.yml → "Run workflow" to manually test the OIDC authentication fix.
+
+
+---
+
+## 🎉 MAJOR SUCCESS: OIDC Fix Worked! Terraform Apply Completed Successfully ✅
+
+### OIDC Authentication Fix Results:
+✅ **OIDC Authentication RESOLVED** - Removing `environment: production` fixed the authentication issue!
+✅ **Terraform Apply COMPLETED** - Infrastructure successfully deployed to AWS
+✅ **All 58 AWS Resources CREATED** - EKS cluster, MongoDB EC2, VPC, S3 backup all deployed
+
+### Key Success Indicators from Logs:
+1. **OIDC Authentication**: `Authenticated as assumedRoleId AROASG7WNPAI6M3AFE467:GitHubActions`
+2. **Terraform Setup**: Terraform 1.7.5 configured successfully
+3. **AWS Credentials**: All AWS environment variables properly set
+4. **Infrastructure Deployment**: Terraform apply completed without errors
+5. **EKS Cluster Created**: `tasky-dev-v15-eks-cluster` is running
+6. **kubectl Connection**: Successfully connected to EKS cluster
+
+### Next Issue to Resolve:
+❌ **Deploy Application Job Failed** - Error in setup-alb-controller.sh script:
+```
+[ERROR] Could not get cluster name from Terraform outputs
+Process completed with exit code 1
+```
+
+### Root Cause Analysis Needed:
+The setup-alb-controller.sh script is trying to get cluster information from Terraform outputs but failing. This suggests:
+1. Terraform outputs may not be properly captured/passed between jobs
+2. Script may be looking in wrong location for Terraform state/outputs
+3. Working directory or file path issues in the deploy-application job
+

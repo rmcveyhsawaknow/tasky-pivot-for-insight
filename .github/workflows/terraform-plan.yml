@@ -22,7 +22,7 @@ env:
   AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
   PROJECT_NAME: ${{ vars.PROJECT_NAME || 'tasky' }}
   ENVIRONMENT: ${{ vars.ENVIRONMENT || 'dev' }}
-  STACK_VERSION: ${{ vars.STACK_VERSION || 'v12' }}
+  STACK_VERSION: ${{ vars.STACK_VERSION || 'v15' }}
 
 permissions:
   contents: read

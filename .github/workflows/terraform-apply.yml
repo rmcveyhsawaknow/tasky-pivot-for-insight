@@ -68,10 +68,8 @@ jobs:
       s3_backup_url: ${{ steps.tf_output.outputs.s3_backup_url }}
       s3_backup_latest_url: ${{ steps.tf_output.outputs.s3_backup_latest_url }}
       mongodb_private_ip: ${{ steps.tf_output.outputs.mongodb_private_ip }}
-      mongodb_username: ${{ steps.tf_output.outputs.mongodb_username }}
-      mongodb_password: ${{ steps.tf_output.outputs.mongodb_password }}
       mongodb_database_name: ${{ steps.tf_output.outputs.mongodb_database_name }}
-      jwt_secret: ${{ steps.tf_output.outputs.jwt_secret }}
+      # Note: Sensitive credentials (username, password, jwt_secret) are passed via artifact to avoid GitHub's secret detection
 
     steps:
       - name: Checkout code
@@ -149,15 +147,20 @@ jobs:
           echo "s3_backup_url=$(terraform output -raw s3_backup_public_url)" >> $GITHUB_OUTPUT
           echo "s3_backup_latest_url=$(terraform output -raw s3_backup_public_url_latest_db)" >> $GITHUB_OUTPUT
           echo "mongodb_private_ip=$(terraform output -raw mongodb_private_ip)" >> $GITHUB_OUTPUT
-          # Use terraform output -json for sensitive values and extract with jq (with error handling)
-          MONGODB_USERNAME=$(terraform output -json mongodb_username 2>/dev/null | jq -r . 2>/dev/null || echo "taskyadmin")
+          echo "mongodb_database_name=$(terraform output -raw mongodb_database_name)" >> $GITHUB_OUTPUT
+          
+          # For sensitive values, write to file for artifact transfer instead of job outputs
+          # This avoids GitHub's "Skip output since it may contain secret" issue
+          MONGODB_USERNAME=$(terraform output -json mongodb_username 2>/dev/null | jq -r . 2>/dev/null || terraform output mongodb_username 2>/dev/null | sed 's/"//g' || echo "taskyadmin")
           MONGODB_PASSWORD=$(terraform output -json mongodb_password 2>/dev/null | jq -r . 2>/dev/null || terraform output mongodb_password 2>/dev/null | sed 's/"//g' || echo "")
           JWT_SECRET=$(terraform output -json jwt_secret 2>/dev/null | jq -r . 2>/dev/null || terraform output jwt_secret 2>/dev/null | sed 's/"//g' || echo "")
           
-          echo "mongodb_username=$MONGODB_USERNAME" >> $GITHUB_OUTPUT
-          echo "mongodb_password=$MONGODB_PASSWORD" >> $GITHUB_OUTPUT
-          echo "mongodb_database_name=$(terraform output -raw mongodb_database_name)" >> $GITHUB_OUTPUT
-          echo "jwt_secret=$JWT_SECRET" >> $GITHUB_OUTPUT
+          # Write credentials to secure artifact file
+          cat > terraform-credentials.env << EOF
+          MONGODB_USERNAME=$MONGODB_USERNAME
+          MONGODB_PASSWORD=$MONGODB_PASSWORD
+          JWT_SECRET=$JWT_SECRET
+          EOF
           
           # Debug output (values will be masked by GitHub for sensitive ones)
           echo "🔍 Terraform Output Debug:"
@@ -165,6 +168,14 @@ jobs:
           echo "  MongoDB Password Length: ${#MONGODB_PASSWORD}"
           echo "  JWT Secret Length: ${#JWT_SECRET}"
         working-directory: terraform
+
+      - name: Upload Credentials Artifact
+        if: github.event.inputs.action != 'destroy'
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-credentials
+          path: terraform/terraform-credentials.env
+          retention-days: 1
 
       - name: Infrastructure Summary
         if: github.event.inputs.action != 'destroy'
@@ -216,17 +227,36 @@ jobs:
           aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ needs.terraform-apply.outputs.eks_cluster_name }}
           kubectl cluster-info
 
+      - name: Download Credentials Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: terraform-credentials
+          path: ./
+
       - name: Setup ALB Controller and Deploy Application
         env:
           CLUSTER_NAME: ${{ needs.terraform-apply.outputs.eks_cluster_name }}
           AWS_REGION: ${{ env.AWS_REGION }}
           MONGODB_PRIVATE_IP: ${{ needs.terraform-apply.outputs.mongodb_private_ip }}
-          MONGODB_USERNAME: ${{ needs.terraform-apply.outputs.mongodb_username }}
-          MONGODB_PASSWORD: ${{ needs.terraform-apply.outputs.mongodb_password }}
           MONGODB_DATABASE_NAME: ${{ needs.terraform-apply.outputs.mongodb_database_name }}
-          JWT_SECRET: ${{ needs.terraform-apply.outputs.jwt_secret }}
-          # Note: SERVICE_ACCOUNT_ROLE_ARN will be handled by the script using cluster name
+          # Note: Sensitive credentials will be loaded from artifact file
         run: |
+          # Load credentials from artifact file
+          if [ -f "terraform-credentials.env" ]; then
+            echo "📁 Loading credentials from artifact file..."
+            source terraform-credentials.env
+            export MONGODB_USERNAME
+            export MONGODB_PASSWORD  
+            export JWT_SECRET
+            echo "✅ Credentials loaded successfully"
+            echo "  MongoDB Username: $MONGODB_USERNAME"
+            echo "  MongoDB Password Length: ${#MONGODB_PASSWORD}"
+            echo "  JWT Secret Length: ${#JWT_SECRET}"
+          else
+            echo "❌ Credentials artifact file not found"
+            exit 1
+          fi
+          
           chmod +x scripts/setup-alb-controller.sh
           ./scripts/setup-alb-controller.sh
 

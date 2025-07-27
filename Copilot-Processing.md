@@ -62,6 +62,51 @@ The terraform-apply workflow jobs were being skipped due to a conditional logic 
 **Files Modified:**
 - `.github/workflows/terraform-apply.yml`: Fixed conditional logic for both manual and automatic triggers
 
+### CRITICAL ISSUE RESOLVED: AWS OIDC Authentication Fixed ✅
+
+### NEW CRITICAL ISSUE FOUND: Terraform Format Check Failure ❌
+
+**Problem from Log Analysis:**
+The terraform-plan.yml workflow is failing at the `terraform fmt -check` step with exit code 3:
+```
+2025-07-27T20:31:45.7035031Z terraform.tfvars
+2025-07-27T20:31:45.7206067Z ##[error]Terraform exited with code 3.
+2025-07-27T20:31:45.7450623Z ##[error]Process completed with exit code 1.
+```
+
+**Root Cause:**
+- Exit code 3 means files need formatting but `terraform fmt -check` only checks without modifying
+- The `terraform.tfvars` file needs formatting
+- This prevents the workflow from proceeding to terraform init and plan
+
+**Backend Configuration Status:**
+- ✅ S3 backend correctly configured: `tasky-terraform-state-152451250193`
+- ✅ State path: `tasky/terraform.tfstate`  
+- ✅ DynamoDB locking: `terraform-state-lock`
+- ✅ Terraform init proceeds successfully after format check failure
+
+### CRITICAL ISSUE FOUND: AWS OIDC Authentication Error ❌
+
+**Problem from Workflow Logs:**
+```
+##[error]Could not assume role with OIDC: Not authorized to perform sts:AssumeRoleWithWebIdentity
+```
+
+**Root Cause Identified:**
+The IAM role `GitHubActionsTerraformRole` has a **space character** in the OIDC provider ARN in its trust policy:
+```
+"arn:aws:iam::152451250193:oidc-provider/token.actions.githubusercontent.co m"
+                                                                          ↑ SPACE HERE
+```
+
+**Fix Applied:**
+Updated trust policy to correct OIDC provider ARN:
+```bash
+aws iam update-assume-role-policy --role-name GitHubActionsTerraformRole --policy-document file:///tmp/trust-policy.json
+```
+
+**Status:** Ready for testing - both workflow logic AND OIDC authentication should now work
+
 ### Phase 4: Validate Complete Pipeline ⏳
 - Test end-to-end workflow execution
 - Monitor deployment automation

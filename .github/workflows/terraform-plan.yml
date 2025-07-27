@@ -5,7 +5,9 @@ on:
     branches: ['deploy/*']
     paths:
       - 'terraform/**'
+      - 'k8s/**'
       - '.github/workflows/terraform-plan.yml'
+      - 'scripts/setup-alb-controller.sh'
   workflow_dispatch:
 
 env:

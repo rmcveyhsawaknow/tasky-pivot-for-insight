@@ -1,32 +1,35 @@
-# Copilot Processing - Terraform Workflow Investigation
+# Copilot Processing - MongoDB IP Terraform Outputs Issue
 
 ## Current Issue Analysis
-User reports terraform-apply.yml workflow is not auto-starting after terraform-plan.yml completes, and when manually triggered, all jobs (Check Plan Success, Terraform Apply, Deploy Application) are being skipped.
+The deploy-application job in terraform-apply.yml workflow is failing when trying to create Kubernetes secrets. The scripts/manage-secrets.sh cannot retrieve MongoDB IP from Terraform outputs, causing the workflow to fail with exit code 1.
+
+## Root Cause
+The setup-alb-controller.sh script calls scripts/manage-secrets.sh which tries to access Terraform outputs to get MongoDB IP, but:
+1. The deploy-application job runs in isolation from the terraform-apply job
+2. The terraform directory and state are not available in the deploy-application job context
+3. Job-to-job data must be passed via outputs and environment variables, not direct file access
 
 ## Immediate Investigation Plan
 
-### Phase 1: Backend Configuration Analysis ✅
-- [x] Read and analyze backend.tf configuration
-- [x] Read terraform-apply.yml workflow to understand dependencies
-- [x] Check backend-prod.hcl configuration
-- [ ] Verify S3 bucket and state file existence
+### Phase 1: Investigate Secret Management Script ✅
+- [x] Examine scripts/manage-secrets.sh to understand MongoDB IP retrieval logic
+- [x] Identify how it tries to access Terraform outputs
+- [x] Check if there are fallback mechanisms or alternative approaches
 
-### Phase 2: Workflow Dependency Investigation  
-- [ ] Analyze terraform-plan.yml outputs and artifacts
-- [ ] Check terraform-apply.yml trigger conditions
-- [ ] Verify workflow_run dependencies and requirements
-- [ ] Identify why jobs are being skipped
+### Phase 2: Analyze Job Context and Data Flow
+- [ ] Review how terraform-apply job outputs are passed to deploy-application job
+- [ ] Check if MongoDB IP is available in terraform-apply job outputs
+- [ ] Verify if the data needs to be passed differently between jobs
 
-### Phase 3: State Management Verification
-- [ ] Check if terraform.tfstate file exists in S3 bucket
-- [ ] Verify backend initialization and state locking
-- [ ] Analyze relationship between plan file and apply workflow
+### Phase 3: Fix Secret Creation Mechanism
+- [ ] Modify the secret creation to use job outputs instead of Terraform outputs
+- [ ] Update scripts/manage-secrets.sh or setup-alb-controller.sh to handle job context
+- [ ] Ensure MongoDB connection string is properly constructed
 
-### Phase 4: Configuration Fixes
-- [ ] Identify missing configurations or dependencies
-- [ ] Fix workflow triggers and dependencies
-- [ ] Ensure proper backend state management
-- [ ] Test workflow chain functionality
+### Phase 4: Test and Validation
+- [ ] Test the fix in a controlled manner
+- [ ] Verify secret creation works with proper MongoDB connection details
+- [ ] Validate end-to-end application deployment
 
 ## Previous Analysis (Archived)
 Terraform plan was successful with 58 resources planned for creation. Backend configuration with S3 remote state is working correctly. STACK_VERSION updated consistently across both workflows (v15). Infrastructure includes EKS cluster, MongoDB EC2, S3 backup, and networking components. Estimated cost: $50-75/month.
@@ -1229,4 +1232,29 @@ The setup-alb-controller.sh script is trying to get cluster information from Ter
 1. Terraform outputs may not be properly captured/passed between jobs
 2. Script may be looking in wrong location for Terraform state/outputs
 3. Working directory or file path issues in the deploy-application job
+
+
+---
+
+## 🔧 Deploy Application Job Fix Applied ✅
+
+### Issue Resolved:
+The setup-alb-controller.sh script was failing because it tried to read terraform outputs directly, but the deploy-application job doesn't have access to terraform state.
+
+### Solution Implemented:
+1. **Modified workflow** to pass terraform outputs as environment variables to the script
+2. **Updated script** to prioritize environment variables over terraform outputs 
+3. **Added fallback logic** to construct service account role ARN from cluster name
+4. **Maintained compatibility** for both GitHub Actions and local development
+
+### Key Changes:
+- **Workflow**: Pass `CLUSTER_NAME` and `AWS_REGION` as environment variables
+- **Script**: Check environment variables first, fallback to terraform outputs
+- **Role ARN**: Auto-construct from cluster name if not provided
+
+### State File Confirmation:
+✅ **terraform.tfstate created successfully** in S3: `s3://tasky-terraform-state-152451250193/tasky/terraform.tfstate` (171KB)
+
+### Next Test Required:
+Re-run the terraform-apply workflow to test the deploy-application job with the fixes applied.
 

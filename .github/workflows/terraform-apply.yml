@@ -68,6 +68,10 @@ jobs:
       s3_backup_url: ${{ steps.tf_output.outputs.s3_backup_url }}
       s3_backup_latest_url: ${{ steps.tf_output.outputs.s3_backup_latest_url }}
       mongodb_private_ip: ${{ steps.tf_output.outputs.mongodb_private_ip }}
+      mongodb_username: ${{ steps.tf_output.outputs.mongodb_username }}
+      mongodb_password: ${{ steps.tf_output.outputs.mongodb_password }}
+      mongodb_database_name: ${{ steps.tf_output.outputs.mongodb_database_name }}
+      jwt_secret: ${{ steps.tf_output.outputs.jwt_secret }}
 
     steps:
       - name: Checkout code
@@ -145,6 +149,10 @@ jobs:
           echo "s3_backup_url=$(terraform output -raw s3_backup_public_url)" >> $GITHUB_OUTPUT
           echo "s3_backup_latest_url=$(terraform output -raw s3_backup_public_url_latest_db)" >> $GITHUB_OUTPUT
           echo "mongodb_private_ip=$(terraform output -raw mongodb_private_ip)" >> $GITHUB_OUTPUT
+          echo "mongodb_username=$(terraform output -raw mongodb_username)" >> $GITHUB_OUTPUT
+          echo "mongodb_password=$(terraform output -raw mongodb_password)" >> $GITHUB_OUTPUT
+          echo "mongodb_database_name=$(terraform output -raw mongodb_database_name)" >> $GITHUB_OUTPUT
+          echo "jwt_secret=$(terraform output -raw jwt_secret)" >> $GITHUB_OUTPUT
         working-directory: terraform
 
       - name: Infrastructure Summary
@@ -201,6 +209,11 @@ jobs:
         env:
           CLUSTER_NAME: ${{ needs.terraform-apply.outputs.eks_cluster_name }}
           AWS_REGION: ${{ env.AWS_REGION }}
+          MONGODB_PRIVATE_IP: ${{ needs.terraform-apply.outputs.mongodb_private_ip }}
+          MONGODB_USERNAME: ${{ needs.terraform-apply.outputs.mongodb_username }}
+          MONGODB_PASSWORD: ${{ needs.terraform-apply.outputs.mongodb_password }}
+          MONGODB_DATABASE_NAME: ${{ needs.terraform-apply.outputs.mongodb_database_name }}
+          JWT_SECRET: ${{ needs.terraform-apply.outputs.jwt_secret }}
           # Note: SERVICE_ACCOUNT_ROLE_ARN will be handled by the script using cluster name
         run: |
           chmod +x scripts/setup-alb-controller.sh

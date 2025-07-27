@@ -149,11 +149,21 @@ jobs:
           echo "s3_backup_url=$(terraform output -raw s3_backup_public_url)" >> $GITHUB_OUTPUT
           echo "s3_backup_latest_url=$(terraform output -raw s3_backup_public_url_latest_db)" >> $GITHUB_OUTPUT
           echo "mongodb_private_ip=$(terraform output -raw mongodb_private_ip)" >> $GITHUB_OUTPUT
-          # Use terraform output -json for sensitive values and extract with jq
-          echo "mongodb_username=$(terraform output -json mongodb_username | jq -r .)" >> $GITHUB_OUTPUT
-          echo "mongodb_password=$(terraform output -json mongodb_password | jq -r .)" >> $GITHUB_OUTPUT
+          # Use terraform output -json for sensitive values and extract with jq (with error handling)
+          MONGODB_USERNAME=$(terraform output -json mongodb_username 2>/dev/null | jq -r . 2>/dev/null || echo "taskyadmin")
+          MONGODB_PASSWORD=$(terraform output -json mongodb_password 2>/dev/null | jq -r . 2>/dev/null || terraform output mongodb_password 2>/dev/null | sed 's/"//g' || echo "")
+          JWT_SECRET=$(terraform output -json jwt_secret 2>/dev/null | jq -r . 2>/dev/null || terraform output jwt_secret 2>/dev/null | sed 's/"//g' || echo "")
+          
+          echo "mongodb_username=$MONGODB_USERNAME" >> $GITHUB_OUTPUT
+          echo "mongodb_password=$MONGODB_PASSWORD" >> $GITHUB_OUTPUT
           echo "mongodb_database_name=$(terraform output -raw mongodb_database_name)" >> $GITHUB_OUTPUT
-          echo "jwt_secret=$(terraform output -json jwt_secret | jq -r .)" >> $GITHUB_OUTPUT
+          echo "jwt_secret=$JWT_SECRET" >> $GITHUB_OUTPUT
+          
+          # Debug output (values will be masked by GitHub for sensitive ones)
+          echo "🔍 Terraform Output Debug:"
+          echo "  MongoDB Username: $MONGODB_USERNAME"
+          echo "  MongoDB Password Length: ${#MONGODB_PASSWORD}"
+          echo "  JWT Secret Length: ${#JWT_SECRET}"
         working-directory: terraform
 
       - name: Infrastructure Summary

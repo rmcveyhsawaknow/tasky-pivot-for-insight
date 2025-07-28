@@ -66,23 +66,25 @@ cd terraform/
 # Format Terraform files
 terraform fmt
 
-# Validate Terraform syntax
-terraform validate
-
-# Initialize with local backend for validation (won't apply)
-# Option 1: Use the provided script (recommended)
+# Validate Terraform syntax (requires initialization first)
+# For local development, we need to use local backend
 cd ..
 ./scripts/terraform-local-init.sh
 cd terraform
 
-# Option 2: Manual initialization 
-# terraform init
+# Now validate the configuration
+terraform validate
 
 # Create a plan file for validation (won't apply)
 terraform plan -out=validation.tfplan
 
 # Expected output: "Success! The configuration is valid."
 ```
+
+**Important Notes:**
+- The `terraform-local-init.sh` script temporarily replaces the S3 backend configuration with local backend for development
+- Your original S3 backend config is backed up as `backend.tf.s3backup`
+- To restore S3 backend for CI/CD: `./scripts/terraform-restore-s3-backend.sh`
 
 ### Step 1.2: Go Application Build
 ```bash
@@ -228,8 +230,8 @@ nano terraform.tfvars
 # Option 1: Use the provided script (recommended for local development)
 cd .. && ./scripts/terraform-local-init.sh && cd terraform
 
-# Option 2: Manual initialization (if you prefer direct commands)
-# terraform init
+# Option 2: For CI/CD deployment (not for local development)
+# terraform init -backend-config=backend-prod.hcl
 
 # Review planned changes and save to file
 terraform plan -out=terraform.tfplan

@@ -16,7 +16,7 @@ on:
       include_optimization:
         description: 'Include cost optimization recommendations'
         required: false
-        default: 'true'
+        default: 'false'
         type: choice
         options:
           - 'true'

@@ -1,0 +1,284 @@
+2025-07-27T22:58:42.1419820Z Current runner version: '2.326.0'
+2025-07-27T22:58:42.1454707Z ##[group]Runner Image Provisioner
+2025-07-27T22:58:42.1455985Z Hosted Compute Agent
+2025-07-27T22:58:42.1456874Z Version: 20250711.363
+2025-07-27T22:58:42.1458163Z Commit: 6785254374ce925a23743850c1cb91912ce5c14c
+2025-07-27T22:58:42.1459355Z Build Date: 2025-07-11T20:04:25Z
+2025-07-27T22:58:42.1460413Z ##[endgroup]
+2025-07-27T22:58:42.1461597Z ##[group]Operating System
+2025-07-27T22:58:42.1462709Z Ubuntu
+2025-07-27T22:58:42.1463634Z 24.04.2
+2025-07-27T22:58:42.1464422Z LTS
+2025-07-27T22:58:42.1465113Z ##[endgroup]
+2025-07-27T22:58:42.1466029Z ##[group]Runner Image
+2025-07-27T22:58:42.1467098Z Image: ubuntu-24.04
+2025-07-27T22:58:42.1467957Z Version: 20250720.1.0
+2025-07-27T22:58:42.1469767Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20250720.1/images/ubuntu/Ubuntu2404-Readme.md
+2025-07-27T22:58:42.1472349Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20250720.1
+2025-07-27T22:58:42.1474339Z ##[endgroup]
+2025-07-27T22:58:42.1476190Z ##[group]GITHUB_TOKEN Permissions
+2025-07-27T22:58:42.1478718Z Contents: read
+2025-07-27T22:58:42.1479617Z Metadata: read
+2025-07-27T22:58:42.1481159Z ##[endgroup]
+2025-07-27T22:58:42.1484635Z Secret source: Actions
+2025-07-27T22:58:42.1486048Z Prepare workflow directory
+2025-07-27T22:58:42.2262286Z Prepare all required actions
+2025-07-27T22:58:42.2320137Z Getting action download info
+2025-07-27T22:58:42.5047661Z ##[group]Download immutable action package 'actions/checkout@v4'
+2025-07-27T22:58:42.5048750Z Version: 4.2.2
+2025-07-27T22:58:42.5049736Z Digest: sha256:ccb2698953eaebd21c7bf6268a94f9c26518a7e38e27e0b83c1fe1ad049819b1
+2025-07-27T22:58:42.5050839Z Source commit SHA: 11bd71901bbe5b1630ceea73d27597364c9af683
+2025-07-27T22:58:42.5051608Z ##[endgroup]
+2025-07-27T22:58:42.6111825Z Download action repository 'aws-actions/configure-aws-credentials@v4' (SHA:e3dd6a429d7300a6a4c196c26e071d42e0343502)
+2025-07-27T22:58:42.8835839Z Download action repository 'azure/setup-kubectl@v3' (SHA:901a10e89ea615cf61f57ac05cecdf23e7de06d8)
+2025-07-27T22:58:43.1185391Z Download action repository 'azure/setup-helm@v3' (SHA:5119fcb9089d432beecbf79bb2c7915207344b78)
+2025-07-27T22:58:43.4308804Z Complete job name: Deploy Application
+2025-07-27T22:58:43.4996271Z ##[group]Run actions/checkout@v4
+2025-07-27T22:58:43.4997251Z with:
+2025-07-27T22:58:43.4997882Z   repository: rmcveyhsawaknow/tasky-pivot-for-insight
+2025-07-27T22:58:43.4998982Z   token: ***
+2025-07-27T22:58:43.4999450Z   ssh-strict: true
+2025-07-27T22:58:43.4999951Z   ssh-user: git
+2025-07-27T22:58:43.5000469Z   persist-credentials: true
+2025-07-27T22:58:43.5001066Z   clean: true
+2025-07-27T22:58:43.5001580Z   sparse-checkout-cone-mode: true
+2025-07-27T22:58:43.5002252Z   fetch-depth: 1
+2025-07-27T22:58:43.5002948Z   fetch-tags: false
+2025-07-27T22:58:43.5003469Z   show-progress: true
+2025-07-27T22:58:43.5004000Z   lfs: false
+2025-07-27T22:58:43.5004474Z   submodules: false
+2025-07-27T22:58:43.5005000Z   set-safe-directory: true
+2025-07-27T22:58:43.5005838Z env:
+2025-07-27T22:58:43.5006272Z   TF_VERSION: 1.7.5
+2025-07-27T22:58:43.5006789Z   AWS_REGION: us-east-1
+2025-07-27T22:58:43.5007336Z   PROJECT_NAME: tasky
+2025-07-27T22:58:43.5007868Z   ENVIRONMENT: dev
+2025-07-27T22:58:43.5008419Z   STACK_VERSION: v15
+2025-07-27T22:58:43.5008930Z ##[endgroup]
+2025-07-27T22:58:43.6104035Z Syncing repository: rmcveyhsawaknow/tasky-pivot-for-insight
+2025-07-27T22:58:43.6106504Z ##[group]Getting Git version info
+2025-07-27T22:58:43.6107967Z Working directory is '/home/runner/work/tasky-pivot-for-insight/tasky-pivot-for-insight'
+2025-07-27T22:58:43.6109836Z [command]/usr/bin/git version
+2025-07-27T22:58:43.6127172Z git version 2.50.1
+2025-07-27T22:58:43.6153607Z ##[endgroup]
+2025-07-27T22:58:43.6169437Z Temporarily overriding HOME='/home/runner/work/_temp/eb4fe764-84d5-4df4-ac27-6b204e8ff61c' before making global git config changes
+2025-07-27T22:58:43.6173793Z Adding repository directory to the temporary git global config as a safe directory
+2025-07-27T22:58:43.6184274Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/tasky-pivot-for-insight/tasky-pivot-for-insight
+2025-07-27T22:58:43.6219219Z Deleting the contents of '/home/runner/work/tasky-pivot-for-insight/tasky-pivot-for-insight'
+2025-07-27T22:58:43.6222815Z ##[group]Initializing the repository
+2025-07-27T22:58:43.6227082Z [command]/usr/bin/git init /home/runner/work/tasky-pivot-for-insight/tasky-pivot-for-insight
+2025-07-27T22:58:43.6296727Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-07-27T22:58:43.6299281Z hint: is subject to change. To configure the initial branch name to use in all
+2025-07-27T22:58:43.6301382Z hint: of your new repositories, which will suppress this warning, call:
+2025-07-27T22:58:43.6303497Z hint:
+2025-07-27T22:58:43.6304604Z hint: 	git config --global init.defaultBranch <name>
+2025-07-27T22:58:43.6306126Z hint:
+2025-07-27T22:58:43.6307504Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-07-27T22:58:43.6309992Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-07-27T22:58:43.6311961Z hint:
+2025-07-27T22:58:43.6313006Z hint: 	git branch -m <name>
+2025-07-27T22:58:43.6314065Z hint:
+2025-07-27T22:58:43.6315599Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-07-27T22:58:43.6318893Z Initialized empty Git repository in /home/runner/work/tasky-pivot-for-insight/tasky-pivot-for-insight/.git/
+2025-07-27T22:58:43.6322438Z [command]/usr/bin/git remote add origin https://github.com/rmcveyhsawaknow/tasky-pivot-for-insight
+2025-07-27T22:58:43.6347148Z ##[endgroup]
+2025-07-27T22:58:43.6348732Z ##[group]Disabling automatic garbage collection
+2025-07-27T22:58:43.6351503Z [command]/usr/bin/git config --local gc.auto 0
+2025-07-27T22:58:43.6381558Z ##[endgroup]
+2025-07-27T22:58:43.6383316Z ##[group]Setting up auth
+2025-07-27T22:58:43.6389547Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-07-27T22:58:43.6421603Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-07-27T22:58:43.6719179Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-07-27T22:58:43.6748458Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-07-27T22:58:43.6966651Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-07-27T22:58:43.7008433Z ##[endgroup]
+2025-07-27T22:58:43.7010061Z ##[group]Fetching the repository
+2025-07-27T22:58:43.7019760Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +f145c86e3113921adfa2b654b1ebdd2538b77d83:refs/remotes/origin/deploy/v15-quickstart
+2025-07-27T22:58:44.2997470Z From https://github.com/rmcveyhsawaknow/tasky-pivot-for-insight
+2025-07-27T22:58:44.2999995Z  * [new ref]         f145c86e3113921adfa2b654b1ebdd2538b77d83 -> origin/deploy/v15-quickstart
+2025-07-27T22:58:44.3023322Z ##[endgroup]
+2025-07-27T22:58:44.3025362Z ##[group]Determining the checkout info
+2025-07-27T22:58:44.3028000Z ##[endgroup]
+2025-07-27T22:58:44.3031494Z [command]/usr/bin/git sparse-checkout disable
+2025-07-27T22:58:44.3070874Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-07-27T22:58:44.3100520Z ##[group]Checking out the ref
+2025-07-27T22:58:44.3104930Z [command]/usr/bin/git checkout --progress --force -B deploy/v15-quickstart refs/remotes/origin/deploy/v15-quickstart
+2025-07-27T22:58:44.4312131Z Switched to a new branch 'deploy/v15-quickstart'
+2025-07-27T22:58:44.4314810Z branch 'deploy/v15-quickstart' set up to track 'origin/deploy/v15-quickstart'.
+2025-07-27T22:58:44.4327579Z ##[endgroup]
+2025-07-27T22:58:44.4366519Z [command]/usr/bin/git log -1 --format=%H
+2025-07-27T22:58:44.4389919Z f145c86e3113921adfa2b654b1ebdd2538b77d83
+2025-07-27T22:58:44.4685970Z ##[group]Run aws-actions/configure-aws-credentials@v4
+2025-07-27T22:58:44.4687241Z with:
+2025-07-27T22:58:44.4688684Z   role-to-assume: ***
+2025-07-27T22:58:44.4689631Z   aws-region: us-east-1
+2025-07-27T22:58:44.4690603Z   audience: sts.amazonaws.com
+2025-07-27T22:58:44.4691592Z env:
+2025-07-27T22:58:44.4692370Z   TF_VERSION: 1.7.5
+2025-07-27T22:58:44.4693428Z   AWS_REGION: us-east-1
+2025-07-27T22:58:44.4694369Z   PROJECT_NAME: tasky
+2025-07-27T22:58:44.4695277Z   ENVIRONMENT: dev
+2025-07-27T22:58:44.4696144Z   STACK_VERSION: v15
+2025-07-27T22:58:44.4697014Z ##[endgroup]
+2025-07-27T22:58:44.6665638Z Assuming role with OIDC
+2025-07-27T22:58:44.7927063Z Authenticated as assumedRoleId AROASG7WNPAI6M3AFE467:GitHubActions
+2025-07-27T22:58:44.8211199Z ##[group]Run azure/setup-kubectl@v3
+2025-07-27T22:58:44.8212209Z with:
+2025-07-27T22:58:44.8213157Z   version: v1.28.0
+2025-07-27T22:58:44.8213981Z env:
+2025-07-27T22:58:44.8214723Z   TF_VERSION: 1.7.5
+2025-07-27T22:58:44.8215552Z   AWS_REGION: us-east-1
+2025-07-27T22:58:44.8216407Z   PROJECT_NAME: tasky
+2025-07-27T22:58:44.8217264Z   ENVIRONMENT: dev
+2025-07-27T22:58:44.8218077Z   STACK_VERSION: v15
+2025-07-27T22:58:44.8218956Z   AWS_DEFAULT_REGION: us-east-1
+2025-07-27T22:58:44.8220087Z   AWS_ACCESS_KEY_ID: ***
+2025-07-27T22:58:44.8221244Z   AWS_SECRET_ACCESS_KEY: ***
+2025-07-27T22:58:44.8237783Z   AWS_SESSION_TOKEN: ***
+2025-07-27T22:58:44.8238683Z ##[endgroup]
+2025-07-27T22:58:45.3843814Z ##[group]Run azure/setup-helm@v3
+2025-07-27T22:58:45.3844923Z with:
+2025-07-27T22:58:45.3845685Z   version: v3.12.0
+2025-07-27T22:58:45.3846479Z env:
+2025-07-27T22:58:45.3847231Z   TF_VERSION: 1.7.5
+2025-07-27T22:58:45.3848178Z   AWS_REGION: us-east-1
+2025-07-27T22:58:45.3849017Z   PROJECT_NAME: tasky
+2025-07-27T22:58:45.3849853Z   ENVIRONMENT: dev
+2025-07-27T22:58:45.3850655Z   STACK_VERSION: v15
+2025-07-27T22:58:45.3851568Z   AWS_DEFAULT_REGION: us-east-1
+2025-07-27T22:58:45.3852789Z   AWS_ACCESS_KEY_ID: ***
+2025-07-27T22:58:45.3853933Z   AWS_SECRET_ACCESS_KEY: ***
+2025-07-27T22:58:45.3870043Z   AWS_SESSION_TOKEN: ***
+2025-07-27T22:58:45.3870907Z ##[endgroup]
+2025-07-27T22:58:45.4403183Z ##[group]Downloading v3.12.0
+2025-07-27T22:58:45.7949878Z [command]/usr/bin/unzip -o -q /home/runner/work/_temp/6bd2de6d-24f6-40dc-b7af-66fb10a10c96
+2025-07-27T22:58:46.2135231Z ##[endgroup]
+2025-07-27T22:58:46.2138278Z Helm tool version 'v3.12.0' has been cached at /opt/hostedtoolcache/helm/3.12.0/x64/linux-amd64/helm
+2025-07-27T22:58:46.2285979Z ##[group]Run aws eks update-kubeconfig --region us-east-1 --name tasky-dev-v15-eks-cluster
+2025-07-27T22:58:46.2286654Z [36;1maws eks update-kubeconfig --region us-east-1 --name tasky-dev-v15-eks-cluster[0m
+2025-07-27T22:58:46.2287074Z [36;1mkubectl cluster-info[0m
+2025-07-27T22:58:46.2318751Z shell: /usr/bin/bash -e {0}
+2025-07-27T22:58:46.2319014Z env:
+2025-07-27T22:58:46.2319212Z   TF_VERSION: 1.7.5
+2025-07-27T22:58:46.2319434Z   AWS_REGION: us-east-1
+2025-07-27T22:58:46.2319658Z   PROJECT_NAME: tasky
+2025-07-27T22:58:46.2319870Z   ENVIRONMENT: dev
+2025-07-27T22:58:46.2320068Z   STACK_VERSION: v15
+2025-07-27T22:58:46.2320279Z   AWS_DEFAULT_REGION: us-east-1
+2025-07-27T22:58:46.2320668Z   AWS_ACCESS_KEY_ID: ***
+2025-07-27T22:58:46.2321012Z   AWS_SECRET_ACCESS_KEY: ***
+2025-07-27T22:58:46.2326418Z   AWS_SESSION_TOKEN: ***
+2025-07-27T22:58:46.2326644Z ##[endgroup]
+2025-07-27T22:58:49.4046479Z Added new context arn:aws:eks:us-east-1:152451250193:cluster/tasky-dev-v15-eks-cluster to /home/runner/.kube/config
+2025-07-27T22:58:50.1811203Z [0;32mKubernetes control plane[0m is running at [0;33mhttps://8B0554D074971B437EEE22A456BFFE7B.gr7.us-east-1.eks.amazonaws.com[0m
+2025-07-27T22:58:50.1814268Z [0;32mCoreDNS[0m is running at [0;33mhttps://8B0554D074971B437EEE22A456BFFE7B.gr7.us-east-1.eks.amazonaws.com/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy[0m
+2025-07-27T22:58:50.1815343Z 
+2025-07-27T22:58:50.1815970Z To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+2025-07-27T22:58:50.1867602Z ##[group]Run chmod +x scripts/setup-alb-controller.sh
+2025-07-27T22:58:50.1868025Z [36;1mchmod +x scripts/setup-alb-controller.sh[0m
+2025-07-27T22:58:50.1868349Z [36;1m./scripts/setup-alb-controller.sh[0m
+2025-07-27T22:58:50.1895991Z shell: /usr/bin/bash -e {0}
+2025-07-27T22:58:50.1896245Z env:
+2025-07-27T22:58:50.1896430Z   TF_VERSION: 1.7.5
+2025-07-27T22:58:50.1896649Z   AWS_REGION: us-east-1
+2025-07-27T22:58:50.1896905Z   PROJECT_NAME: tasky
+2025-07-27T22:58:50.1897114Z   ENVIRONMENT: dev
+2025-07-27T22:58:50.1897345Z   STACK_VERSION: v15
+2025-07-27T22:58:50.1897559Z   AWS_DEFAULT_REGION: us-east-1
+2025-07-27T22:58:50.1898045Z   AWS_ACCESS_KEY_ID: ***
+2025-07-27T22:58:50.1898365Z   AWS_SECRET_ACCESS_KEY: ***
+2025-07-27T22:58:50.1903837Z   AWS_SESSION_TOKEN: ***
+2025-07-27T22:58:50.1904098Z   CLUSTER_NAME: tasky-dev-v15-eks-cluster
+2025-07-27T22:58:50.1904379Z   MONGODB_PRIVATE_IP: 10.0.3.165
+2025-07-27T22:58:50.1904625Z   MONGODB_USERNAME: 
+2025-07-27T22:58:50.1904850Z   MONGODB_PASSWORD: 
+2025-07-27T22:58:50.1905061Z   MONGODB_DATABASE_NAME: go-mongodb
+2025-07-27T22:58:50.1905309Z   JWT_SECRET: 
+2025-07-27T22:58:50.1905490Z ##[endgroup]
+2025-07-27T22:58:50.1979978Z [0;34m[INFO][0m Starting AWS Load Balancer Controller setup...
+2025-07-27T22:58:50.1980677Z [0;34m[INFO][0m Checking prerequisites...
+2025-07-27T22:58:50.1981263Z [0;32m[SUCCESS][0m All prerequisites are installed
+2025-07-27T22:58:50.1981872Z [0;34m[INFO][0m Getting cluster information...
+2025-07-27T22:58:50.1982702Z [0;34m[INFO][0m Using cluster information from environment variables
+2025-07-27T22:58:50.8004091Z [0;32m[SUCCESS][0m Cluster info retrieved: tasky-dev-v15-eks-cluster in us-east-1
+2025-07-27T22:58:50.8004938Z [0;34m[INFO][0m Updating kubeconfig for EKS cluster...
+2025-07-27T22:58:51.5234628Z Updated context arn:aws:eks:us-east-1:152451250193:cluster/tasky-dev-v15-eks-cluster in /home/runner/.kube/config
+2025-07-27T22:58:51.5916296Z [0;32m[SUCCESS][0m Kubeconfig updated
+2025-07-27T22:58:51.5917077Z [0;34m[INFO][0m Installing AWS Load Balancer Controller...
+2025-07-27T22:58:52.3240059Z [1;33m[WARNING][0m AWS Load Balancer Controller is already installed
+2025-07-27T22:58:52.3240779Z [0;34m[INFO][0m Checking if upgrade is needed...
+2025-07-27T22:58:52.4181833Z "eks" has been added to your repositories
+2025-07-27T22:58:52.4524174Z Hang tight while we grab the latest from your chart repositories...
+2025-07-27T22:58:52.5060907Z ...Successfully got an update from the "eks" chart repository
+2025-07-27T22:58:52.5061902Z Update Complete. ⎈Happy Helming!⎈
+2025-07-27T22:58:52.5080879Z [0;34m[INFO][0m Upgrading existing AWS Load Balancer Controller...
+2025-07-27T22:58:54.8614038Z Release "aws-load-balancer-controller" has been upgraded. Happy Helming!
+2025-07-27T22:58:54.8614577Z NAME: aws-load-balancer-controller
+2025-07-27T22:58:54.8614880Z LAST DEPLOYED: Sun Jul 27 22:58:54 2025
+2025-07-27T22:58:54.8615274Z NAMESPACE: kube-system
+2025-07-27T22:58:54.8615496Z STATUS: deployed
+2025-07-27T22:58:54.8615710Z REVISION: 4
+2025-07-27T22:58:54.8615886Z TEST SUITE: None
+2025-07-27T22:58:54.8616060Z NOTES:
+2025-07-27T22:58:54.8616244Z AWS Load Balancer controller installed!
+2025-07-27T22:58:54.8649999Z [0;32m[SUCCESS][0m AWS Load Balancer Controller upgraded
+2025-07-27T22:58:54.8650783Z [0;34m[INFO][0m Waiting for AWS Load Balancer Controller to be ready...
+2025-07-27T22:58:56.2810127Z pod/aws-load-balancer-controller-d7f6895c4-cfl6h condition met
+2025-07-27T22:58:56.3822254Z pod/aws-load-balancer-controller-d7f6895c4-zlldg condition met
+2025-07-27T22:58:56.3846716Z [0;32m[SUCCESS][0m AWS Load Balancer Controller is ready
+2025-07-27T22:58:56.3847131Z [0;34m[INFO][0m Verifying controller status...
+2025-07-27T22:58:57.0002246Z [0;34m[INFO][0m Controller pod: aws-load-balancer-controller-d7f6895c4-cfl6h
+2025-07-27T22:58:57.7068296Z [0;32m[SUCCESS][0m No immediate errors in controller logs
+2025-07-27T22:58:57.7069508Z [0;34m[INFO][0m Deploying Tasky application...
+2025-07-27T22:58:57.7070456Z [0;34m[INFO][0m Creating namespace...
+2025-07-27T22:58:58.6112888Z namespace/tasky unchanged
+2025-07-27T22:58:58.6137810Z [0;34m[INFO][0m Waiting for namespace to be active...
+2025-07-27T22:59:58.6583701Z [1;33m[WARNING][0m Timeout waiting for namespace condition, checking namespace status manually...
+2025-07-27T22:59:59.3116772Z [0;34m[INFO][0m Namespace exists, checking if it's usable...
+2025-07-27T23:00:00.7155892Z configmap/namespace-test created
+2025-07-27T23:00:00.7184374Z [0;32m[SUCCESS][0m Namespace is working despite condition timeout
+2025-07-27T23:00:01.4317734Z [0;34m[INFO][0m Creating RBAC resources...
+2025-07-27T23:00:02.1507755Z serviceaccount/tasky-admin unchanged
+2025-07-27T23:00:02.1589928Z clusterrolebinding.rbac.authorization.k8s.io/tasky-admin-binding unchanged
+2025-07-27T23:00:02.1615551Z [0;34m[INFO][0m Creating ConfigMap...
+2025-07-27T23:00:02.9434554Z configmap/tasky-config unchanged
+2025-07-27T23:00:02.9459559Z [0;34m[INFO][0m Creating Secret with MongoDB connection using shared utilities...
+2025-07-27T23:00:02.9464693Z [0;34m[INFO][0m Updating secret.yaml file for consistency...
+2025-07-27T23:00:02.9465407Z 📝 Updating secret.yaml with Terraform values...
+2025-07-27T23:00:02.9466266Z 🌐 Using values from environment variables (GitHub Actions context)
+2025-07-27T23:00:02.9466839Z ✅ Retrieved Terraform values:
+2025-07-27T23:00:02.9467200Z    MongoDB IP: 10.0.3.165
+2025-07-27T23:00:02.9467563Z    MongoDB Username: taskyadmin
+2025-07-27T23:00:02.9467930Z    MongoDB Database: go-mongodb
+2025-07-27T23:00:02.9468318Z    Password length: 0 characters
+2025-07-27T23:00:02.9548240Z ✅ Successfully updated k8s/secret.yaml
+2025-07-27T23:00:02.9548848Z [0;32m[SUCCESS][0m Secret.yaml updated with consistent Terraform values
+2025-07-27T23:00:02.9549542Z [0;34m[INFO][0m Creating Kubernetes secret with consistent values...
+2025-07-27T23:00:02.9550319Z 🔐 Creating Kubernetes secret: tasky-secrets in namespace: tasky
+2025-07-27T23:00:02.9551176Z 🌐 Using values from environment variables (GitHub Actions context)
+2025-07-27T23:00:02.9551841Z ✅ Using Terraform values:
+2025-07-27T23:00:02.9552190Z    MongoDB IP: 10.0.3.165
+2025-07-27T23:00:02.9552429Z    MongoDB Username: taskyadmin
+2025-07-27T23:00:02.9553384Z    MongoDB Database: go-mongodb
+2025-07-27T23:00:04.2559543Z secret/tasky-secrets configured
+2025-07-27T23:00:04.2585373Z ✅ Successfully created/updated secret: tasky-secrets
+2025-07-27T23:00:04.2586360Z [0;32m[SUCCESS][0m Secret created/updated successfully with consistent values
+2025-07-27T23:00:04.2587044Z 🔍 Validating secret: tasky-secrets
+2025-07-27T23:00:05.6440289Z ✅ MongoDB URI: ***10.0.3.165:27017/go-mongodb
+2025-07-27T23:00:05.6440876Z ✅ MongoDB URI format appears valid
+2025-07-27T23:00:06.2710506Z ❌ JWT secret is missing
+2025-07-27T23:00:06.2726872Z ##[error]Process completed with exit code 1.
+2025-07-27T23:00:06.2829425Z Post job cleanup.
+2025-07-27T23:00:06.4028163Z Post job cleanup.
+2025-07-27T23:00:06.4940355Z [command]/usr/bin/git version
+2025-07-27T23:00:06.4977207Z git version 2.50.1
+2025-07-27T23:00:06.5020941Z Temporarily overriding HOME='/home/runner/work/_temp/7b33b70f-2bef-4f07-90dc-8b064c03f1e8' before making global git config changes
+2025-07-27T23:00:06.5022227Z Adding repository directory to the temporary git global config as a safe directory
+2025-07-27T23:00:06.5027757Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/tasky-pivot-for-insight/tasky-pivot-for-insight
+2025-07-27T23:00:06.5068864Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-07-27T23:00:06.5101189Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-07-27T23:00:06.5326456Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-07-27T23:00:06.5347095Z http.https://github.com/.extraheader
+2025-07-27T23:00:06.5359318Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2025-07-27T23:00:06.5389479Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-07-27T23:00:06.5719113Z Cleaning up orphan processes

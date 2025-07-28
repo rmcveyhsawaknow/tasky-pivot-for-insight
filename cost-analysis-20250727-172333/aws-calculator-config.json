@@ -1,0 +1,46 @@
+{
+  "estimate": {
+    "name": "Tasky Infrastructure Cost Estimate",
+    "region": "us-east-1",
+    "services": [
+      {
+        "service": "AmazonEKS",
+        "configuration": {
+          "clusters": 1,
+          "hours_per_month": 720,
+          "rate_per_hour": 0.10
+        }
+      },
+      {
+        "service": "AmazonEC2",
+        "configuration": {
+          "instances": [
+            {
+              "type": "t3.medium",
+              "count": 3,
+              "hours_per_month": 720,
+              "rate_per_hour": 0.05
+            }
+          ]
+        }
+      },
+      {
+        "service": "AWSELB",
+        "configuration": {
+          "load_balancers": 1,
+          "hours_per_month": 720,
+          "rate_per_hour": 0.0225
+        }
+      },
+      {
+        "service": "AmazonVPC",
+        "configuration": {
+          "nat_gateways": 1,
+          "hours_per_month": 720,
+          "rate_per_hour": 0.045
+        }
+      }
+    ],
+    "estimated_monthly_total": 248.60
+  }
+}

@@ -13,27 +13,38 @@ update_secret_yaml() {
     
     echo "📝 Updating secret.yaml with Terraform values..."
     
-    # Check if terraform directory exists
-    if [ ! -d "$terraform_dir" ]; then
-        echo "❌ Terraform directory not found: $terraform_dir"
-        return 1
-    fi
-    
-    # Get all required values from terraform with comprehensive fallbacks
+    # Get all required values from environment variables first (GitHub Actions context)
+    # Then fallback to terraform outputs (local development)
     local mongodb_ip mongodb_username mongodb_password mongodb_database jwt_secret
     
-    mongodb_ip=$(cd "$terraform_dir" && terraform output -raw mongodb_private_ip 2>/dev/null || echo "")
-    mongodb_username=$(cd "$terraform_dir" && terraform output -raw mongodb_username 2>/dev/null || echo "taskyadmin")
-    
-    # Try multiple sources for password
-    mongodb_password=$(cd "$terraform_dir" && terraform output -raw mongodb_password 2>/dev/null || echo "")
-    if [ -z "$mongodb_password" ]; then
-        # Fallback to tfvars if available
-        mongodb_password=$(cd "$terraform_dir" && grep '^mongodb_password' terraform.tfvars 2>/dev/null | sed 's/.*=.*"\([^"]*\)".*/\1/' || echo "justapassv10")
+    if [ -n "$MONGODB_PRIVATE_IP" ]; then
+        echo "🌐 Using values from environment variables (GitHub Actions context)"
+        mongodb_ip="$MONGODB_PRIVATE_IP"
+        mongodb_username="${MONGODB_USERNAME:-taskyadmin}"
+        mongodb_password="$MONGODB_PASSWORD"
+        mongodb_database="${MONGODB_DATABASE_NAME:-go-mongodb}"
+        jwt_secret="$JWT_SECRET"
+    else
+        echo "📁 Using values from Terraform outputs (local development)"
+        # Check if terraform directory exists
+        if [ ! -d "$terraform_dir" ]; then
+            echo "❌ Terraform directory not found: $terraform_dir"
+            return 1
+        fi
+        
+        mongodb_ip=$(cd "$terraform_dir" && terraform output -raw mongodb_private_ip 2>/dev/null || echo "")
+        mongodb_username=$(cd "$terraform_dir" && terraform output -raw mongodb_username 2>/dev/null || echo "taskyadmin")
+        
+        # Try multiple sources for password
+        mongodb_password=$(cd "$terraform_dir" && terraform output -raw mongodb_password 2>/dev/null || echo "")
+        if [ -z "$mongodb_password" ]; then
+            # Fallback to tfvars if available
+            mongodb_password=$(cd "$terraform_dir" && grep '^mongodb_password' terraform.tfvars 2>/dev/null | sed 's/.*=.*"\([^"]*\)".*/\1/' || echo "justapassv10")
+        fi
+        
+        mongodb_database=$(cd "$terraform_dir" && terraform output -raw mongodb_database_name 2>/dev/null || echo "go-mongodb")
+        jwt_secret=$(cd "$terraform_dir" && terraform output -raw jwt_secret 2>/dev/null || echo "12345rtyhujk-0987ytfc-3erftghnm-asdfgh")
     fi
-    
-    mongodb_database=$(cd "$terraform_dir" && terraform output -raw mongodb_database_name 2>/dev/null || echo "go-mongodb")
-    jwt_secret=$(cd "$terraform_dir" && terraform output -raw jwt_secret 2>/dev/null || echo "12345rtyhujk-0987ytfc-3erftghnm-asdfgh")
     
     if [ -z "$mongodb_ip" ]; then
         echo "⚠️ Warning: Could not retrieve MongoDB IP from Terraform"
@@ -86,20 +97,31 @@ create_k8s_secret() {
     
     echo "🔐 Creating Kubernetes secret: $secret_name in namespace: $namespace"
     
-    # Get all required values from terraform
+    # Get all required values from environment variables first (GitHub Actions context)
+    # Then fallback to terraform outputs (local development)
     local mongodb_ip mongodb_username mongodb_password mongodb_database jwt_secret
     
-    mongodb_ip=$(cd "$terraform_dir" && terraform output -raw mongodb_private_ip 2>/dev/null || echo "")
-    mongodb_username=$(cd "$terraform_dir" && terraform output -raw mongodb_username 2>/dev/null || echo "taskyadmin")
-    
-    # Try multiple sources for password  
-    mongodb_password=$(cd "$terraform_dir" && terraform output -raw mongodb_password 2>/dev/null || echo "")
-    if [ -z "$mongodb_password" ]; then
-        mongodb_password=$(cd "$terraform_dir" && grep '^mongodb_password' terraform.tfvars 2>/dev/null | sed 's/.*=.*"\([^"]*\)".*/\1/' || echo "justapassv10")
+    if [ -n "$MONGODB_PRIVATE_IP" ]; then
+        echo "🌐 Using values from environment variables (GitHub Actions context)"
+        mongodb_ip="$MONGODB_PRIVATE_IP"
+        mongodb_username="${MONGODB_USERNAME:-taskyadmin}"
+        mongodb_password="$MONGODB_PASSWORD"
+        mongodb_database="${MONGODB_DATABASE_NAME:-go-mongodb}"
+        jwt_secret="$JWT_SECRET"
+    else
+        echo "📁 Using values from Terraform outputs (local development)"
+        mongodb_ip=$(cd "$terraform_dir" && terraform output -raw mongodb_private_ip 2>/dev/null || echo "")
+        mongodb_username=$(cd "$terraform_dir" && terraform output -raw mongodb_username 2>/dev/null || echo "taskyadmin")
+        
+        # Try multiple sources for password  
+        mongodb_password=$(cd "$terraform_dir" && terraform output -raw mongodb_password 2>/dev/null || echo "")
+        if [ -z "$mongodb_password" ]; then
+            mongodb_password=$(cd "$terraform_dir" && grep '^mongodb_password' terraform.tfvars 2>/dev/null | sed 's/.*=.*"\([^"]*\)".*/\1/' || echo "justapassv10")
+        fi
+        
+        mongodb_database=$(cd "$terraform_dir" && terraform output -raw mongodb_database_name 2>/dev/null || echo "go-mongodb")
+        jwt_secret=$(cd "$terraform_dir" && terraform output -raw jwt_secret 2>/dev/null || echo "12345rtyhujk-0987ytfc-3erftghnm-asdfgh")
     fi
-    
-    mongodb_database=$(cd "$terraform_dir" && terraform output -raw mongodb_database_name 2>/dev/null || echo "go-mongodb")
-    jwt_secret=$(cd "$terraform_dir" && terraform output -raw jwt_secret 2>/dev/null || echo "12345rtyhujk-0987ytfc-3erftghnm-asdfgh")
     
     if [ -z "$mongodb_ip" ]; then
         echo "❌ Error: Could not get MongoDB IP from Terraform outputs"

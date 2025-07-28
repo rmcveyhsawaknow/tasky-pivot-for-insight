@@ -95,23 +95,25 @@ module "eks" {
 }
 
 # ALB Module - Application Load Balancer
+# NOTE: Commented out because we're using Kubernetes Ingress with AWS Load Balancer Controller
+# The Kubernetes ingress.yaml creates and manages the ALB automatically
 # Provides cost-effective cloud-native load balancer for web applications
-module "alb" {
-  source = "./modules/alb"
+# module "alb" {
+#   source = "./modules/alb"
 
-  project_name           = var.project_name
-  environment            = var.environment
-  stack_version          = var.stack_version
-  vpc_id                 = module.vpc.vpc_id
-  public_subnet_ids      = module.vpc.public_subnet_ids
-  eks_security_group_ids = [module.eks.node_group_security_group_id, module.eks.cluster_security_group_id]
-  health_check_path      = var.alb_health_check_path
-  ssl_certificate_arn    = var.alb_ssl_certificate_arn
-  enable_access_logs     = var.alb_enable_access_logs
-  access_logs_bucket     = var.alb_enable_access_logs ? module.s3_backup.bucket_name : null
-  create_dns_record      = var.alb_create_dns_record
-  domain_name            = var.alb_domain_name
-  hosted_zone_id         = var.alb_hosted_zone_id
+#   project_name           = var.project_name
+#   environment            = var.environment
+#   stack_version          = var.stack_version
+#   vpc_id                 = module.vpc.vpc_id
+#   public_subnet_ids      = module.vpc.public_subnet_ids
+#   eks_security_group_ids = [module.eks.node_group_security_group_id, module.eks.cluster_security_group_id]
+#   health_check_path      = var.alb_health_check_path
+#   ssl_certificate_arn    = var.alb_ssl_certificate_arn
+#   enable_access_logs     = var.alb_enable_access_logs
+#   access_logs_bucket     = var.alb_enable_access_logs ? module.s3_backup.bucket_name : null
+#   create_dns_record      = var.alb_create_dns_record
+#   domain_name            = var.alb_domain_name
+#   hosted_zone_id         = var.alb_hosted_zone_id
 
-  tags = local.common_tags
-}
+#   tags = local.common_tags
+# }

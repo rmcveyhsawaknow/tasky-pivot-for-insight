@@ -9,7 +9,6 @@ metadata:
     app.kubernetes.io/part-of: tasky-app
   annotations:
     # AWS Load Balancer Controller annotations
-    kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/backend-protocol: HTTP
@@ -29,6 +28,7 @@ metadata:
     # Tags for cost tracking and management
     alb.ingress.kubernetes.io/tags: Environment=dev,Project=tasky,ManagedBy=kubernetes,Component=alb
 spec:
+  ingressClassName: alb  # Modern way to specify ingress class
   rules:
   - host: ideatasky.ryanmcvey.me  # Custom domain - update DNS to point to ALB
     http:
@@ -40,7 +40,7 @@ spec:
             name: tasky-service
             port:
               number: 80
-  - http:  # Default rule for ALB DNS name access
+  - http:  # Default rule for ALB DNS name access (this enables ELB endpoint testing)
       paths:
       - path: /
         pathType: Prefix

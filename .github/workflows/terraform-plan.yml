@@ -1,19 +1,28 @@
 name: Terraform Plan
 
 on:
+  push:
+    branches: ['deploy/*']
+    paths:
+      - 'terraform/**'
+      - 'k8s/**'
+      - '.github/workflows/terraform-*.yml'
+      - 'scripts/setup-alb-controller.sh'
   pull_request:
     branches: ['deploy/*']
     paths:
       - 'terraform/**'
+      - 'k8s/**'
       - '.github/workflows/terraform-plan.yml'
+      - 'scripts/setup-alb-controller.sh'
   workflow_dispatch:
 
 env:
-  TF_VERSION: '1.6.0'
+  TF_VERSION: '1.7.5'
   AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
   PROJECT_NAME: ${{ vars.PROJECT_NAME || 'tasky' }}
   ENVIRONMENT: ${{ vars.ENVIRONMENT || 'dev' }}
-  STACK_VERSION: ${{ vars.STACK_VERSION || 'v12' }}
+  STACK_VERSION: ${{ vars.STACK_VERSION || 'v15' }}
 
 permissions:
   contents: read
@@ -42,7 +51,7 @@ jobs:
 
       - name: Create terraform.tfvars for planning
         run: |
-          cat > terraform/terraform.tfvars << EOF
+          cat > terraform.tfvars << EOF
           project_name = "${{ env.PROJECT_NAME }}"
           environment = "${{ env.ENVIRONMENT }}"
           stack_version = "${{ env.STACK_VERSION }}"
@@ -54,6 +63,9 @@ jobs:
           mongodb_database_name = "${{ vars.MONGODB_DATABASE_NAME || 'go-mongodb' }}"
           jwt_secret = "${{ secrets.JWT_SECRET }}"
           EOF
+          # Format the generated file immediately
+          terraform fmt terraform.tfvars
+        working-directory: terraform
 
       - name: Terraform Format Check
         id: fmt

@@ -85,27 +85,45 @@ check_prerequisites() {
     print_success "All prerequisites are installed"
 }
 
-# Get cluster information from Terraform outputs
+# Get cluster information from environment variables or Terraform outputs
 get_cluster_info() {
-    print_status "Getting cluster information from Terraform outputs..."
+    print_status "Getting cluster information..."
     
-    cd terraform
-    
-    # Get cluster name and region
-    CLUSTER_NAME=$(terraform output -raw eks_cluster_name 2>/dev/null || echo "")
-    AWS_REGION=$(terraform output -raw aws_region 2>/dev/null || echo "us-east-1")
-    SERVICE_ACCOUNT_ROLE_ARN=$(terraform output -raw eks_aws_load_balancer_controller_role_arn 2>/dev/null || echo "")
-    
-    cd ..
+    # First try to get from environment variables (GitHub Actions workflow)
+    if [ -n "$CLUSTER_NAME" ] && [ -n "$AWS_REGION" ]; then
+        print_status "Using cluster information from environment variables"
+        # SERVICE_ACCOUNT_ROLE_ARN will be constructed from cluster name
+        SERVICE_ACCOUNT_ROLE_ARN="arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):role/${CLUSTER_NAME}-aws-load-balancer-controller"
+    else
+        # Fallback to Terraform outputs (local development)
+        print_status "Getting cluster information from Terraform outputs..."
+        
+        cd terraform
+        
+        # Get cluster name and region
+        CLUSTER_NAME=$(terraform output -raw eks_cluster_name 2>/dev/null || echo "")
+        AWS_REGION=$(terraform output -raw aws_region 2>/dev/null || echo "us-east-1")
+        SERVICE_ACCOUNT_ROLE_ARN=$(terraform output -raw eks_aws_load_balancer_controller_role_arn 2>/dev/null || echo "")
+        
+        cd ..
+    fi
     
     if [ -z "$CLUSTER_NAME" ]; then
-        print_error "Could not get cluster name from Terraform outputs"
+        print_error "Could not get cluster name from environment variables or Terraform outputs"
         exit 1
     fi
     
+    # If SERVICE_ACCOUNT_ROLE_ARN is still empty, try to construct it
     if [ -z "$SERVICE_ACCOUNT_ROLE_ARN" ]; then
-        print_error "Could not get service account role ARN from Terraform outputs"
-        exit 1
+        print_warning "Service account role ARN not found, attempting to construct from cluster name..."
+        ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "")
+        if [ -n "$ACCOUNT_ID" ]; then
+            SERVICE_ACCOUNT_ROLE_ARN="arn:aws:iam::${ACCOUNT_ID}:role/${CLUSTER_NAME}-aws-load-balancer-controller"
+            print_status "Constructed role ARN: $SERVICE_ACCOUNT_ROLE_ARN"
+        else
+            print_error "Could not get AWS account ID to construct service account role ARN"
+            exit 1
+        fi
     fi
     
     print_success "Cluster info retrieved: $CLUSTER_NAME in $AWS_REGION"
@@ -304,19 +322,49 @@ EOF
     
     print_success "Application deployed"
     
-    print_status "Waiting for ingress to be ready..."
-    sleep 30
+    # Enhanced ALB URL checking and output
+    print_status "Checking ALB provisioning status..."
     
-    # Get ALB DNS name
+    # Give ALB a moment to be created
+    sleep 15
+    
+    # Try to get ALB DNS name (but don't wait indefinitely)
     ALB_DNS=$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || echo "")
     
     if [ -z "$ALB_DNS" ]; then
-        print_warning "ALB DNS name not available yet. Please check again in a few minutes:"
-        print_status "kubectl get ingress tasky-ingress -n tasky"
+        print_warning "ALB DNS name not yet available - this is normal for new deployments"
+        print_status "ALB provisioning can take 2-3 minutes to complete"
+        print_status ""
+        print_status "🔍 To check ALB status:"
+        print_status "   kubectl get ingress tasky-ingress -n tasky"
+        print_status ""
+        print_status "📋 To get the ALB URL when ready:"
+        print_status "   kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'"
+        print_status ""
+        print_status "🌐 Application will be accessible at: http://<alb-dns-name>"
     else
+        print_success "🎉 ALB is ready!"
         print_success "Application is accessible at: http://$ALB_DNS"
-        print_status "For custom domain, point ideatasky.ryanmcvey.me CNAME to: $ALB_DNS"
+        print_status ""
+        print_status "🔗 ALB DNS Name: $ALB_DNS"
+        print_status "🌐 Application URL: http://$ALB_DNS"
+        print_status "📝 Custom Domain: Point ideatasky.ryanmcvey.me CNAME to: $ALB_DNS"
+        
+        # Output for GitHub Actions (if running in CI)
+        if [ -n "${GITHUB_ENV:-}" ]; then
+            echo "ALB_DNS_NAME=$ALB_DNS" >> $GITHUB_ENV
+            echo "APPLICATION_URL=http://$ALB_DNS" >> $GITHUB_ENV
+            print_status "✅ ALB information exported to GitHub Actions environment"
+        fi
     fi
+    
+    # Always show deployment status
+    print_status ""
+    print_status "📊 Deployment Status Summary:"
+    print_status "├── Namespace: $(kubectl get namespace tasky -o jsonpath='{.status.phase}' 2>/dev/null || echo 'Not found')"
+    print_status "├── Deployment: $(kubectl get deployment tasky-deployment -n tasky -o jsonpath='{.status.readyReplicas}/{.status.replicas}' 2>/dev/null || echo '0/0') pods ready"
+    print_status "├── Service: $(kubectl get service tasky-service -n tasky -o jsonpath='{.spec.type}' 2>/dev/null || echo 'Not found')"
+    print_status "└── Ingress: $(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null | head -c 30 || echo 'Provisioning...')"
 }
 
 # Main execution
@@ -346,9 +394,15 @@ main() {
     wait_for_controller
     deploy_application
     
-    print_success "Setup complete!"
-    print_status "To get the ALB DNS name later, run:"
-    print_status "kubectl get ingress tasky-ingress -n tasky"
+    print_success "🎉 Setup complete!"
+    print_status ""
+    print_status "📋 Next Steps:"
+    print_status "1. Check ALB status: kubectl get ingress tasky-ingress -n tasky"
+    print_status "2. View application: kubectl get pods -n tasky" 
+    print_status "3. Get logs: kubectl logs -l app.kubernetes.io/name=tasky -n tasky"
+    print_status ""
+    print_status "⏱️  ALB provisioning typically takes 2-3 minutes"
+    print_status "🌐 Application will be accessible once ALB is ready"
 }
 
 # Run main function

@@ -7,15 +7,13 @@
 # ==============================================================================
 
 terraform {
-  # Backend configuration is intentionally left empty for flexibility
-  # This allows the same code to work with both local and remote backends
-
-  # Local development: Uses local terraform.tfstate (default behavior)
-  # CI/CD deployment: Uses S3 backend via -backend-config flag
-
-  # The backend configuration is provided at runtime via:
-  # terraform init -backend-config=backend-prod.hcl (for CI/CD)
-  # terraform init (for local development)
+  # Backend configuration for S3 remote state
+  # Configuration details provided via backend-config file
+  backend "s3" {
+    # Configuration is provided at runtime via:
+    # terraform init -backend-config=backend-prod.hcl (for CI/CD)
+    # This enables the use of -backend-config parameter
+  }
 }
 
 # ==========================================

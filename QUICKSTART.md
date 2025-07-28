@@ -22,9 +22,15 @@ cd tasky-pivot-for-insight
 # Setup AWS OIDC and Terraform backend (one-time)
 ./scripts/setup-aws-oidc.sh
 
-# Configure GitHub repository secrets and variables
-./scripts/setup-github-repo.sh
+# Generate GitHub repository configuration values  
+./scripts/generate-github-config.sh
+
+# Manually add the generated secrets and variables to GitHub repository:
+# Secrets: https://github.com/rmcveyhsawaknow/tasky-pivot-for-insight/settings/secrets/actions
+# Variables: https://github.com/rmcveyhsawaknow/tasky-pivot-for-insight/settings/variables/actions
 ```
+
+**Note**: The automated `setup-github-repo.sh` may fail in Codespaces due to GitHub API permissions. Use `generate-github-config.sh` for reliable configuration generation.
 
 ### Step 3: Deploy via GitHub Actions
 ```bash

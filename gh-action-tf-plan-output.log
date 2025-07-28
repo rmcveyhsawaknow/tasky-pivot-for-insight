@@ -1,0 +1,1752 @@
+2025-07-27T21:08:41.6538812Z Current runner version: '2.326.0'
+2025-07-27T21:08:41.6561665Z ##[group]Runner Image Provisioner
+2025-07-27T21:08:41.6562559Z Hosted Compute Agent
+2025-07-27T21:08:41.6563254Z Version: 20250711.363
+2025-07-27T21:08:41.6563857Z Commit: 6785254374ce925a23743850c1cb91912ce5c14c
+2025-07-27T21:08:41.6564579Z Build Date: 2025-07-11T20:04:25Z
+2025-07-27T21:08:41.6565220Z ##[endgroup]
+2025-07-27T21:08:41.6565699Z ##[group]Operating System
+2025-07-27T21:08:41.6566303Z Ubuntu
+2025-07-27T21:08:41.6566797Z 24.04.2
+2025-07-27T21:08:41.6567261Z LTS
+2025-07-27T21:08:41.6567786Z ##[endgroup]
+2025-07-27T21:08:41.6568713Z ##[group]Runner Image
+2025-07-27T21:08:41.6569292Z Image: ubuntu-24.04
+2025-07-27T21:08:41.6569916Z Version: 20250720.1.0
+2025-07-27T21:08:41.6570943Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20250720.1/images/ubuntu/Ubuntu2404-Readme.md
+2025-07-27T21:08:41.6572559Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20250720.1
+2025-07-27T21:08:41.6573562Z ##[endgroup]
+2025-07-27T21:08:41.6574779Z ##[group]GITHUB_TOKEN Permissions
+2025-07-27T21:08:41.6576603Z Contents: read
+2025-07-27T21:08:41.6577638Z Metadata: read
+2025-07-27T21:08:41.6578335Z PullRequests: write
+2025-07-27T21:08:41.6578908Z ##[endgroup]
+2025-07-27T21:08:41.6581278Z Secret source: Actions
+2025-07-27T21:08:41.6582191Z Prepare workflow directory
+2025-07-27T21:08:41.7160958Z Prepare all required actions
+2025-07-27T21:08:41.7198045Z Getting action download info
+2025-07-27T21:08:42.1696430Z ##[group]Download immutable action package 'actions/checkout@v4'
+2025-07-27T21:08:42.1697646Z Version: 4.2.2
+2025-07-27T21:08:42.1699229Z Digest: sha256:ccb2698953eaebd21c7bf6268a94f9c26518a7e38e27e0b83c1fe1ad049819b1
+2025-07-27T21:08:42.1700583Z Source commit SHA: 11bd71901bbe5b1630ceea73d27597364c9af683
+2025-07-27T21:08:42.1701494Z ##[endgroup]
+2025-07-27T21:08:42.2831161Z Download action repository 'aws-actions/configure-aws-credentials@v4' (SHA:e3dd6a429d7300a6a4c196c26e071d42e0343502)
+2025-07-27T21:08:43.0834389Z Download action repository 'hashicorp/setup-terraform@v3' (SHA:b9cd54a3c349d3f38e8881555d616ced269862dd)
+2025-07-27T21:08:43.8635693Z ##[group]Download immutable action package 'actions/github-script@v7'
+2025-07-27T21:08:43.8636242Z Version: 7.0.1
+2025-07-27T21:08:43.8636861Z Digest: sha256:bce02966afe3a75123f766b765abe432fac5464b74976015dc06b811ac9054c7
+2025-07-27T21:08:43.8637478Z Source commit SHA: 60a0d83039c74a4aee543508d2ffcb1c3799cdea
+2025-07-27T21:08:43.8637907Z ##[endgroup]
+2025-07-27T21:08:44.2814052Z Complete job name: Terraform Plan
+2025-07-27T21:08:44.3403316Z ##[group]Run actions/checkout@v4
+2025-07-27T21:08:44.3403955Z with:
+2025-07-27T21:08:44.3404287Z   repository: rmcveyhsawaknow/tasky-pivot-for-insight
+2025-07-27T21:08:44.3404805Z   token: ***
+2025-07-27T21:08:44.3405046Z   ssh-strict: true
+2025-07-27T21:08:44.3405293Z   ssh-user: git
+2025-07-27T21:08:44.3405542Z   persist-credentials: true
+2025-07-27T21:08:44.3405813Z   clean: true
+2025-07-27T21:08:44.3406068Z   sparse-checkout-cone-mode: true
+2025-07-27T21:08:44.3406378Z   fetch-depth: 1
+2025-07-27T21:08:44.3406631Z   fetch-tags: false
+2025-07-27T21:08:44.3406882Z   show-progress: true
+2025-07-27T21:08:44.3407129Z   lfs: false
+2025-07-27T21:08:44.3407361Z   submodules: false
+2025-07-27T21:08:44.3407609Z   set-safe-directory: true
+2025-07-27T21:08:44.3408232Z env:
+2025-07-27T21:08:44.3408484Z   TF_VERSION: 1.7.5
+2025-07-27T21:08:44.3408753Z   AWS_REGION: us-east-1
+2025-07-27T21:08:44.3409010Z   PROJECT_NAME: tasky
+2025-07-27T21:08:44.3409258Z   ENVIRONMENT: dev
+2025-07-27T21:08:44.3409532Z   STACK_VERSION: v15
+2025-07-27T21:08:44.3409774Z ##[endgroup]
+2025-07-27T21:08:44.4452902Z Syncing repository: rmcveyhsawaknow/tasky-pivot-for-insight
+2025-07-27T21:08:44.4454374Z ##[group]Getting Git version info
+2025-07-27T21:08:44.4454932Z Working directory is '/home/runner/work/tasky-pivot-for-insight/tasky-pivot-for-insight'
+2025-07-27T21:08:44.4455653Z [command]/usr/bin/git version
+2025-07-27T21:08:44.4513763Z git version 2.50.1
+2025-07-27T21:08:44.4538956Z ##[endgroup]
+2025-07-27T21:08:44.4559434Z Temporarily overriding HOME='/home/runner/work/_temp/5b925e32-9f88-4991-8059-07fd115b71f4' before making global git config changes
+2025-07-27T21:08:44.4560342Z Adding repository directory to the temporary git global config as a safe directory
+2025-07-27T21:08:44.4564849Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/tasky-pivot-for-insight/tasky-pivot-for-insight
+2025-07-27T21:08:44.4602323Z Deleting the contents of '/home/runner/work/tasky-pivot-for-insight/tasky-pivot-for-insight'
+2025-07-27T21:08:44.4605610Z ##[group]Initializing the repository
+2025-07-27T21:08:44.4610041Z [command]/usr/bin/git init /home/runner/work/tasky-pivot-for-insight/tasky-pivot-for-insight
+2025-07-27T21:08:44.4711269Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-07-27T21:08:44.4712403Z hint: is subject to change. To configure the initial branch name to use in all
+2025-07-27T21:08:44.4713264Z hint: of your new repositories, which will suppress this warning, call:
+2025-07-27T21:08:44.4713985Z hint:
+2025-07-27T21:08:44.4714571Z hint: 	git config --global init.defaultBranch <name>
+2025-07-27T21:08:44.4715204Z hint:
+2025-07-27T21:08:44.4715851Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-07-27T21:08:44.4716832Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-07-27T21:08:44.4717622Z hint:
+2025-07-27T21:08:44.4718289Z hint: 	git branch -m <name>
+2025-07-27T21:08:44.4718813Z hint:
+2025-07-27T21:08:44.4719790Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-07-27T21:08:44.4721112Z Initialized empty Git repository in /home/runner/work/tasky-pivot-for-insight/tasky-pivot-for-insight/.git/
+2025-07-27T21:08:44.4727563Z [command]/usr/bin/git remote add origin https://github.com/rmcveyhsawaknow/tasky-pivot-for-insight
+2025-07-27T21:08:44.4773493Z ##[endgroup]
+2025-07-27T21:08:44.4774003Z ##[group]Disabling automatic garbage collection
+2025-07-27T21:08:44.4777557Z [command]/usr/bin/git config --local gc.auto 0
+2025-07-27T21:08:44.4805731Z ##[endgroup]
+2025-07-27T21:08:44.4806468Z ##[group]Setting up auth
+2025-07-27T21:08:44.4812745Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-07-27T21:08:44.4841632Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-07-27T21:08:44.5143476Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-07-27T21:08:44.5171140Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-07-27T21:08:44.5391633Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-07-27T21:08:44.5425923Z ##[endgroup]
+2025-07-27T21:08:44.5426823Z ##[group]Fetching the repository
+2025-07-27T21:08:44.5435355Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +c1f2a6dc45b5933c7e15d208489571e833af3b19:refs/remotes/origin/deploy/v15-quickstart
+2025-07-27T21:08:45.5046289Z From https://github.com/rmcveyhsawaknow/tasky-pivot-for-insight
+2025-07-27T21:08:45.5049228Z  * [new ref]         c1f2a6dc45b5933c7e15d208489571e833af3b19 -> origin/deploy/v15-quickstart
+2025-07-27T21:08:45.5072813Z ##[endgroup]
+2025-07-27T21:08:45.5076636Z ##[group]Determining the checkout info
+2025-07-27T21:08:45.5077353Z ##[endgroup]
+2025-07-27T21:08:45.5082166Z [command]/usr/bin/git sparse-checkout disable
+2025-07-27T21:08:45.5131539Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-07-27T21:08:45.5162745Z ##[group]Checking out the ref
+2025-07-27T21:08:45.5167996Z [command]/usr/bin/git checkout --progress --force -B deploy/v15-quickstart refs/remotes/origin/deploy/v15-quickstart
+2025-07-27T21:08:45.6357792Z Switched to a new branch 'deploy/v15-quickstart'
+2025-07-27T21:08:45.6359384Z branch 'deploy/v15-quickstart' set up to track 'origin/deploy/v15-quickstart'.
+2025-07-27T21:08:45.6374540Z ##[endgroup]
+2025-07-27T21:08:45.6417908Z [command]/usr/bin/git log -1 --format=%H
+2025-07-27T21:08:45.6442154Z c1f2a6dc45b5933c7e15d208489571e833af3b19
+2025-07-27T21:08:45.6652951Z ##[group]Run aws-actions/configure-aws-credentials@v4
+2025-07-27T21:08:45.6653291Z with:
+2025-07-27T21:08:45.6653673Z   role-to-assume: ***
+2025-07-27T21:08:45.6653884Z   aws-region: us-east-1
+2025-07-27T21:08:45.6654101Z   audience: sts.amazonaws.com
+2025-07-27T21:08:45.6719231Z env:
+2025-07-27T21:08:45.6719564Z   TF_VERSION: 1.7.5
+2025-07-27T21:08:45.6719905Z   AWS_REGION: us-east-1
+2025-07-27T21:08:45.6720333Z   PROJECT_NAME: tasky
+2025-07-27T21:08:45.6720761Z   ENVIRONMENT: dev
+2025-07-27T21:08:45.6721181Z   STACK_VERSION: v15
+2025-07-27T21:08:45.6721505Z ##[endgroup]
+2025-07-27T21:08:46.0287390Z Assuming role with OIDC
+2025-07-27T21:08:46.3518712Z Authenticated as assumedRoleId AROASG7WNPAI6M3AFE467:GitHubActions
+2025-07-27T21:08:46.4346004Z ##[group]Run hashicorp/setup-terraform@v3
+2025-07-27T21:08:46.4346319Z with:
+2025-07-27T21:08:46.4346514Z   terraform_version: 1.7.5
+2025-07-27T21:08:46.4346787Z   cli_config_credentials_hostname: app.terraform.io
+2025-07-27T21:08:46.4347091Z   terraform_wrapper: true
+2025-07-27T21:08:46.4347304Z env:
+2025-07-27T21:08:46.4347483Z   TF_VERSION: 1.7.5
+2025-07-27T21:08:46.4347686Z   AWS_REGION: us-east-1
+2025-07-27T21:08:46.4347904Z   PROJECT_NAME: tasky
+2025-07-27T21:08:46.4348507Z   ENVIRONMENT: dev
+2025-07-27T21:08:46.4348723Z   STACK_VERSION: v15
+2025-07-27T21:08:46.4348941Z   AWS_DEFAULT_REGION: us-east-1
+2025-07-27T21:08:46.4349313Z   AWS_ACCESS_KEY_ID: ***
+2025-07-27T21:08:46.4349650Z   AWS_SECRET_ACCESS_KEY: ***
+2025-07-27T21:08:46.4354906Z   AWS_SESSION_TOKEN: ***
+2025-07-27T21:08:46.4355144Z ##[endgroup]
+2025-07-27T21:08:46.9173505Z [command]/usr/bin/unzip -o -q /home/runner/work/_temp/eec526a1-460a-48e6-9e36-85339b429a91
+2025-07-27T21:08:47.5474593Z ##[group]Run cat > terraform/terraform.tfvars << EOF
+2025-07-27T21:08:47.5475039Z [36;1mcat > terraform/terraform.tfvars << EOF[0m
+2025-07-27T21:08:47.5475362Z [36;1mproject_name = "tasky"[0m
+2025-07-27T21:08:47.5475622Z [36;1menvironment = "dev"[0m
+2025-07-27T21:08:47.5475870Z [36;1mstack_version = "v15"[0m
+2025-07-27T21:08:47.5476121Z [36;1maws_region = "us-east-1"[0m
+2025-07-27T21:08:47.5476399Z [36;1mmongodb_instance_type = "t3.micro"[0m
+2025-07-27T21:08:47.5476666Z [36;1mvpc_cidr = "10.0.0.0/16"[0m
+2025-07-27T21:08:47.5477139Z [36;1mmongodb_username = "***"[0m
+2025-07-27T21:08:47.5477431Z [36;1mmongodb_password = "***"[0m
+2025-07-27T21:08:47.5477702Z [36;1mmongodb_database_name = "go-mongodb"[0m
+2025-07-27T21:08:47.5478277Z [36;1mjwt_secret = "***"[0m
+2025-07-27T21:08:47.5478609Z [36;1mEOF[0m
+2025-07-27T21:08:47.5510240Z shell: /usr/bin/bash -e {0}
+2025-07-27T21:08:47.5510528Z env:
+2025-07-27T21:08:47.5510715Z   TF_VERSION: 1.7.5
+2025-07-27T21:08:47.5510955Z   AWS_REGION: us-east-1
+2025-07-27T21:08:47.5511182Z   PROJECT_NAME: tasky
+2025-07-27T21:08:47.5511396Z   ENVIRONMENT: dev
+2025-07-27T21:08:47.5511606Z   STACK_VERSION: v15
+2025-07-27T21:08:47.5511819Z   AWS_DEFAULT_REGION: us-east-1
+2025-07-27T21:08:47.5512133Z   AWS_ACCESS_KEY_ID: ***
+2025-07-27T21:08:47.5512468Z   AWS_SECRET_ACCESS_KEY: ***
+2025-07-27T21:08:47.5517652Z   AWS_SESSION_TOKEN: ***
+2025-07-27T21:08:47.5518016Z   TERRAFORM_CLI_PATH: /home/runner/work/_temp/682a2dc3-cbf7-4562-b769-5f8063a5c3f9
+2025-07-27T21:08:47.5518669Z ##[endgroup]
+2025-07-27T21:08:47.5621179Z ##[group]Run terraform fmt -check -recursive
+2025-07-27T21:08:47.5621537Z [36;1mterraform fmt -check -recursive[0m
+2025-07-27T21:08:47.5646133Z shell: /usr/bin/bash -e {0}
+2025-07-27T21:08:47.5646387Z env:
+2025-07-27T21:08:47.5646572Z   TF_VERSION: 1.7.5
+2025-07-27T21:08:47.5646781Z   AWS_REGION: us-east-1
+2025-07-27T21:08:47.5647172Z   PROJECT_NAME: tasky
+2025-07-27T21:08:47.5647391Z   ENVIRONMENT: dev
+2025-07-27T21:08:47.5647588Z   STACK_VERSION: v15
+2025-07-27T21:08:47.5647801Z   AWS_DEFAULT_REGION: us-east-1
+2025-07-27T21:08:47.5648251Z   AWS_ACCESS_KEY_ID: ***
+2025-07-27T21:08:47.5648596Z   AWS_SECRET_ACCESS_KEY: ***
+2025-07-27T21:08:47.5653747Z   AWS_SESSION_TOKEN: ***
+2025-07-27T21:08:47.5654111Z   TERRAFORM_CLI_PATH: /home/runner/work/_temp/682a2dc3-cbf7-4562-b769-5f8063a5c3f9
+2025-07-27T21:08:47.5654487Z ##[endgroup]
+2025-07-27T21:08:49.1822639Z terraform.tfvars
+2025-07-27T21:08:49.1995117Z ##[error]Terraform exited with code 3.
+2025-07-27T21:08:49.2202245Z ##[error]Process completed with exit code 1.
+2025-07-27T21:08:49.2254027Z ##[group]Run terraform init -backend-config=backend-prod.hcl
+2025-07-27T21:08:49.2254481Z [36;1mterraform init -backend-config=backend-prod.hcl[0m
+2025-07-27T21:08:49.2281626Z shell: /usr/bin/bash -e {0}
+2025-07-27T21:08:49.2281879Z env:
+2025-07-27T21:08:49.2282073Z   TF_VERSION: 1.7.5
+2025-07-27T21:08:49.2282301Z   AWS_REGION: us-east-1
+2025-07-27T21:08:49.2282521Z   PROJECT_NAME: tasky
+2025-07-27T21:08:49.2282735Z   ENVIRONMENT: dev
+2025-07-27T21:08:49.2282941Z   STACK_VERSION: v15
+2025-07-27T21:08:49.2283162Z   AWS_DEFAULT_REGION: us-east-1
+2025-07-27T21:08:49.2283488Z   AWS_ACCESS_KEY_ID: ***
+2025-07-27T21:08:49.2283814Z   AWS_SECRET_ACCESS_KEY: ***
+2025-07-27T21:08:49.2289237Z   AWS_SESSION_TOKEN: ***
+2025-07-27T21:08:49.2289614Z   TERRAFORM_CLI_PATH: /home/runner/work/_temp/682a2dc3-cbf7-4562-b769-5f8063a5c3f9
+2025-07-27T21:08:49.2289993Z ##[endgroup]
+2025-07-27T21:08:49.3319112Z 
+2025-07-27T21:08:49.3319868Z [0m[1mInitializing the backend...[0m
+2025-07-27T21:08:49.9698766Z [0m[32m
+2025-07-27T21:08:49.9699386Z Successfully configured the backend "s3"! Terraform will automatically
+2025-07-27T21:08:49.9701621Z use this backend unless the backend configuration changes.[0m
+2025-07-27T21:08:50.3516247Z [0m[1mInitializing modules...[0m
+2025-07-27T21:08:50.3541255Z - eks in modules/eks
+2025-07-27T21:08:50.3554570Z - mongodb_ec2 in modules/mongodb-ec2
+2025-07-27T21:08:50.3562792Z - s3_backup in modules/s3-backup
+2025-07-27T21:08:50.3575489Z - vpc in modules/vpc
+2025-07-27T21:08:50.3614142Z 
+2025-07-27T21:08:50.3614912Z [0m[1mInitializing provider plugins...[0m
+2025-07-27T21:08:50.3615607Z - Reusing previous version of hashicorp/aws from the dependency lock file
+2025-07-27T21:08:50.4921959Z - Reusing previous version of hashicorp/kubernetes from the dependency lock file
+2025-07-27T21:08:50.6056862Z - Reusing previous version of hashicorp/helm from the dependency lock file
+2025-07-27T21:08:50.7161201Z - Reusing previous version of hashicorp/tls from the dependency lock file
+2025-07-27T21:08:50.7581081Z - Reusing previous version of hashicorp/random from the dependency lock file
+2025-07-27T21:08:50.8779104Z - Installing hashicorp/random v3.7.2...
+2025-07-27T21:08:51.2136239Z - Installed hashicorp/random v3.7.2 (signed by HashiCorp)
+2025-07-27T21:08:51.2898800Z - Installing hashicorp/aws v5.100.0...
+2025-07-27T21:08:58.0825897Z - Installed hashicorp/aws v5.100.0 (signed by HashiCorp)
+2025-07-27T21:08:58.1679117Z - Installing hashicorp/kubernetes v2.37.1...
+2025-07-27T21:08:59.0070694Z - Installed hashicorp/kubernetes v2.37.1 (signed by HashiCorp)
+2025-07-27T21:08:59.0859220Z - Installing hashicorp/helm v2.17.0...
+2025-07-27T21:08:59.9317733Z - Installed hashicorp/helm v2.17.0 (signed by HashiCorp)
+2025-07-27T21:09:00.0114729Z - Installing hashicorp/tls v4.1.0...
+2025-07-27T21:09:00.3711712Z - Installed hashicorp/tls v4.1.0 (signed by HashiCorp)
+2025-07-27T21:09:00.3712133Z 
+2025-07-27T21:09:00.3714615Z [0m[1m[32mTerraform has been successfully initialized![0m[32m[0m
+2025-07-27T21:09:00.3715256Z [0m[32m
+2025-07-27T21:09:00.3715752Z You may now begin working with Terraform. Try running "terraform plan" to see
+2025-07-27T21:09:00.3716543Z any changes that are required for your infrastructure. All Terraform commands
+2025-07-27T21:09:00.3717129Z should now work.
+2025-07-27T21:09:00.3717644Z 
+2025-07-27T21:09:00.3717979Z If you ever set or change modules or backend configuration for Terraform,
+2025-07-27T21:09:00.3718977Z rerun this command to reinitialize your working directory. If you forget, other
+2025-07-27T21:09:00.3719558Z commands will detect it and remind you to do so if necessary.[0m
+2025-07-27T21:09:00.3834245Z ##[group]Run terraform validate -no-color
+2025-07-27T21:09:00.3834592Z [36;1mterraform validate -no-color[0m
+2025-07-27T21:09:00.3862219Z shell: /usr/bin/bash -e {0}
+2025-07-27T21:09:00.3862466Z env:
+2025-07-27T21:09:00.3862648Z   TF_VERSION: 1.7.5
+2025-07-27T21:09:00.3862856Z   AWS_REGION: us-east-1
+2025-07-27T21:09:00.3863087Z   PROJECT_NAME: tasky
+2025-07-27T21:09:00.3863304Z   ENVIRONMENT: dev
+2025-07-27T21:09:00.3863505Z   STACK_VERSION: v15
+2025-07-27T21:09:00.3863719Z   AWS_DEFAULT_REGION: us-east-1
+2025-07-27T21:09:00.3864044Z   AWS_ACCESS_KEY_ID: ***
+2025-07-27T21:09:00.3864370Z   AWS_SECRET_ACCESS_KEY: ***
+2025-07-27T21:09:00.3869708Z   AWS_SESSION_TOKEN: ***
+2025-07-27T21:09:00.3870089Z   TERRAFORM_CLI_PATH: /home/runner/work/_temp/682a2dc3-cbf7-4562-b769-5f8063a5c3f9
+2025-07-27T21:09:00.3870463Z ##[endgroup]
+2025-07-27T21:09:02.7001581Z Success! The configuration is valid.
+2025-07-27T21:09:02.7005410Z 
+2025-07-27T21:09:02.7144858Z ##[group]Run terraform plan -no-color -out=tfplan
+2025-07-27T21:09:02.7145252Z [36;1mterraform plan -no-color -out=tfplan[0m
+2025-07-27T21:09:02.7172107Z shell: /usr/bin/bash -e {0}
+2025-07-27T21:09:02.7172356Z env:
+2025-07-27T21:09:02.7172542Z   TF_VERSION: 1.7.5
+2025-07-27T21:09:02.7172759Z   AWS_REGION: us-east-1
+2025-07-27T21:09:02.7172984Z   PROJECT_NAME: tasky
+2025-07-27T21:09:02.7173202Z   ENVIRONMENT: dev
+2025-07-27T21:09:02.7173410Z   STACK_VERSION: v15
+2025-07-27T21:09:02.7173623Z   AWS_DEFAULT_REGION: us-east-1
+2025-07-27T21:09:02.7173944Z   AWS_ACCESS_KEY_ID: ***
+2025-07-27T21:09:02.7174293Z   AWS_SECRET_ACCESS_KEY: ***
+2025-07-27T21:09:02.7179734Z   AWS_SESSION_TOKEN: ***
+2025-07-27T21:09:02.7180107Z   TERRAFORM_CLI_PATH: /home/runner/work/_temp/682a2dc3-cbf7-4562-b769-5f8063a5c3f9
+2025-07-27T21:09:02.7180502Z ##[endgroup]
+2025-07-27T21:09:06.6689874Z module.vpc.data.aws_region.current: Reading...
+2025-07-27T21:09:06.6690670Z data.aws_availability_zones.available: Reading...
+2025-07-27T21:09:06.6770994Z module.mongodb_ec2.data.aws_ami.amazon_linux_2: Reading...
+2025-07-27T21:09:06.6771803Z module.vpc.data.aws_region.current: Read complete after 0s [id=us-east-1]
+2025-07-27T21:09:06.6791951Z data.aws_caller_identity.current: Reading...
+2025-07-27T21:09:06.7402162Z data.aws_caller_identity.current: Read complete after 0s [id=152451250193]
+2025-07-27T21:09:06.9815165Z data.aws_availability_zones.available: Read complete after 0s [id=us-east-1]
+2025-07-27T21:09:07.2522310Z module.mongodb_ec2.data.aws_ami.amazon_linux_2: Read complete after 0s [id=ami-083e865b97bdf1c1b]
+2025-07-27T21:09:07.4430922Z 
+2025-07-27T21:09:07.4432330Z Terraform used the selected providers to generate the following execution
+2025-07-27T21:09:07.4433125Z plan. Resource actions are indicated with the following symbols:
+2025-07-27T21:09:07.4435462Z   + create
+2025-07-27T21:09:07.4437056Z  <= read (data resources)
+2025-07-27T21:09:07.4438739Z 
+2025-07-27T21:09:07.4448832Z Terraform will perform the following actions:
+2025-07-27T21:09:07.4449636Z 
+2025-07-27T21:09:07.4450328Z   # module.eks.data.aws_iam_policy_document.aws_load_balancer_controller_assume_role_policy will be read during apply
+2025-07-27T21:09:07.4451141Z   # (config refers to values not yet known)
+2025-07-27T21:09:07.4451760Z  <= data "aws_iam_policy_document" "aws_load_balancer_controller_assume_role_policy" {
+2025-07-27T21:09:07.4452359Z       + id            = (known after apply)
+2025-07-27T21:09:07.4452757Z       + json          = (known after apply)
+2025-07-27T21:09:07.4453175Z       + minified_json = (known after apply)
+2025-07-27T21:09:07.4453468Z 
+2025-07-27T21:09:07.4453592Z       + statement {
+2025-07-27T21:09:07.4453906Z           + actions = [
+2025-07-27T21:09:07.4454285Z               + "sts:AssumeRoleWithWebIdentity",
+2025-07-27T21:09:07.4455115Z             ]
+2025-07-27T21:09:07.4455428Z           + effect  = "Allow"
+2025-07-27T21:09:07.4455672Z 
+2025-07-27T21:09:07.4455803Z           + condition {
+2025-07-27T21:09:07.4456168Z               + test     = "StringEquals"
+2025-07-27T21:09:07.4456687Z               + values   = [
+2025-07-27T21:09:07.4457233Z                   + "system:serviceaccount:kube-system:aws-load-balancer-controller",
+2025-07-27T21:09:07.4457837Z                 ]
+2025-07-27T21:09:07.4458491Z               + variable = (known after apply)
+2025-07-27T21:09:07.4458932Z             }
+2025-07-27T21:09:07.4459116Z 
+2025-07-27T21:09:07.4459258Z           + principals {
+2025-07-27T21:09:07.4459628Z               + identifiers = [
+2025-07-27T21:09:07.4460052Z                   + (known after apply),
+2025-07-27T21:09:07.4460474Z                 ]
+2025-07-27T21:09:07.4460835Z               + type        = "Federated"
+2025-07-27T21:09:07.4461289Z             }
+2025-07-27T21:09:07.4461630Z         }
+2025-07-27T21:09:07.4461932Z     }
+2025-07-27T21:09:07.4462103Z 
+2025-07-27T21:09:07.4462394Z   # module.eks.data.tls_certificate.eks will be read during apply
+2025-07-27T21:09:07.4463315Z   # (config refers to values not yet known)
+2025-07-27T21:09:07.4463792Z  <= data "tls_certificate" "eks" {
+2025-07-27T21:09:07.4464212Z       + certificates = (known after apply)
+2025-07-27T21:09:07.4464646Z       + id           = (known after apply)
+2025-07-27T21:09:07.4465071Z       + url          = (known after apply)
+2025-07-27T21:09:07.4465460Z     }
+2025-07-27T21:09:07.4465623Z 
+2025-07-27T21:09:07.4465827Z   # module.eks.aws_eks_addon.coredns will be created
+2025-07-27T21:09:07.4466329Z   + resource "aws_eks_addon" "coredns" {
+2025-07-27T21:09:07.4466765Z       + addon_name           = "coredns"
+2025-07-27T21:09:07.4467214Z       + addon_version        = "v1.10.1-eksbuild.5"
+2025-07-27T21:09:07.4467693Z       + arn                  = (known after apply)
+2025-07-27T21:09:07.4468436Z       + cluster_name         = "tasky-dev-v15-eks-cluster"
+2025-07-27T21:09:07.4468963Z       + configuration_values = (known after apply)
+2025-07-27T21:09:07.4469438Z       + created_at           = (known after apply)
+2025-07-27T21:09:07.4469893Z       + id                   = (known after apply)
+2025-07-27T21:09:07.4470341Z       + modified_at          = (known after apply)
+2025-07-27T21:09:07.4470787Z       + tags                 = (known after apply)
+2025-07-27T21:09:07.4471238Z       + tags_all             = (known after apply)
+2025-07-27T21:09:07.4471648Z     }
+2025-07-27T21:09:07.4471811Z 
+2025-07-27T21:09:07.4472012Z   # module.eks.aws_eks_addon.ebs_csi will be created
+2025-07-27T21:09:07.4472500Z   + resource "aws_eks_addon" "ebs_csi" {
+2025-07-27T21:09:07.4472954Z       + addon_name           = "aws-ebs-csi-driver"
+2025-07-27T21:09:07.4473430Z       + addon_version        = "v1.24.0-eksbuild.1"
+2025-07-27T21:09:07.4473885Z       + arn                  = (known after apply)
+2025-07-27T21:09:07.4474380Z       + cluster_name         = "tasky-dev-v15-eks-cluster"
+2025-07-27T21:09:07.4474893Z       + configuration_values = (known after apply)
+2025-07-27T21:09:07.4475366Z       + created_at           = (known after apply)
+2025-07-27T21:09:07.4475819Z       + id                   = (known after apply)
+2025-07-27T21:09:07.4476264Z       + modified_at          = (known after apply)
+2025-07-27T21:09:07.4476714Z       + tags                 = (known after apply)
+2025-07-27T21:09:07.4477166Z       + tags_all             = (known after apply)
+2025-07-27T21:09:07.4477573Z     }
+2025-07-27T21:09:07.4477729Z 
+2025-07-27T21:09:07.4477947Z   # module.eks.aws_eks_addon.kube_proxy will be created
+2025-07-27T21:09:07.4478688Z   + resource "aws_eks_addon" "kube_proxy" {
+2025-07-27T21:09:07.4479160Z       + addon_name           = "kube-proxy"
+2025-07-27T21:09:07.4479603Z       + addon_version        = "v1.28.2-eksbuild.2"
+2025-07-27T21:09:07.4480064Z       + arn                  = (known after apply)
+2025-07-27T21:09:07.4480557Z       + cluster_name         = "tasky-dev-v15-eks-cluster"
+2025-07-27T21:09:07.4481261Z       + configuration_values = (known after apply)
+2025-07-27T21:09:07.4481764Z       + created_at           = (known after apply)
+2025-07-27T21:09:07.4482256Z       + id                   = (known after apply)
+2025-07-27T21:09:07.4482748Z       + modified_at          = (known after apply)
+2025-07-27T21:09:07.4483232Z       + tags                 = (known after apply)
+2025-07-27T21:09:07.4483712Z       + tags_all             = (known after apply)
+2025-07-27T21:09:07.4484161Z     }
+2025-07-27T21:09:07.4484330Z 
+2025-07-27T21:09:07.4484543Z   # module.eks.aws_eks_addon.vpc_cni will be created
+2025-07-27T21:09:07.4485107Z   + resource "aws_eks_addon" "vpc_cni" {
+2025-07-27T21:09:07.4485621Z       + addon_name           = "vpc-cni"
+2025-07-27T21:09:07.4486138Z       + addon_version        = "v1.15.1-eksbuild.1"
+2025-07-27T21:09:07.4486662Z       + arn                  = (known after apply)
+2025-07-27T21:09:07.4487220Z       + cluster_name         = "tasky-dev-v15-eks-cluster"
+2025-07-27T21:09:07.4487804Z       + configuration_values = (known after apply)
+2025-07-27T21:09:07.4488488Z       + created_at           = (known after apply)
+2025-07-27T21:09:07.4489146Z       + id                   = (known after apply)
+2025-07-27T21:09:07.4489606Z       + modified_at          = (known after apply)
+2025-07-27T21:09:07.4490076Z       + tags                 = (known after apply)
+2025-07-27T21:09:07.4490533Z       + tags_all             = (known after apply)
+2025-07-27T21:09:07.4490952Z     }
+2025-07-27T21:09:07.4491120Z 
+2025-07-27T21:09:07.4491316Z   # module.eks.aws_eks_cluster.main will be created
+2025-07-27T21:09:07.4491819Z   + resource "aws_eks_cluster" "main" {
+2025-07-27T21:09:07.4492279Z       + arn                           = (known after apply)
+2025-07-27T21:09:07.4492780Z       + bootstrap_self_managed_addons = true
+2025-07-27T21:09:07.4493290Z       + certificate_authority         = (known after apply)
+2025-07-27T21:09:07.4493828Z       + cluster_id                    = (known after apply)
+2025-07-27T21:09:07.4494353Z       + created_at                    = (known after apply)
+2025-07-27T21:09:07.4494831Z       + enabled_cluster_log_types     = [
+2025-07-27T21:09:07.4495267Z           + "api",
+2025-07-27T21:09:07.4495564Z           + "audit",
+2025-07-27T21:09:07.4495910Z           + "authenticator",
+2025-07-27T21:09:07.4496280Z           + "controllerManager",
+2025-07-27T21:09:07.4496674Z           + "scheduler",
+2025-07-27T21:09:07.4496992Z         ]
+2025-07-27T21:09:07.4497352Z       + endpoint                      = (known after apply)
+2025-07-27T21:09:07.4497831Z       + id                            = (known after apply)
+2025-07-27T21:09:07.4498448Z       + identity                      = (known after apply)
+2025-07-27T21:09:07.4498975Z       + name                          = "tasky-dev-v15-eks-cluster"
+2025-07-27T21:09:07.4499511Z       + platform_version              = (known after apply)
+2025-07-27T21:09:07.4500024Z       + role_arn                      = (known after apply)
+2025-07-27T21:09:07.4500506Z       + status                        = (known after apply)
+2025-07-27T21:09:07.4500986Z       + tags                          = (known after apply)
+2025-07-27T21:09:07.4501475Z       + tags_all                      = (known after apply)
+2025-07-27T21:09:07.4501925Z       + version                       = "1.28"
+2025-07-27T21:09:07.4502234Z 
+2025-07-27T21:09:07.4502360Z       + vpc_config {
+2025-07-27T21:09:07.4502741Z           + cluster_security_group_id = (known after apply)
+2025-07-27T21:09:07.4503249Z           + endpoint_private_access   = true
+2025-07-27T21:09:07.4503679Z           + endpoint_public_access    = true
+2025-07-27T21:09:07.4504165Z           + public_access_cidrs       = (known after apply)
+2025-07-27T21:09:07.4504693Z           + security_group_ids        = (known after apply)
+2025-07-27T21:09:07.4505204Z           + subnet_ids                = (known after apply)
+2025-07-27T21:09:07.4505714Z           + vpc_id                    = (known after apply)
+2025-07-27T21:09:07.4506327Z         }
+2025-07-27T21:09:07.4506595Z     }
+2025-07-27T21:09:07.4506751Z 
+2025-07-27T21:09:07.4506967Z   # module.eks.aws_eks_node_group.main will be created
+2025-07-27T21:09:07.4507480Z   + resource "aws_eks_node_group" "main" {
+2025-07-27T21:09:07.4507949Z       + ami_type               = (known after apply)
+2025-07-27T21:09:07.4508550Z       + arn                    = (known after apply)
+2025-07-27T21:09:07.4509007Z       + capacity_type          = "ON_DEMAND"
+2025-07-27T21:09:07.4509498Z       + cluster_name           = "tasky-dev-v15-eks-cluster"
+2025-07-27T21:09:07.4510020Z       + disk_size              = (known after apply)
+2025-07-27T21:09:07.4510468Z       + id                     = (known after apply)
+2025-07-27T21:09:07.4510911Z       + instance_types         = [
+2025-07-27T21:09:07.4511285Z           + "t3.medium",
+2025-07-27T21:09:07.4511615Z         ]
+2025-07-27T21:09:07.4511973Z       + node_group_name        = "tasky-dev-v15-eks-nodes"
+2025-07-27T21:09:07.4512513Z       + node_group_name_prefix = (known after apply)
+2025-07-27T21:09:07.4513005Z       + node_role_arn          = (known after apply)
+2025-07-27T21:09:07.4513628Z       + release_version        = (known after apply)
+2025-07-27T21:09:07.4514119Z       + resources              = (known after apply)
+2025-07-27T21:09:07.4514582Z       + status                 = (known after apply)
+2025-07-27T21:09:07.4515054Z       + subnet_ids             = (known after apply)
+2025-07-27T21:09:07.4515570Z       + tags                   = (known after apply)
+2025-07-27T21:09:07.4516019Z       + tags_all               = (known after apply)
+2025-07-27T21:09:07.4516489Z       + version                = (known after apply)
+2025-07-27T21:09:07.4516789Z 
+2025-07-27T21:09:07.4516915Z       + scaling_config {
+2025-07-27T21:09:07.4517279Z           + desired_size = 2
+2025-07-27T21:09:07.4517633Z           + max_size     = 3
+2025-07-27T21:09:07.4518001Z           + min_size     = 1
+2025-07-27T21:09:07.4518474Z         }
+2025-07-27T21:09:07.4518626Z 
+2025-07-27T21:09:07.4518756Z       + update_config {
+2025-07-27T21:09:07.4519134Z           + max_unavailable = 1
+2025-07-27T21:09:07.4519506Z         }
+2025-07-27T21:09:07.4519794Z     }
+2025-07-27T21:09:07.4519981Z 
+2025-07-27T21:09:07.4520269Z   # module.eks.aws_iam_openid_connect_provider.eks will be created
+2025-07-27T21:09:07.4520956Z   + resource "aws_iam_openid_connect_provider" "eks" {
+2025-07-27T21:09:07.4521496Z       + arn             = (known after apply)
+2025-07-27T21:09:07.4521950Z       + client_id_list  = [
+2025-07-27T21:09:07.4522356Z           + "sts.amazonaws.com",
+2025-07-27T21:09:07.4522743Z         ]
+2025-07-27T21:09:07.4523097Z       + id              = (known after apply)
+2025-07-27T21:09:07.4523564Z       + tags            = (known after apply)
+2025-07-27T21:09:07.4524038Z       + tags_all        = (known after apply)
+2025-07-27T21:09:07.4524512Z       + thumbprint_list = (known after apply)
+2025-07-27T21:09:07.4524991Z       + url             = (known after apply)
+2025-07-27T21:09:07.4525424Z     }
+2025-07-27T21:09:07.4525595Z 
+2025-07-27T21:09:07.4525923Z   # module.eks.aws_iam_policy.aws_load_balancer_controller will be created
+2025-07-27T21:09:07.4526676Z   + resource "aws_iam_policy" "aws_load_balancer_controller" {
+2025-07-27T21:09:07.4527270Z       + arn              = (known after apply)
+2025-07-27T21:09:07.4527752Z       + attachment_count = (known after apply)
+2025-07-27T21:09:07.4528361Z       + id               = (known after apply)
+2025-07-27T21:09:07.4528982Z       + name             = "tasky-dev-v15-AWSLoadBalancerControllerPolicy"
+2025-07-27T21:09:07.4529599Z       + name_prefix      = (known after apply)
+2025-07-27T21:09:07.4530056Z       + path             = "/"
+2025-07-27T21:09:07.4530479Z       + policy           = jsonencode(
+2025-07-27T21:09:07.4530899Z             {
+2025-07-27T21:09:07.4531232Z               + Statement = [
+2025-07-27T21:09:07.4531622Z                   + {
+2025-07-27T21:09:07.4531967Z                       + Action   = [
+2025-07-27T21:09:07.4532664Z                           + "iam:CreateServiceLinkedRole",
+2025-07-27T21:09:07.4533220Z                           + "ec2:DescribeAccountAttributes",
+2025-07-27T21:09:07.4533748Z                           + "ec2:DescribeAddresses",
+2025-07-27T21:09:07.4534265Z                           + "ec2:DescribeAvailabilityZones",
+2025-07-27T21:09:07.4534810Z                           + "ec2:DescribeInternetGateways",
+2025-07-27T21:09:07.4535325Z                           + "ec2:DescribeVpcs",
+2025-07-27T21:09:07.4535803Z                           + "ec2:DescribeSubnets",
+2025-07-27T21:09:07.4536310Z                           + "ec2:DescribeSecurityGroups",
+2025-07-27T21:09:07.4536870Z                           + "ec2:DescribeInstances",
+2025-07-27T21:09:07.4537378Z                           + "ec2:DescribeNetworkInterfaces",
+2025-07-27T21:09:07.4537877Z                           + "ec2:DescribeTags",
+2025-07-27T21:09:07.4538511Z                           + "ec2:GetCoipPoolUsage",
+2025-07-27T21:09:07.4539035Z                           + "ec2:DescribeCoipPools",
+2025-07-27T21:09:07.4539588Z                           + "elasticloadbalancing:DescribeLoadBalancers",
+2025-07-27T21:09:07.4540493Z                           + "elasticloadbalancing:DescribeLoadBalancerAttributes",
+2025-07-27T21:09:07.4541183Z                           + "elasticloadbalancing:DescribeListeners",
+2025-07-27T21:09:07.4541813Z                           + "elasticloadbalancing:DescribeListenerAttributes",
+2025-07-27T21:09:07.4542490Z                           + "elasticloadbalancing:DescribeListenerCertificates",
+2025-07-27T21:09:07.4543138Z                           + "elasticloadbalancing:DescribeSSLPolicies",
+2025-07-27T21:09:07.4543757Z                           + "elasticloadbalancing:DescribeRules",
+2025-07-27T21:09:07.4544326Z                           + "elasticloadbalancing:DescribeTargetGroups",
+2025-07-27T21:09:07.4544982Z                           + "elasticloadbalancing:DescribeTargetGroupAttributes",
+2025-07-27T21:09:07.4545637Z                           + "elasticloadbalancing:DescribeTargetHealth",
+2025-07-27T21:09:07.4546219Z                           + "elasticloadbalancing:DescribeTags",
+2025-07-27T21:09:07.4546715Z                         ]
+2025-07-27T21:09:07.4547094Z                       + Effect   = "Allow"
+2025-07-27T21:09:07.4547565Z                       + Resource = "*"
+2025-07-27T21:09:07.4547972Z                     },
+2025-07-27T21:09:07.4548460Z                   + {
+2025-07-27T21:09:07.4548811Z                       + Action   = [
+2025-07-27T21:09:07.4549297Z                           + "cognito-idp:DescribeUserPoolClient",
+2025-07-27T21:09:07.4549820Z                           + "acm:ListCertificates",
+2025-07-27T21:09:07.4550315Z                           + "acm:DescribeCertificate",
+2025-07-27T21:09:07.4550823Z                           + "iam:ListServerCertificates",
+2025-07-27T21:09:07.4551326Z                           + "iam:GetServerCertificate",
+2025-07-27T21:09:07.4551824Z                           + "waf-regional:GetWebACL",
+2025-07-27T21:09:07.4552343Z                           + "waf-regional:GetWebACLForResource",
+2025-07-27T21:09:07.4552866Z                           + "waf-regional:AssociateWebACL",
+2025-07-27T21:09:07.4553405Z                           + "waf-regional:DisassociateWebACL",
+2025-07-27T21:09:07.4553906Z                           + "wafv2:GetWebACL",
+2025-07-27T21:09:07.4554408Z                           + "wafv2:GetWebACLForResource",
+2025-07-27T21:09:07.4554903Z                           + "wafv2:AssociateWebACL",
+2025-07-27T21:09:07.4555396Z                           + "wafv2:DisassociateWebACL",
+2025-07-27T21:09:07.4555897Z                           + "shield:DescribeProtection",
+2025-07-27T21:09:07.4556414Z                           + "shield:DescribeSubscription",
+2025-07-27T21:09:07.4556927Z                           + "shield:CreateProtection",
+2025-07-27T21:09:07.4557412Z                           + "shield:DeleteProtection",
+2025-07-27T21:09:07.4558049Z                         ]
+2025-07-27T21:09:07.4558581Z                       + Effect   = "Allow"
+2025-07-27T21:09:07.4559019Z                       + Resource = "*"
+2025-07-27T21:09:07.4559440Z                     },
+2025-07-27T21:09:07.4559780Z                   + {
+2025-07-27T21:09:07.4560130Z                       + Action   = [
+2025-07-27T21:09:07.4560618Z                           + "ec2:AuthorizeSecurityGroupIngress",
+2025-07-27T21:09:07.4561158Z                           + "ec2:RevokeSecurityGroupIngress",
+2025-07-27T21:09:07.4561604Z                         ]
+2025-07-27T21:09:07.4561947Z                       + Effect   = "Allow"
+2025-07-27T21:09:07.4562352Z                       + Resource = "*"
+2025-07-27T21:09:07.4562729Z                     },
+2025-07-27T21:09:07.4563044Z                   + {
+2025-07-27T21:09:07.4563383Z                       + Action   = [
+2025-07-27T21:09:07.4563811Z                           + "ec2:CreateSecurityGroup",
+2025-07-27T21:09:07.4564232Z                         ]
+2025-07-27T21:09:07.4564573Z                       + Effect   = "Allow"
+2025-07-27T21:09:07.4564993Z                       + Resource = "*"
+2025-07-27T21:09:07.4565384Z                     },
+2025-07-27T21:09:07.4565898Z                   + {
+2025-07-27T21:09:07.4566279Z                       + Action    = [
+2025-07-27T21:09:07.4566702Z                           + "ec2:CreateTags",
+2025-07-27T21:09:07.4567111Z                         ]
+2025-07-27T21:09:07.4567478Z                       + Condition = {
+2025-07-27T21:09:07.4567908Z                           + Null         = {
+2025-07-27T21:09:07.4568570Z                               + "aws:RequestedRegion" = "false"
+2025-07-27T21:09:07.4568998Z                             }
+2025-07-27T21:09:07.4569383Z                           + StringEquals = {
+2025-07-27T21:09:07.4569844Z                               + "ec2:CreateAction" = "CreateSecurityGroup"
+2025-07-27T21:09:07.4570499Z                             }
+2025-07-27T21:09:07.4570835Z                         }
+2025-07-27T21:09:07.4571183Z                       + Effect    = "Allow"
+2025-07-27T21:09:07.4571641Z                       + Resource  = "arn:aws:ec2:*:*:security-group/*"
+2025-07-27T21:09:07.4572083Z                     },
+2025-07-27T21:09:07.4572388Z                   + {
+2025-07-27T21:09:07.4572771Z                       + Action    = [
+2025-07-27T21:09:07.4573231Z                           + "elasticloadbalancing:CreateLoadBalancer",
+2025-07-27T21:09:07.4573756Z                           + "elasticloadbalancing:CreateTargetGroup",
+2025-07-27T21:09:07.4574211Z                         ]
+2025-07-27T21:09:07.4574549Z                       + Condition = {
+2025-07-27T21:09:07.4574930Z                           + Null = {
+2025-07-27T21:09:07.4575354Z                               + "aws:RequestedRegion" = "false"
+2025-07-27T21:09:07.4575778Z                             }
+2025-07-27T21:09:07.4576117Z                         }
+2025-07-27T21:09:07.4576458Z                       + Effect    = "Allow"
+2025-07-27T21:09:07.4576905Z                       + Resource  = "*"
+2025-07-27T21:09:07.4577283Z                     },
+2025-07-27T21:09:07.4577592Z                   + {
+2025-07-27T21:09:07.4577913Z                       + Action   = [
+2025-07-27T21:09:07.4578519Z                           + "elasticloadbalancing:CreateListener",
+2025-07-27T21:09:07.4579029Z                           + "elasticloadbalancing:DeleteListener",
+2025-07-27T21:09:07.4579542Z                           + "elasticloadbalancing:CreateRule",
+2025-07-27T21:09:07.4580026Z                           + "elasticloadbalancing:DeleteRule",
+2025-07-27T21:09:07.4580454Z                         ]
+2025-07-27T21:09:07.4580797Z                       + Effect   = "Allow"
+2025-07-27T21:09:07.4581195Z                       + Resource = "*"
+2025-07-27T21:09:07.4581561Z                     },
+2025-07-27T21:09:07.4581861Z                   + {
+2025-07-27T21:09:07.4582177Z                       + Action    = [
+2025-07-27T21:09:07.4582604Z                           + "elasticloadbalancing:AddTags",
+2025-07-27T21:09:07.4583288Z                           + "elasticloadbalancing:RemoveTags",
+2025-07-27T21:09:07.4583718Z                         ]
+2025-07-27T21:09:07.4584054Z                       + Condition = {
+2025-07-27T21:09:07.4584427Z                           + Null = {
+2025-07-27T21:09:07.4584870Z                               + "aws:RequestedRegion"                   = "false"
+2025-07-27T21:09:07.4585430Z                               + "aws:ResourceTag/elbv2.k8s.aws/cluster" = "false"
+2025-07-27T21:09:07.4585908Z                             }
+2025-07-27T21:09:07.4586237Z                         }
+2025-07-27T21:09:07.4586572Z                       + Effect    = "Allow"
+2025-07-27T21:09:07.4586966Z                       + Resource  = [
+2025-07-27T21:09:07.4587444Z                           + "arn:aws:elasticloadbalancing:*:*:targetgroup/*/*",
+2025-07-27T21:09:07.4588197Z                           + "arn:aws:elasticloadbalancing:*:*:loadbalancer/net/*/*",
+2025-07-27T21:09:07.4588823Z                           + "arn:aws:elasticloadbalancing:*:*:loadbalancer/app/*/*",
+2025-07-27T21:09:07.4589319Z                         ]
+2025-07-27T21:09:07.4589625Z                     },
+2025-07-27T21:09:07.4590255Z                   + {
+2025-07-27T21:09:07.4590593Z                       + Action   = [
+2025-07-27T21:09:07.4591016Z                           + "elasticloadbalancing:AddTags",
+2025-07-27T21:09:07.4591525Z                           + "elasticloadbalancing:RemoveTags",
+2025-07-27T21:09:07.4591985Z                         ]
+2025-07-27T21:09:07.4592332Z                       + Effect   = "Allow"
+2025-07-27T21:09:07.4592732Z                       + Resource = [
+2025-07-27T21:09:07.4593238Z                           + "arn:aws:elasticloadbalancing:*:*:listener/net/*/*/*",
+2025-07-27T21:09:07.4593838Z                           + "arn:aws:elasticloadbalancing:*:*:listener/app/*/*/*",
+2025-07-27T21:09:07.4594460Z                           + "arn:aws:elasticloadbalancing:*:*:listener-rule/net/*/*/*",
+2025-07-27T21:09:07.4595112Z                           + "arn:aws:elasticloadbalancing:*:*:listener-rule/app/*/*/*",
+2025-07-27T21:09:07.4595626Z                         ]
+2025-07-27T21:09:07.4595947Z                     },
+2025-07-27T21:09:07.4624332Z                   + {
+2025-07-27T21:09:07.4624759Z                       + Action    = [
+2025-07-27T21:09:07.4625284Z                           + "elasticloadbalancing:ModifyLoadBalancerAttributes",
+2025-07-27T21:09:07.4625877Z                           + "elasticloadbalancing:SetIpAddressType",
+2025-07-27T21:09:07.4626450Z                           + "elasticloadbalancing:SetSecurityGroups",
+2025-07-27T21:09:07.4626995Z                           + "elasticloadbalancing:SetSubnets",
+2025-07-27T21:09:07.4627525Z                           + "elasticloadbalancing:DeleteLoadBalancer",
+2025-07-27T21:09:07.4628047Z                           + "elasticloadbalancing:ModifyTargetGroup",
+2025-07-27T21:09:07.4628786Z                           + "elasticloadbalancing:ModifyTargetGroupAttributes",
+2025-07-27T21:09:07.4629415Z                           + "elasticloadbalancing:DeleteTargetGroup",
+2025-07-27T21:09:07.4629921Z                         ]
+2025-07-27T21:09:07.4630313Z                       + Condition = {
+2025-07-27T21:09:07.4630721Z                           + Null = {
+2025-07-27T21:09:07.4631197Z                               + "aws:ResourceTag/elbv2.k8s.aws/cluster" = "false"
+2025-07-27T21:09:07.4631714Z                             }
+2025-07-27T21:09:07.4632116Z                         }
+2025-07-27T21:09:07.4632488Z                       + Effect    = "Allow"
+2025-07-27T21:09:07.4632933Z                       + Resource  = "*"
+2025-07-27T21:09:07.4633361Z                     },
+2025-07-27T21:09:07.4633721Z                   + {
+2025-07-27T21:09:07.4634075Z                       + Action   = [
+2025-07-27T21:09:07.4634576Z                           + "elasticloadbalancing:RegisterTargets",
+2025-07-27T21:09:07.4635175Z                           + "elasticloadbalancing:DeregisterTargets",
+2025-07-27T21:09:07.4636054Z                         ]
+2025-07-27T21:09:07.4636444Z                       + Effect   = "Allow"
+2025-07-27T21:09:07.4637121Z                       + Resource = "arn:aws:elasticloadbalancing:*:*:targetgroup/*/*"
+2025-07-27T21:09:07.4637722Z                     },
+2025-07-27T21:09:07.4638045Z                   + {
+2025-07-27T21:09:07.4638563Z                       + Action   = [
+2025-07-27T21:09:07.4639016Z                           + "elasticloadbalancing:SetWebAcl",
+2025-07-27T21:09:07.4639548Z                           + "elasticloadbalancing:ModifyListener",
+2025-07-27T21:09:07.4640108Z                           + "elasticloadbalancing:AddListenerCertificates",
+2025-07-27T21:09:07.4640727Z                           + "elasticloadbalancing:RemoveListenerCertificates",
+2025-07-27T21:09:07.4641298Z                           + "elasticloadbalancing:ModifyRule",
+2025-07-27T21:09:07.4641751Z                         ]
+2025-07-27T21:09:07.4642117Z                       + Effect   = "Allow"
+2025-07-27T21:09:07.4642526Z                       + Resource = "*"
+2025-07-27T21:09:07.4642915Z                     },
+2025-07-27T21:09:07.4643231Z                 ]
+2025-07-27T21:09:07.4643812Z               + Version   = "2012-10-17"
+2025-07-27T21:09:07.4644222Z             }
+2025-07-27T21:09:07.4644507Z         )
+2025-07-27T21:09:07.4644827Z       + policy_id        = (known after apply)
+2025-07-27T21:09:07.4645283Z       + tags             = (known after apply)
+2025-07-27T21:09:07.4645720Z       + tags_all         = (known after apply)
+2025-07-27T21:09:07.4646121Z     }
+2025-07-27T21:09:07.4646285Z 
+2025-07-27T21:09:07.4646587Z   # module.eks.aws_iam_role.aws_load_balancer_controller will be created
+2025-07-27T21:09:07.4647252Z   + resource "aws_iam_role" "aws_load_balancer_controller" {
+2025-07-27T21:09:07.4647787Z       + arn                   = (known after apply)
+2025-07-27T21:09:07.4648429Z       + assume_role_policy    = (known after apply)
+2025-07-27T21:09:07.4648950Z       + create_date           = (known after apply)
+2025-07-27T21:09:07.4649437Z       + force_detach_policies = false
+2025-07-27T21:09:07.4649910Z       + id                    = (known after apply)
+2025-07-27T21:09:07.4650429Z       + managed_policy_arns   = (known after apply)
+2025-07-27T21:09:07.4650928Z       + max_session_duration  = 3600
+2025-07-27T21:09:07.4651513Z       + name                  = "tasky-dev-v15-aws-load-balancer-controller"
+2025-07-27T21:09:07.4652101Z       + name_prefix           = (known after apply)
+2025-07-27T21:09:07.4652576Z       + path                  = "/"
+2025-07-27T21:09:07.4653024Z       + tags                  = (known after apply)
+2025-07-27T21:09:07.4653524Z       + tags_all              = (known after apply)
+2025-07-27T21:09:07.4654017Z       + unique_id             = (known after apply)
+2025-07-27T21:09:07.4654527Z     }
+2025-07-27T21:09:07.4654696Z 
+2025-07-27T21:09:07.4654931Z   # module.eks.aws_iam_role.eks_cluster will be created
+2025-07-27T21:09:07.4655495Z   + resource "aws_iam_role" "eks_cluster" {
+2025-07-27T21:09:07.4655990Z       + arn                   = (known after apply)
+2025-07-27T21:09:07.4656484Z       + assume_role_policy    = jsonencode(
+2025-07-27T21:09:07.4656927Z             {
+2025-07-27T21:09:07.4657253Z               + Statement = [
+2025-07-27T21:09:07.4657657Z                   + {
+2025-07-27T21:09:07.4658036Z                       + Action    = "sts:AssumeRole"
+2025-07-27T21:09:07.4658726Z                       + Effect    = "Allow"
+2025-07-27T21:09:07.4659177Z                       + Principal = {
+2025-07-27T21:09:07.4659657Z                           + Service = "eks.amazonaws.com"
+2025-07-27T21:09:07.4660117Z                         }
+2025-07-27T21:09:07.4660451Z                     },
+2025-07-27T21:09:07.4660766Z                 ]
+2025-07-27T21:09:07.4661091Z               + Version   = "2012-10-17"
+2025-07-27T21:09:07.4661483Z             }
+2025-07-27T21:09:07.4661779Z         )
+2025-07-27T21:09:07.4662123Z       + create_date           = (known after apply)
+2025-07-27T21:09:07.4662849Z       + force_detach_policies = false
+2025-07-27T21:09:07.4663301Z       + id                    = (known after apply)
+2025-07-27T21:09:07.4663790Z       + managed_policy_arns   = (known after apply)
+2025-07-27T21:09:07.4664256Z       + max_session_duration  = 3600
+2025-07-27T21:09:07.4664740Z       + name                  = "tasky-dev-v15-eks-cluster-role"
+2025-07-27T21:09:07.4665266Z       + name_prefix           = (known after apply)
+2025-07-27T21:09:07.4665708Z       + path                  = "/"
+2025-07-27T21:09:07.4666123Z       + tags                  = (known after apply)
+2025-07-27T21:09:07.4666589Z       + tags_all              = (known after apply)
+2025-07-27T21:09:07.4667042Z       + unique_id             = (known after apply)
+2025-07-27T21:09:07.4667462Z     }
+2025-07-27T21:09:07.4667630Z 
+2025-07-27T21:09:07.4667864Z   # module.eks.aws_iam_role.eks_node_group will be created
+2025-07-27T21:09:07.4668612Z   + resource "aws_iam_role" "eks_node_group" {
+2025-07-27T21:09:07.4669089Z       + arn                   = (known after apply)
+2025-07-27T21:09:07.4669547Z       + assume_role_policy    = jsonencode(
+2025-07-27T21:09:07.4669959Z             {
+2025-07-27T21:09:07.4670430Z               + Statement = [
+2025-07-27T21:09:07.4670810Z                   + {
+2025-07-27T21:09:07.4671175Z                       + Action    = "sts:AssumeRole"
+2025-07-27T21:09:07.4671638Z                       + Effect    = "Allow"
+2025-07-27T21:09:07.4672076Z                       + Principal = {
+2025-07-27T21:09:07.4672538Z                           + Service = "ec2.amazonaws.com"
+2025-07-27T21:09:07.4672987Z                         }
+2025-07-27T21:09:07.4673330Z                     },
+2025-07-27T21:09:07.4673647Z                 ]
+2025-07-27T21:09:07.4673983Z               + Version   = "2012-10-17"
+2025-07-27T21:09:07.4674372Z             }
+2025-07-27T21:09:07.4674658Z         )
+2025-07-27T21:09:07.4675784Z       + create_date           = (known after apply)
+2025-07-27T21:09:07.4676285Z       + force_detach_policies = false
+2025-07-27T21:09:07.4676720Z       + id                    = (known after apply)
+2025-07-27T21:09:07.4677202Z       + managed_policy_arns   = (known after apply)
+2025-07-27T21:09:07.4677665Z       + max_session_duration  = 3600
+2025-07-27T21:09:07.4678323Z       + name                  = "tasky-dev-v15-eks-node-group-role"
+2025-07-27T21:09:07.4678862Z       + name_prefix           = (known after apply)
+2025-07-27T21:09:07.4679308Z       + path                  = "/"
+2025-07-27T21:09:07.4679727Z       + tags                  = (known after apply)
+2025-07-27T21:09:07.4680200Z       + tags_all              = (known after apply)
+2025-07-27T21:09:07.4680658Z       + unique_id             = (known after apply)
+2025-07-27T21:09:07.4681073Z     }
+2025-07-27T21:09:07.4681231Z 
+2025-07-27T21:09:07.4681658Z   # module.eks.aws_iam_role_policy_attachment.aws_load_balancer_controller_attach will be created
+2025-07-27T21:09:07.4682590Z   + resource "aws_iam_role_policy_attachment" "aws_load_balancer_controller_attach" {
+2025-07-27T21:09:07.4683234Z       + id         = (known after apply)
+2025-07-27T21:09:07.4683662Z       + policy_arn = (known after apply)
+2025-07-27T21:09:07.4684194Z       + role       = "tasky-dev-v15-aws-load-balancer-controller"
+2025-07-27T21:09:07.4684698Z     }
+2025-07-27T21:09:07.4684862Z 
+2025-07-27T21:09:07.4685186Z   # module.eks.aws_iam_role_policy_attachment.eks_cluster_policy will be created
+2025-07-27T21:09:07.4685930Z   + resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
+2025-07-27T21:09:07.4686482Z       + id         = (known after apply)
+2025-07-27T21:09:07.4692360Z       + policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+2025-07-27T21:09:07.4693005Z       + role       = "tasky-dev-v15-eks-cluster-role"
+2025-07-27T21:09:07.4693466Z     }
+2025-07-27T21:09:07.4693636Z 
+2025-07-27T21:09:07.4693957Z   # module.eks.aws_iam_role_policy_attachment.eks_cni_policy will be created
+2025-07-27T21:09:07.4694897Z   + resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
+2025-07-27T21:09:07.4695458Z       + id         = (known after apply)
+2025-07-27T21:09:07.4696041Z       + policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+2025-07-27T21:09:07.4696648Z       + role       = "tasky-dev-v15-eks-node-group-role"
+2025-07-27T21:09:07.4697046Z     }
+2025-07-27T21:09:07.4697152Z 
+2025-07-27T21:09:07.4697410Z   # module.eks.aws_iam_role_policy_attachment.eks_container_registry_policy will be created
+2025-07-27T21:09:07.4697945Z   + resource "aws_iam_role_policy_attachment" "eks_container_registry_policy" {
+2025-07-27T21:09:07.4698576Z       + id         = (known after apply)
+2025-07-27T21:09:07.4698953Z       + policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+2025-07-27T21:09:07.4699355Z       + role       = "tasky-dev-v15-eks-node-group-role"
+2025-07-27T21:09:07.4699628Z     }
+2025-07-27T21:09:07.4699858Z 
+2025-07-27T21:09:07.4700065Z   # module.eks.aws_iam_role_policy_attachment.eks_worker_node_policy will be created
+2025-07-27T21:09:07.4700565Z   + resource "aws_iam_role_policy_attachment" "eks_worker_node_policy" {
+2025-07-27T21:09:07.4700915Z       + id         = (known after apply)
+2025-07-27T21:09:07.4701383Z       + policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+2025-07-27T21:09:07.4701771Z       + role       = "tasky-dev-v15-eks-node-group-role"
+2025-07-27T21:09:07.4702048Z     }
+2025-07-27T21:09:07.4702144Z 
+2025-07-27T21:09:07.4702309Z   # module.eks.aws_security_group.eks_additional will be created
+2025-07-27T21:09:07.4702673Z   + resource "aws_security_group" "eks_additional" {
+2025-07-27T21:09:07.4702979Z       + arn                    = (known after apply)
+2025-07-27T21:09:07.4703279Z       + description            = "Managed by Terraform"
+2025-07-27T21:09:07.4703570Z       + egress                 = [
+2025-07-27T21:09:07.4703797Z           + {
+2025-07-27T21:09:07.4703991Z               + cidr_blocks      = [
+2025-07-27T21:09:07.4704228Z                   + "0.0.0.0/0",
+2025-07-27T21:09:07.4704450Z                 ]
+2025-07-27T21:09:07.4704674Z               + description      = "All outbound traffic"
+2025-07-27T21:09:07.4704946Z               + from_port        = 0
+2025-07-27T21:09:07.4705191Z               + ipv6_cidr_blocks = []
+2025-07-27T21:09:07.4705447Z               + prefix_list_ids  = []
+2025-07-27T21:09:07.4705696Z               + protocol         = "-1"
+2025-07-27T21:09:07.4705958Z               + security_groups  = []
+2025-07-27T21:09:07.4706194Z               + self             = false
+2025-07-27T21:09:07.4706432Z               + to_port          = 0
+2025-07-27T21:09:07.4706661Z             },
+2025-07-27T21:09:07.4706851Z           + {
+2025-07-27T21:09:07.4707041Z               + cidr_blocks      = []
+2025-07-27T21:09:07.4707302Z               + description      = "Access to MongoDB"
+2025-07-27T21:09:07.4707574Z               + from_port        = 27017
+2025-07-27T21:09:07.4707821Z               + ipv6_cidr_blocks = []
+2025-07-27T21:09:07.4708247Z               + prefix_list_ids  = []
+2025-07-27T21:09:07.4708527Z               + protocol         = "tcp"
+2025-07-27T21:09:07.4708800Z               + security_groups  = (known after apply)
+2025-07-27T21:09:07.4709073Z               + self             = false
+2025-07-27T21:09:07.4709305Z               + to_port          = 27017
+2025-07-27T21:09:07.4709533Z             },
+2025-07-27T21:09:07.4709706Z         ]
+2025-07-27T21:09:07.4709910Z       + id                     = (known after apply)
+2025-07-27T21:09:07.4710196Z       + ingress                = (known after apply)
+2025-07-27T21:09:07.4710482Z       + name                   = (known after apply)
+2025-07-27T21:09:07.4710826Z       + name_prefix            = "tasky-dev-v15-eks-additional-"
+2025-07-27T21:09:07.4711147Z       + owner_id               = (known after apply)
+2025-07-27T21:09:07.4711438Z       + revoke_rules_on_delete = false
+2025-07-27T21:09:07.4711699Z       + tags                   = (known after apply)
+2025-07-27T21:09:07.4711974Z       + tags_all               = (known after apply)
+2025-07-27T21:09:07.4712393Z       + vpc_id                 = (known after apply)
+2025-07-27T21:09:07.4712638Z     }
+2025-07-27T21:09:07.4712738Z 
+2025-07-27T21:09:07.4712953Z   # module.eks.aws_security_group_rule.mongodb_from_eks_additional will be created
+2025-07-27T21:09:07.4713423Z   + resource "aws_security_group_rule" "mongodb_from_eks_additional" {
+2025-07-27T21:09:07.4713857Z       + description              = "MongoDB access from EKS additional security group"
+2025-07-27T21:09:07.4714197Z       + from_port                = 27017
+2025-07-27T21:09:07.4714460Z       + id                       = (known after apply)
+2025-07-27T21:09:07.4714726Z       + protocol                 = "tcp"
+2025-07-27T21:09:07.4714995Z       + security_group_id        = (known after apply)
+2025-07-27T21:09:07.4715291Z       + security_group_rule_id   = (known after apply)
+2025-07-27T21:09:07.4715561Z       + self                     = false
+2025-07-27T21:09:07.4715824Z       + source_security_group_id = (known after apply)
+2025-07-27T21:09:07.4716104Z       + to_port                  = 27017
+2025-07-27T21:09:07.4716350Z       + type                     = "ingress"
+2025-07-27T21:09:07.4716593Z     }
+2025-07-27T21:09:07.4716795Z 
+2025-07-27T21:09:07.4717000Z   # module.eks.aws_security_group_rule.mongodb_from_eks_cluster will be created
+2025-07-27T21:09:07.4717446Z   + resource "aws_security_group_rule" "mongodb_from_eks_cluster" {
+2025-07-27T21:09:07.4717855Z       + description              = "MongoDB access from EKS cluster security group"
+2025-07-27T21:09:07.4718395Z       + from_port                = 27017
+2025-07-27T21:09:07.4718655Z       + id                       = (known after apply)
+2025-07-27T21:09:07.4718922Z       + protocol                 = "tcp"
+2025-07-27T21:09:07.4719189Z       + security_group_id        = (known after apply)
+2025-07-27T21:09:07.4719486Z       + security_group_rule_id   = (known after apply)
+2025-07-27T21:09:07.4719761Z       + self                     = false
+2025-07-27T21:09:07.4720035Z       + source_security_group_id = (known after apply)
+2025-07-27T21:09:07.4720309Z       + to_port                  = 27017
+2025-07-27T21:09:07.4720550Z       + type                     = "ingress"
+2025-07-27T21:09:07.4720786Z     }
+2025-07-27T21:09:07.4720877Z 
+2025-07-27T21:09:07.4721055Z   # module.mongodb_ec2.aws_cloudwatch_log_group.mongodb will be created
+2025-07-27T21:09:07.4721427Z   + resource "aws_cloudwatch_log_group" "mongodb" {
+2025-07-27T21:09:07.4721720Z       + arn               = (known after apply)
+2025-07-27T21:09:07.4721983Z       + id                = (known after apply)
+2025-07-27T21:09:07.4722245Z       + log_group_class   = (known after apply)
+2025-07-27T21:09:07.4722535Z       + name              = "/aws/ec2/tasky-dev-v15/mongodb"
+2025-07-27T21:09:07.4722826Z       + name_prefix       = (known after apply)
+2025-07-27T21:09:07.4723094Z       + retention_in_days = 30
+2025-07-27T21:09:07.4723328Z       + skip_destroy      = false
+2025-07-27T21:09:07.4723578Z       + tags              = (known after apply)
+2025-07-27T21:09:07.4723838Z       + tags_all          = (known after apply)
+2025-07-27T21:09:07.4724075Z     }
+2025-07-27T21:09:07.4724166Z 
+2025-07-27T21:09:07.4724346Z   # module.mongodb_ec2.aws_iam_instance_profile.mongodb will be created
+2025-07-27T21:09:07.4724717Z   + resource "aws_iam_instance_profile" "mongodb" {
+2025-07-27T21:09:07.4725001Z       + arn         = (known after apply)
+2025-07-27T21:09:07.4725254Z       + create_date = (known after apply)
+2025-07-27T21:09:07.4725512Z       + id          = (known after apply)
+2025-07-27T21:09:07.4725794Z       + name        = "tasky-dev-v15-mongodb-profile"
+2025-07-27T21:09:07.4726090Z       + name_prefix = (known after apply)
+2025-07-27T21:09:07.4726354Z       + path        = "/"
+2025-07-27T21:09:07.4726595Z       + role        = "tasky-dev-v15-mongodb-role"
+2025-07-27T21:09:07.4726867Z       + tags        = (known after apply)
+2025-07-27T21:09:07.4727115Z       + tags_all    = (known after apply)
+2025-07-27T21:09:07.4727500Z       + unique_id   = (known after apply)
+2025-07-27T21:09:07.4727731Z     }
+2025-07-27T21:09:07.4727828Z 
+2025-07-27T21:09:07.4727967Z   # module.mongodb_ec2.aws_iam_role.mongodb will be created
+2025-07-27T21:09:07.4728555Z   + resource "aws_iam_role" "mongodb" {
+2025-07-27T21:09:07.4728822Z       + arn                   = (known after apply)
+2025-07-27T21:09:07.4729096Z       + assume_role_policy    = jsonencode(
+2025-07-27T21:09:07.4729343Z             {
+2025-07-27T21:09:07.4729529Z               + Statement = [
+2025-07-27T21:09:07.4729751Z                   + {
+2025-07-27T21:09:07.4729962Z                       + Action    = "sts:AssumeRole"
+2025-07-27T21:09:07.4730224Z                       + Effect    = "Allow"
+2025-07-27T21:09:07.4730471Z                       + Principal = {
+2025-07-27T21:09:07.4730732Z                           + Service = "ec2.amazonaws.com"
+2025-07-27T21:09:07.4730996Z                         }
+2025-07-27T21:09:07.4731194Z                     },
+2025-07-27T21:09:07.4731388Z                 ]
+2025-07-27T21:09:07.4731583Z               + Version   = "2012-10-17"
+2025-07-27T21:09:07.4731816Z             }
+2025-07-27T21:09:07.4731988Z         )
+2025-07-27T21:09:07.4732315Z       + create_date           = (known after apply)
+2025-07-27T21:09:07.4732600Z       + force_detach_policies = false
+2025-07-27T21:09:07.4732858Z       + id                    = (known after apply)
+2025-07-27T21:09:07.4733125Z       + managed_policy_arns   = (known after apply)
+2025-07-27T21:09:07.4733394Z       + max_session_duration  = 3600
+2025-07-27T21:09:07.4733681Z       + name                  = "tasky-dev-v15-mongodb-role"
+2025-07-27T21:09:07.4733974Z       + name_prefix           = (known after apply)
+2025-07-27T21:09:07.4734232Z       + path                  = "/"
+2025-07-27T21:09:07.4734475Z       + tags                  = (known after apply)
+2025-07-27T21:09:07.4734743Z       + tags_all              = (known after apply)
+2025-07-27T21:09:07.4735010Z       + unique_id             = (known after apply)
+2025-07-27T21:09:07.4735256Z     }
+2025-07-27T21:09:07.4735356Z 
+2025-07-27T21:09:07.4735567Z   # module.mongodb_ec2.aws_iam_role_policy_attachment.mongodb_admin will be created
+2025-07-27T21:09:07.4736059Z   + resource "aws_iam_role_policy_attachment" "mongodb_admin" {
+2025-07-27T21:09:07.4736384Z       + id         = (known after apply)
+2025-07-27T21:09:07.4736750Z       + policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+2025-07-27T21:09:07.4737093Z       + role       = "tasky-dev-v15-mongodb-role"
+2025-07-27T21:09:07.4737353Z     }
+2025-07-27T21:09:07.4737456Z 
+2025-07-27T21:09:07.4737600Z   # module.mongodb_ec2.aws_instance.mongodb will be created
+2025-07-27T21:09:07.4737921Z   + resource "aws_instance" "mongodb" {
+2025-07-27T21:09:07.4738471Z       + ami                                  = "ami-083e865b97bdf1c1b"
+2025-07-27T21:09:07.4738784Z       + arn                                  = (known after apply)
+2025-07-27T21:09:07.4739122Z       + associate_public_ip_address          = (known after apply)
+2025-07-27T21:09:07.4739492Z       + availability_zone                    = (known after apply)
+2025-07-27T21:09:07.4739833Z       + cpu_core_count                       = (known after apply)
+2025-07-27T21:09:07.4740169Z       + cpu_threads_per_core                 = (known after apply)
+2025-07-27T21:09:07.4740508Z       + disable_api_stop                     = (known after apply)
+2025-07-27T21:09:07.4740853Z       + disable_api_termination              = (known after apply)
+2025-07-27T21:09:07.4741193Z       + ebs_optimized                        = (known after apply)
+2025-07-27T21:09:07.4741527Z       + enable_primary_ipv6                  = (known after apply)
+2025-07-27T21:09:07.4741844Z       + get_password_data                    = false
+2025-07-27T21:09:07.4742146Z       + host_id                              = (known after apply)
+2025-07-27T21:09:07.4742475Z       + host_resource_group_arn              = (known after apply)
+2025-07-27T21:09:07.4742885Z       + iam_instance_profile                 = "tasky-dev-v15-mongodb-profile"
+2025-07-27T21:09:07.4743397Z       + id                                   = (known after apply)
+2025-07-27T21:09:07.4743736Z       + instance_initiated_shutdown_behavior = (known after apply)
+2025-07-27T21:09:07.4744116Z       + instance_lifecycle                   = (known after apply)
+2025-07-27T21:09:07.4744460Z       + instance_state                       = (known after apply)
+2025-07-27T21:09:07.4744786Z       + instance_type                        = "t3.micro"
+2025-07-27T21:09:07.4745112Z       + ipv6_address_count                   = (known after apply)
+2025-07-27T21:09:07.4745451Z       + ipv6_addresses                       = (known after apply)
+2025-07-27T21:09:07.4745771Z       + key_name                             = (known after apply)
+2025-07-27T21:09:07.4746094Z       + monitoring                           = (known after apply)
+2025-07-27T21:09:07.4746421Z       + outpost_arn                          = (known after apply)
+2025-07-27T21:09:07.4746761Z       + password_data                        = (known after apply)
+2025-07-27T21:09:07.4747098Z       + placement_group                      = (known after apply)
+2025-07-27T21:09:07.4747558Z       + placement_partition_number           = (known after apply)
+2025-07-27T21:09:07.4747925Z       + primary_network_interface_id         = (known after apply)
+2025-07-27T21:09:07.4748378Z       + private_dns                          = (known after apply)
+2025-07-27T21:09:07.4748696Z       + private_ip                           = (known after apply)
+2025-07-27T21:09:07.4749011Z       + public_dns                           = (known after apply)
+2025-07-27T21:09:07.4749323Z       + public_ip                            = (known after apply)
+2025-07-27T21:09:07.4749662Z       + secondary_private_ips                = (known after apply)
+2025-07-27T21:09:07.4750005Z       + security_groups                      = (known after apply)
+2025-07-27T21:09:07.4750314Z       + source_dest_check                    = true
+2025-07-27T21:09:07.4750632Z       + spot_instance_request_id             = (known after apply)
+2025-07-27T21:09:07.4750961Z       + subnet_id                            = (known after apply)
+2025-07-27T21:09:07.4751266Z       + tags                                 = (known after apply)
+2025-07-27T21:09:07.4751564Z       + tags_all                             = (known after apply)
+2025-07-27T21:09:07.4751875Z       + tenancy                              = (known after apply)
+2025-07-27T21:09:07.4752188Z       + user_data                            = (known after apply)
+2025-07-27T21:09:07.4752507Z       + user_data_base64                     = (known after apply)
+2025-07-27T21:09:07.4752823Z       + user_data_replace_on_change          = true
+2025-07-27T21:09:07.4753137Z       + vpc_security_group_ids               = (known after apply)
+2025-07-27T21:09:07.4753359Z 
+2025-07-27T21:09:07.4753451Z       + root_block_device {
+2025-07-27T21:09:07.4753698Z           + delete_on_termination = true
+2025-07-27T21:09:07.4753992Z           + device_name           = (known after apply)
+2025-07-27T21:09:07.4754270Z           + encrypted             = true
+2025-07-27T21:09:07.4754530Z           + iops                  = (known after apply)
+2025-07-27T21:09:07.4754810Z           + kms_key_id            = (known after apply)
+2025-07-27T21:09:07.4755087Z           + tags                  = (known after apply)
+2025-07-27T21:09:07.4755364Z           + tags_all              = (known after apply)
+2025-07-27T21:09:07.4755639Z           + throughput            = (known after apply)
+2025-07-27T21:09:07.4755922Z           + volume_id             = (known after apply)
+2025-07-27T21:09:07.4756183Z           + volume_size           = 20
+2025-07-27T21:09:07.4756454Z           + volume_type           = "gp3"
+2025-07-27T21:09:07.4756689Z         }
+2025-07-27T21:09:07.4756854Z     }
+2025-07-27T21:09:07.4756948Z 
+2025-07-27T21:09:07.4757113Z   # module.mongodb_ec2.aws_security_group.mongodb will be created
+2025-07-27T21:09:07.4757457Z   + resource "aws_security_group" "mongodb" {
+2025-07-27T21:09:07.4757866Z       + arn                    = (known after apply)
+2025-07-27T21:09:07.4758260Z       + description            = "Managed by Terraform"
+2025-07-27T21:09:07.4758535Z       + egress                 = [
+2025-07-27T21:09:07.4758752Z           + {
+2025-07-27T21:09:07.4758945Z               + cidr_blocks      = [
+2025-07-27T21:09:07.4759178Z                   + "0.0.0.0/0",
+2025-07-27T21:09:07.4759388Z                 ]
+2025-07-27T21:09:07.4759604Z               + description      = "All outbound traffic"
+2025-07-27T21:09:07.4759877Z               + from_port        = 0
+2025-07-27T21:09:07.4760120Z               + ipv6_cidr_blocks = []
+2025-07-27T21:09:07.4760365Z               + prefix_list_ids  = []
+2025-07-27T21:09:07.4760610Z               + protocol         = "-1"
+2025-07-27T21:09:07.4760859Z               + security_groups  = []
+2025-07-27T21:09:07.4761094Z               + self             = false
+2025-07-27T21:09:07.4761331Z               + to_port          = 0
+2025-07-27T21:09:07.4761555Z             },
+2025-07-27T21:09:07.4761728Z         ]
+2025-07-27T21:09:07.4761930Z       + id                     = (known after apply)
+2025-07-27T21:09:07.4762310Z       + ingress                = [
+2025-07-27T21:09:07.4762538Z           + {
+2025-07-27T21:09:07.4762722Z               + cidr_blocks      = [
+2025-07-27T21:09:07.4762949Z                   + "10.0.0.0/16",
+2025-07-27T21:09:07.4763161Z                 ]
+2025-07-27T21:09:07.4763388Z               + description      = "MongoDB access from VPC"
+2025-07-27T21:09:07.4763669Z               + from_port        = 27017
+2025-07-27T21:09:07.4763914Z               + ipv6_cidr_blocks = []
+2025-07-27T21:09:07.4764158Z               + prefix_list_ids  = []
+2025-07-27T21:09:07.4764397Z               + protocol         = "tcp"
+2025-07-27T21:09:07.4764645Z               + security_groups  = []
+2025-07-27T21:09:07.4764878Z               + self             = false
+2025-07-27T21:09:07.4765118Z               + to_port          = 27017
+2025-07-27T21:09:07.4765351Z             },
+2025-07-27T21:09:07.4765528Z           + {
+2025-07-27T21:09:07.4765711Z               + cidr_blocks      = [
+2025-07-27T21:09:07.4765943Z                   + "10.0.0.0/16",
+2025-07-27T21:09:07.4766159Z                 ]
+2025-07-27T21:09:07.4766376Z               + description      = "SSH access from VPC"
+2025-07-27T21:09:07.4766645Z               + from_port        = 22
+2025-07-27T21:09:07.4766881Z               + ipv6_cidr_blocks = []
+2025-07-27T21:09:07.4767116Z               + prefix_list_ids  = []
+2025-07-27T21:09:07.4767353Z               + protocol         = "tcp"
+2025-07-27T21:09:07.4767601Z               + security_groups  = []
+2025-07-27T21:09:07.4767833Z               + self             = false
+2025-07-27T21:09:07.4768240Z               + to_port          = 22
+2025-07-27T21:09:07.4768554Z             },
+2025-07-27T21:09:07.4768731Z         ]
+2025-07-27T21:09:07.4768932Z       + name                   = (known after apply)
+2025-07-27T21:09:07.4769238Z       + name_prefix            = "tasky-dev-mongodb-"
+2025-07-27T21:09:07.4769534Z       + owner_id               = (known after apply)
+2025-07-27T21:09:07.4769809Z       + revoke_rules_on_delete = false
+2025-07-27T21:09:07.4770078Z       + tags                   = (known after apply)
+2025-07-27T21:09:07.4770351Z       + tags_all               = (known after apply)
+2025-07-27T21:09:07.4770630Z       + vpc_id                 = (known after apply)
+2025-07-27T21:09:07.4770876Z     }
+2025-07-27T21:09:07.4770974Z 
+2025-07-27T21:09:07.4771116Z   # module.s3_backup.aws_s3_bucket.backup will be created
+2025-07-27T21:09:07.4771427Z   + resource "aws_s3_bucket" "backup" {
+2025-07-27T21:09:07.4771713Z       + acceleration_status         = (known after apply)
+2025-07-27T21:09:07.4772011Z       + acl                         = (known after apply)
+2025-07-27T21:09:07.4772285Z       + arn                         = (known after apply)
+2025-07-27T21:09:07.4772571Z       + bucket                      = (known after apply)
+2025-07-27T21:09:07.4773023Z       + bucket_domain_name          = (known after apply)
+2025-07-27T21:09:07.4773323Z       + bucket_prefix               = (known after apply)
+2025-07-27T21:09:07.4773630Z       + bucket_regional_domain_name = (known after apply)
+2025-07-27T21:09:07.4773918Z       + force_destroy               = true
+2025-07-27T21:09:07.4774195Z       + hosted_zone_id              = (known after apply)
+2025-07-27T21:09:07.4774486Z       + id                          = (known after apply)
+2025-07-27T21:09:07.4774773Z       + object_lock_enabled         = (known after apply)
+2025-07-27T21:09:07.4775068Z       + policy                      = (known after apply)
+2025-07-27T21:09:07.4775354Z       + region                      = (known after apply)
+2025-07-27T21:09:07.4775646Z       + request_payer               = (known after apply)
+2025-07-27T21:09:07.4775934Z       + tags                        = (known after apply)
+2025-07-27T21:09:07.4776214Z       + tags_all                    = (known after apply)
+2025-07-27T21:09:07.4776509Z       + website_domain              = (known after apply)
+2025-07-27T21:09:07.4776815Z       + website_endpoint            = (known after apply)
+2025-07-27T21:09:07.4777076Z     }
+2025-07-27T21:09:07.4777323Z 
+2025-07-27T21:09:07.4777535Z   # module.s3_backup.aws_s3_bucket_lifecycle_configuration.backup will be created
+2025-07-27T21:09:07.4777976Z   + resource "aws_s3_bucket_lifecycle_configuration" "backup" {
+2025-07-27T21:09:07.4778492Z       + bucket                                 = (known after apply)
+2025-07-27T21:09:07.4778845Z       + expected_bucket_owner                  = (known after apply)
+2025-07-27T21:09:07.4779189Z       + id                                     = (known after apply)
+2025-07-27T21:09:07.4779556Z       + transition_default_minimum_object_size = "all_storage_classes_128K"
+2025-07-27T21:09:07.4779829Z 
+2025-07-27T21:09:07.4779900Z       + rule {
+2025-07-27T21:09:07.4780097Z           + id     = "backup_lifecycle"
+2025-07-27T21:09:07.4780360Z           + status = "Enabled"
+2025-07-27T21:09:07.4780508Z 
+2025-07-27T21:09:07.4780589Z           + expiration {
+2025-07-27T21:09:07.4780823Z               + days                         = 30
+2025-07-27T21:09:07.4781104Z               + expired_object_delete_marker = false
+2025-07-27T21:09:07.4781360Z             }
+2025-07-27T21:09:07.4781464Z 
+2025-07-27T21:09:07.4781543Z           + filter {
+2025-07-27T21:09:07.4781744Z               + prefix = "backups/"
+2025-07-27T21:09:07.4781970Z             }
+2025-07-27T21:09:07.4782071Z 
+2025-07-27T21:09:07.4782176Z           + noncurrent_version_expiration {
+2025-07-27T21:09:07.4782441Z               + noncurrent_days = 7
+2025-07-27T21:09:07.4782661Z             }
+2025-07-27T21:09:07.4782835Z         }
+2025-07-27T21:09:07.4782998Z     }
+2025-07-27T21:09:07.4783096Z 
+2025-07-27T21:09:07.4783283Z   # module.s3_backup.aws_s3_bucket_policy.backup_public_read will be created
+2025-07-27T21:09:07.4783698Z   + resource "aws_s3_bucket_policy" "backup_public_read" {
+2025-07-27T21:09:07.4784015Z       + bucket = (known after apply)
+2025-07-27T21:09:07.4784266Z       + id     = (known after apply)
+2025-07-27T21:09:07.4784506Z       + policy = (known after apply)
+2025-07-27T21:09:07.4784727Z     }
+2025-07-27T21:09:07.4784824Z 
+2025-07-27T21:09:07.4785013Z   # module.s3_backup.aws_s3_bucket_public_access_block.backup will be created
+2025-07-27T21:09:07.4785421Z   + resource "aws_s3_bucket_public_access_block" "backup" {
+2025-07-27T21:09:07.4785726Z       + block_public_acls       = false
+2025-07-27T21:09:07.4785981Z       + block_public_policy     = false
+2025-07-27T21:09:07.4786249Z       + bucket                  = (known after apply)
+2025-07-27T21:09:07.4786534Z       + id                      = (known after apply)
+2025-07-27T21:09:07.4786804Z       + ignore_public_acls      = false
+2025-07-27T21:09:07.4787058Z       + restrict_public_buckets = false
+2025-07-27T21:09:07.4787289Z     }
+2025-07-27T21:09:07.4787381Z 
+2025-07-27T21:09:07.4787546Z   # module.s3_backup.aws_s3_bucket_versioning.backup will be created
+2025-07-27T21:09:07.4788033Z   + resource "aws_s3_bucket_versioning" "backup" {
+2025-07-27T21:09:07.4788451Z       + bucket = (known after apply)
+2025-07-27T21:09:07.4788697Z       + id     = (known after apply)
+2025-07-27T21:09:07.4788855Z 
+2025-07-27T21:09:07.4788948Z       + versioning_configuration {
+2025-07-27T21:09:07.4789207Z           + mfa_delete = (known after apply)
+2025-07-27T21:09:07.4789466Z           + status     = "Enabled"
+2025-07-27T21:09:07.4789685Z         }
+2025-07-27T21:09:07.4789853Z     }
+2025-07-27T21:09:07.4789950Z 
+2025-07-27T21:09:07.4790106Z   # module.s3_backup.random_string.bucket_suffix will be created
+2025-07-27T21:09:07.4790448Z   + resource "random_string" "bucket_suffix" {
+2025-07-27T21:09:07.4790722Z       + id          = (known after apply)
+2025-07-27T21:09:07.4790969Z       + length      = 8
+2025-07-27T21:09:07.4791176Z       + lower       = true
+2025-07-27T21:09:07.4791385Z       + min_lower   = 0
+2025-07-27T21:09:07.4791585Z       + min_numeric = 0
+2025-07-27T21:09:07.4791786Z       + min_special = 0
+2025-07-27T21:09:07.4791980Z       + min_upper   = 0
+2025-07-27T21:09:07.4792177Z       + number      = true
+2025-07-27T21:09:07.4792387Z       + numeric     = true
+2025-07-27T21:09:07.4792716Z       + result      = (known after apply)
+2025-07-27T21:09:07.4792979Z       + special     = false
+2025-07-27T21:09:07.4793195Z       + upper       = false
+2025-07-27T21:09:07.4793393Z     }
+2025-07-27T21:09:07.4793484Z 
+2025-07-27T21:09:07.4793592Z   # module.vpc.aws_eip.nat[0] will be created
+2025-07-27T21:09:07.4793866Z   + resource "aws_eip" "nat" {
+2025-07-27T21:09:07.4794115Z       + allocation_id        = (known after apply)
+2025-07-27T21:09:07.4794391Z       + arn                  = (known after apply)
+2025-07-27T21:09:07.4794665Z       + association_id       = (known after apply)
+2025-07-27T21:09:07.4794939Z       + carrier_ip           = (known after apply)
+2025-07-27T21:09:07.4795216Z       + customer_owned_ip    = (known after apply)
+2025-07-27T21:09:07.4795483Z       + domain               = "vpc"
+2025-07-27T21:09:07.4795727Z       + id                   = (known after apply)
+2025-07-27T21:09:07.4796000Z       + instance             = (known after apply)
+2025-07-27T21:09:07.4796272Z       + ipam_pool_id         = (known after apply)
+2025-07-27T21:09:07.4796548Z       + network_border_group = (known after apply)
+2025-07-27T21:09:07.4796828Z       + network_interface    = (known after apply)
+2025-07-27T21:09:07.4797103Z       + private_dns          = (known after apply)
+2025-07-27T21:09:07.4797379Z       + private_ip           = (known after apply)
+2025-07-27T21:09:07.4797657Z       + ptr_record           = (known after apply)
+2025-07-27T21:09:07.4797930Z       + public_dns           = (known after apply)
+2025-07-27T21:09:07.4798301Z       + public_ip            = (known after apply)
+2025-07-27T21:09:07.4798578Z       + public_ipv4_pool     = (known after apply)
+2025-07-27T21:09:07.4798852Z       + tags                 = (known after apply)
+2025-07-27T21:09:07.4799126Z       + tags_all             = (known after apply)
+2025-07-27T21:09:07.4799402Z       + vpc                  = (known after apply)
+2025-07-27T21:09:07.4799643Z     }
+2025-07-27T21:09:07.4799735Z 
+2025-07-27T21:09:07.4799847Z   # module.vpc.aws_eip.nat[1] will be created
+2025-07-27T21:09:07.4800126Z   + resource "aws_eip" "nat" {
+2025-07-27T21:09:07.4800372Z       + allocation_id        = (known after apply)
+2025-07-27T21:09:07.4800644Z       + arn                  = (known after apply)
+2025-07-27T21:09:07.4800915Z       + association_id       = (known after apply)
+2025-07-27T21:09:07.4801188Z       + carrier_ip           = (known after apply)
+2025-07-27T21:09:07.4801462Z       + customer_owned_ip    = (known after apply)
+2025-07-27T21:09:07.4801726Z       + domain               = "vpc"
+2025-07-27T21:09:07.4801974Z       + id                   = (known after apply)
+2025-07-27T21:09:07.4802240Z       + instance             = (known after apply)
+2025-07-27T21:09:07.4802512Z       + ipam_pool_id         = (known after apply)
+2025-07-27T21:09:07.4802907Z       + network_border_group = (known after apply)
+2025-07-27T21:09:07.4803188Z       + network_interface    = (known after apply)
+2025-07-27T21:09:07.4803465Z       + private_dns          = (known after apply)
+2025-07-27T21:09:07.4803749Z       + private_ip           = (known after apply)
+2025-07-27T21:09:07.4804017Z       + ptr_record           = (known after apply)
+2025-07-27T21:09:07.4804290Z       + public_dns           = (known after apply)
+2025-07-27T21:09:07.4804560Z       + public_ip            = (known after apply)
+2025-07-27T21:09:07.4804833Z       + public_ipv4_pool     = (known after apply)
+2025-07-27T21:09:07.4805108Z       + tags                 = (known after apply)
+2025-07-27T21:09:07.4805376Z       + tags_all             = (known after apply)
+2025-07-27T21:09:07.4805642Z       + vpc                  = (known after apply)
+2025-07-27T21:09:07.4805880Z     }
+2025-07-27T21:09:07.4805972Z 
+2025-07-27T21:09:07.4806081Z   # module.vpc.aws_eip.nat[2] will be created
+2025-07-27T21:09:07.4806354Z   + resource "aws_eip" "nat" {
+2025-07-27T21:09:07.4806596Z       + allocation_id        = (known after apply)
+2025-07-27T21:09:07.4806975Z       + arn                  = (known after apply)
+2025-07-27T21:09:07.4807252Z       + association_id       = (known after apply)
+2025-07-27T21:09:07.4807527Z       + carrier_ip           = (known after apply)
+2025-07-27T21:09:07.4807798Z       + customer_owned_ip    = (known after apply)
+2025-07-27T21:09:07.4808214Z       + domain               = "vpc"
+2025-07-27T21:09:07.4808559Z       + id                   = (known after apply)
+2025-07-27T21:09:07.4808836Z       + instance             = (known after apply)
+2025-07-27T21:09:07.4809108Z       + ipam_pool_id         = (known after apply)
+2025-07-27T21:09:07.4809386Z       + network_border_group = (known after apply)
+2025-07-27T21:09:07.4809664Z       + network_interface    = (known after apply)
+2025-07-27T21:09:07.4809942Z       + private_dns          = (known after apply)
+2025-07-27T21:09:07.4810219Z       + private_ip           = (known after apply)
+2025-07-27T21:09:07.4810488Z       + ptr_record           = (known after apply)
+2025-07-27T21:09:07.4810766Z       + public_dns           = (known after apply)
+2025-07-27T21:09:07.4811037Z       + public_ip            = (known after apply)
+2025-07-27T21:09:07.4811311Z       + public_ipv4_pool     = (known after apply)
+2025-07-27T21:09:07.4811596Z       + tags                 = (known after apply)
+2025-07-27T21:09:07.4811861Z       + tags_all             = (known after apply)
+2025-07-27T21:09:07.4812129Z       + vpc                  = (known after apply)
+2025-07-27T21:09:07.4812372Z     }
+2025-07-27T21:09:07.4812464Z 
+2025-07-27T21:09:07.4812607Z   # module.vpc.aws_internet_gateway.main will be created
+2025-07-27T21:09:07.4812929Z   + resource "aws_internet_gateway" "main" {
+2025-07-27T21:09:07.4813201Z       + arn      = (known after apply)
+2025-07-27T21:09:07.4813454Z       + id       = (known after apply)
+2025-07-27T21:09:07.4813707Z       + owner_id = (known after apply)
+2025-07-27T21:09:07.4813952Z       + tags     = (known after apply)
+2025-07-27T21:09:07.4814194Z       + tags_all = (known after apply)
+2025-07-27T21:09:07.4814448Z       + vpc_id   = (known after apply)
+2025-07-27T21:09:07.4814669Z     }
+2025-07-27T21:09:07.4814759Z 
+2025-07-27T21:09:07.4814891Z   # module.vpc.aws_nat_gateway.main[0] will be created
+2025-07-27T21:09:07.4815191Z   + resource "aws_nat_gateway" "main" {
+2025-07-27T21:09:07.4815491Z       + allocation_id                      = (known after apply)
+2025-07-27T21:09:07.4815838Z       + association_id                     = (known after apply)
+2025-07-27T21:09:07.4816157Z       + connectivity_type                  = "public"
+2025-07-27T21:09:07.4816449Z       + id                                 = (known after apply)
+2025-07-27T21:09:07.4816761Z       + network_interface_id               = (known after apply)
+2025-07-27T21:09:07.4817092Z       + private_ip                         = (known after apply)
+2025-07-27T21:09:07.4817540Z       + public_ip                          = (known after apply)
+2025-07-27T21:09:07.4817883Z       + secondary_private_ip_address_count = (known after apply)
+2025-07-27T21:09:07.4818352Z       + secondary_private_ip_addresses     = (known after apply)
+2025-07-27T21:09:07.4818687Z       + subnet_id                          = (known after apply)
+2025-07-27T21:09:07.4818992Z       + tags                               = (known after apply)
+2025-07-27T21:09:07.4819291Z       + tags_all                           = (known after apply)
+2025-07-27T21:09:07.4819553Z     }
+2025-07-27T21:09:07.4819650Z 
+2025-07-27T21:09:07.4819773Z   # module.vpc.aws_nat_gateway.main[1] will be created
+2025-07-27T21:09:07.4820069Z   + resource "aws_nat_gateway" "main" {
+2025-07-27T21:09:07.4820360Z       + allocation_id                      = (known after apply)
+2025-07-27T21:09:07.4820692Z       + association_id                     = (known after apply)
+2025-07-27T21:09:07.4821011Z       + connectivity_type                  = "public"
+2025-07-27T21:09:07.4821302Z       + id                                 = (known after apply)
+2025-07-27T21:09:07.4821613Z       + network_interface_id               = (known after apply)
+2025-07-27T21:09:07.4822052Z       + private_ip                         = (known after apply)
+2025-07-27T21:09:07.4822376Z       + public_ip                          = (known after apply)
+2025-07-27T21:09:07.4822712Z       + secondary_private_ip_address_count = (known after apply)
+2025-07-27T21:09:07.4823070Z       + secondary_private_ip_addresses     = (known after apply)
+2025-07-27T21:09:07.4823403Z       + subnet_id                          = (known after apply)
+2025-07-27T21:09:07.4823709Z       + tags                               = (known after apply)
+2025-07-27T21:09:07.4824008Z       + tags_all                           = (known after apply)
+2025-07-27T21:09:07.4824278Z     }
+2025-07-27T21:09:07.4824371Z 
+2025-07-27T21:09:07.4824498Z   # module.vpc.aws_nat_gateway.main[2] will be created
+2025-07-27T21:09:07.4824799Z   + resource "aws_nat_gateway" "main" {
+2025-07-27T21:09:07.4825093Z       + allocation_id                      = (known after apply)
+2025-07-27T21:09:07.4825428Z       + association_id                     = (known after apply)
+2025-07-27T21:09:07.4825742Z       + connectivity_type                  = "public"
+2025-07-27T21:09:07.4826032Z       + id                                 = (known after apply)
+2025-07-27T21:09:07.4826341Z       + network_interface_id               = (known after apply)
+2025-07-27T21:09:07.4826674Z       + private_ip                         = (known after apply)
+2025-07-27T21:09:07.4826988Z       + public_ip                          = (known after apply)
+2025-07-27T21:09:07.4827330Z       + secondary_private_ip_address_count = (known after apply)
+2025-07-27T21:09:07.4827684Z       + secondary_private_ip_addresses     = (known after apply)
+2025-07-27T21:09:07.4828017Z       + subnet_id                          = (known after apply)
+2025-07-27T21:09:07.4828425Z       + tags                               = (known after apply)
+2025-07-27T21:09:07.4828721Z       + tags_all                           = (known after apply)
+2025-07-27T21:09:07.4828985Z     }
+2025-07-27T21:09:07.4829080Z 
+2025-07-27T21:09:07.4829218Z   # module.vpc.aws_route_table.private[0] will be created
+2025-07-27T21:09:07.4829532Z   + resource "aws_route_table" "private" {
+2025-07-27T21:09:07.4829805Z       + arn              = (known after apply)
+2025-07-27T21:09:07.4830071Z       + id               = (known after apply)
+2025-07-27T21:09:07.4830335Z       + owner_id         = (known after apply)
+2025-07-27T21:09:07.4830608Z       + propagating_vgws = (known after apply)
+2025-07-27T21:09:07.4830864Z       + route            = [
+2025-07-27T21:09:07.4831075Z           + {
+2025-07-27T21:09:07.4831277Z               + carrier_gateway_id         = ""
+2025-07-27T21:09:07.4831553Z               + cidr_block                 = "0.0.0.0/0"
+2025-07-27T21:09:07.4831826Z               + core_network_arn           = ""
+2025-07-27T21:09:07.4832217Z               + destination_prefix_list_id = ""
+2025-07-27T21:09:07.4832481Z               + egress_only_gateway_id     = ""
+2025-07-27T21:09:07.4832744Z               + gateway_id                 = ""
+2025-07-27T21:09:07.4832996Z               + ipv6_cidr_block            = ""
+2025-07-27T21:09:07.4833250Z               + local_gateway_id           = ""
+2025-07-27T21:09:07.4833535Z               + nat_gateway_id             = (known after apply)
+2025-07-27T21:09:07.4833851Z               + network_interface_id       = ""
+2025-07-27T21:09:07.4834122Z               + transit_gateway_id         = ""
+2025-07-27T21:09:07.4834382Z               + vpc_endpoint_id            = ""
+2025-07-27T21:09:07.4834647Z               + vpc_peering_connection_id  = ""
+2025-07-27T21:09:07.4834891Z             },
+2025-07-27T21:09:07.4835065Z         ]
+2025-07-27T21:09:07.4835256Z       + tags             = (known after apply)
+2025-07-27T21:09:07.4835524Z       + tags_all         = (known after apply)
+2025-07-27T21:09:07.4835797Z       + vpc_id           = (known after apply)
+2025-07-27T21:09:07.4836038Z     }
+2025-07-27T21:09:07.4836140Z 
+2025-07-27T21:09:07.4836385Z   # module.vpc.aws_route_table.private[1] will be created
+2025-07-27T21:09:07.4836720Z   + resource "aws_route_table" "private" {
+2025-07-27T21:09:07.4837024Z       + arn              = (known after apply)
+2025-07-27T21:09:07.4837284Z       + id               = (known after apply)
+2025-07-27T21:09:07.4837545Z       + owner_id         = (known after apply)
+2025-07-27T21:09:07.4837813Z       + propagating_vgws = (known after apply)
+2025-07-27T21:09:07.4838162Z       + route            = [
+2025-07-27T21:09:07.4838377Z           + {
+2025-07-27T21:09:07.4838579Z               + carrier_gateway_id         = ""
+2025-07-27T21:09:07.4838853Z               + cidr_block                 = "0.0.0.0/0"
+2025-07-27T21:09:07.4839121Z               + core_network_arn           = ""
+2025-07-27T21:09:07.4839385Z               + destination_prefix_list_id = ""
+2025-07-27T21:09:07.4839653Z               + egress_only_gateway_id     = ""
+2025-07-27T21:09:07.4839913Z               + gateway_id                 = ""
+2025-07-27T21:09:07.4840167Z               + ipv6_cidr_block            = ""
+2025-07-27T21:09:07.4840426Z               + local_gateway_id           = ""
+2025-07-27T21:09:07.4840708Z               + nat_gateway_id             = (known after apply)
+2025-07-27T21:09:07.4841001Z               + network_interface_id       = ""
+2025-07-27T21:09:07.4841257Z               + transit_gateway_id         = ""
+2025-07-27T21:09:07.4841511Z               + vpc_endpoint_id            = ""
+2025-07-27T21:09:07.4841770Z               + vpc_peering_connection_id  = ""
+2025-07-27T21:09:07.4842014Z             },
+2025-07-27T21:09:07.4842187Z         ]
+2025-07-27T21:09:07.4842377Z       + tags             = (known after apply)
+2025-07-27T21:09:07.4842668Z       + tags_all         = (known after apply)
+2025-07-27T21:09:07.4842940Z       + vpc_id           = (known after apply)
+2025-07-27T21:09:07.4843184Z     }
+2025-07-27T21:09:07.4843278Z 
+2025-07-27T21:09:07.4843421Z   # module.vpc.aws_route_table.private[2] will be created
+2025-07-27T21:09:07.4843749Z   + resource "aws_route_table" "private" {
+2025-07-27T21:09:07.4844029Z       + arn              = (known after apply)
+2025-07-27T21:09:07.4844289Z       + id               = (known after apply)
+2025-07-27T21:09:07.4844556Z       + owner_id         = (known after apply)
+2025-07-27T21:09:07.4844824Z       + propagating_vgws = (known after apply)
+2025-07-27T21:09:07.4845080Z       + route            = [
+2025-07-27T21:09:07.4845289Z           + {
+2025-07-27T21:09:07.4845488Z               + carrier_gateway_id         = ""
+2025-07-27T21:09:07.4853055Z               + cidr_block                 = "0.0.0.0/0"
+2025-07-27T21:09:07.4853367Z               + core_network_arn           = ""
+2025-07-27T21:09:07.4853654Z               + destination_prefix_list_id = ""
+2025-07-27T21:09:07.4853933Z               + egress_only_gateway_id     = ""
+2025-07-27T21:09:07.4854390Z               + gateway_id                 = ""
+2025-07-27T21:09:07.4854648Z               + ipv6_cidr_block            = ""
+2025-07-27T21:09:07.4854911Z               + local_gateway_id           = ""
+2025-07-27T21:09:07.4855205Z               + nat_gateway_id             = (known after apply)
+2025-07-27T21:09:07.4855510Z               + network_interface_id       = ""
+2025-07-27T21:09:07.4855768Z               + transit_gateway_id         = ""
+2025-07-27T21:09:07.4856028Z               + vpc_endpoint_id            = ""
+2025-07-27T21:09:07.4856318Z               + vpc_peering_connection_id  = ""
+2025-07-27T21:09:07.4856580Z             },
+2025-07-27T21:09:07.4856767Z         ]
+2025-07-27T21:09:07.4856962Z       + tags             = (known after apply)
+2025-07-27T21:09:07.4857228Z       + tags_all         = (known after apply)
+2025-07-27T21:09:07.4857488Z       + vpc_id           = (known after apply)
+2025-07-27T21:09:07.4857726Z     }
+2025-07-27T21:09:07.4857827Z 
+2025-07-27T21:09:07.4857971Z   # module.vpc.aws_route_table.public will be created
+2025-07-27T21:09:07.4858446Z   + resource "aws_route_table" "public" {
+2025-07-27T21:09:07.4858726Z       + arn              = (known after apply)
+2025-07-27T21:09:07.4859112Z       + id               = (known after apply)
+2025-07-27T21:09:07.4859383Z       + owner_id         = (known after apply)
+2025-07-27T21:09:07.4859654Z       + propagating_vgws = (known after apply)
+2025-07-27T21:09:07.4859925Z       + route            = [
+2025-07-27T21:09:07.4860139Z           + {
+2025-07-27T21:09:07.4860343Z               + carrier_gateway_id         = ""
+2025-07-27T21:09:07.4860622Z               + cidr_block                 = "0.0.0.0/0"
+2025-07-27T21:09:07.4860899Z               + core_network_arn           = ""
+2025-07-27T21:09:07.4861165Z               + destination_prefix_list_id = ""
+2025-07-27T21:09:07.4861429Z               + egress_only_gateway_id     = ""
+2025-07-27T21:09:07.4861718Z               + gateway_id                 = (known after apply)
+2025-07-27T21:09:07.4862017Z               + ipv6_cidr_block            = ""
+2025-07-27T21:09:07.4862269Z               + local_gateway_id           = ""
+2025-07-27T21:09:07.4862525Z               + nat_gateway_id             = ""
+2025-07-27T21:09:07.4862788Z               + network_interface_id       = ""
+2025-07-27T21:09:07.4863057Z               + transit_gateway_id         = ""
+2025-07-27T21:09:07.4863320Z               + vpc_endpoint_id            = ""
+2025-07-27T21:09:07.4863586Z               + vpc_peering_connection_id  = ""
+2025-07-27T21:09:07.4863833Z             },
+2025-07-27T21:09:07.4864009Z         ]
+2025-07-27T21:09:07.4864199Z       + tags             = (known after apply)
+2025-07-27T21:09:07.4864464Z       + tags_all         = (known after apply)
+2025-07-27T21:09:07.4864726Z       + vpc_id           = (known after apply)
+2025-07-27T21:09:07.4864971Z     }
+2025-07-27T21:09:07.4865073Z 
+2025-07-27T21:09:07.4865245Z   # module.vpc.aws_route_table_association.private[0] will be created
+2025-07-27T21:09:07.4865638Z   + resource "aws_route_table_association" "private" {
+2025-07-27T21:09:07.4865944Z       + id             = (known after apply)
+2025-07-27T21:09:07.4866224Z       + route_table_id = (known after apply)
+2025-07-27T21:09:07.4866487Z       + subnet_id      = (known after apply)
+2025-07-27T21:09:07.4866723Z     }
+2025-07-27T21:09:07.4866817Z 
+2025-07-27T21:09:07.4866992Z   # module.vpc.aws_route_table_association.private[1] will be created
+2025-07-27T21:09:07.4867116Z   + resource "aws_route_table_association" "private" {
+2025-07-27T21:09:07.4867213Z       + id             = (known after apply)
+2025-07-27T21:09:07.4867312Z       + route_table_id = (known after apply)
+2025-07-27T21:09:07.4867402Z       + subnet_id      = (known after apply)
+2025-07-27T21:09:07.4867476Z     }
+2025-07-27T21:09:07.4867480Z 
+2025-07-27T21:09:07.4867650Z   # module.vpc.aws_route_table_association.private[2] will be created
+2025-07-27T21:09:07.4867788Z   + resource "aws_route_table_association" "private" {
+2025-07-27T21:09:07.4868197Z       + id             = (known after apply)
+2025-07-27T21:09:07.4868299Z       + route_table_id = (known after apply)
+2025-07-27T21:09:07.4868389Z       + subnet_id      = (known after apply)
+2025-07-27T21:09:07.4868468Z     }
+2025-07-27T21:09:07.4868473Z 
+2025-07-27T21:09:07.4868657Z   # module.vpc.aws_route_table_association.public[0] will be created
+2025-07-27T21:09:07.4868789Z   + resource "aws_route_table_association" "public" {
+2025-07-27T21:09:07.4868888Z       + id             = (known after apply)
+2025-07-27T21:09:07.4868980Z       + route_table_id = (known after apply)
+2025-07-27T21:09:07.4869074Z       + subnet_id      = (known after apply)
+2025-07-27T21:09:07.4869142Z     }
+2025-07-27T21:09:07.4869146Z 
+2025-07-27T21:09:07.4869321Z   # module.vpc.aws_route_table_association.public[1] will be created
+2025-07-27T21:09:07.4869446Z   + resource "aws_route_table_association" "public" {
+2025-07-27T21:09:07.4869534Z       + id             = (known after apply)
+2025-07-27T21:09:07.4869634Z       + route_table_id = (known after apply)
+2025-07-27T21:09:07.4869724Z       + subnet_id      = (known after apply)
+2025-07-27T21:09:07.4869798Z     }
+2025-07-27T21:09:07.4869802Z 
+2025-07-27T21:09:07.4870066Z   # module.vpc.aws_route_table_association.public[2] will be created
+2025-07-27T21:09:07.4870195Z   + resource "aws_route_table_association" "public" {
+2025-07-27T21:09:07.4870288Z       + id             = (known after apply)
+2025-07-27T21:09:07.4870378Z       + route_table_id = (known after apply)
+2025-07-27T21:09:07.4870472Z       + subnet_id      = (known after apply)
+2025-07-27T21:09:07.4870539Z     }
+2025-07-27T21:09:07.4870542Z 
+2025-07-27T21:09:07.4870705Z   # module.vpc.aws_security_group.vpc_endpoints will be created
+2025-07-27T21:09:07.4870823Z   + resource "aws_security_group" "vpc_endpoints" {
+2025-07-27T21:09:07.4870930Z       + arn                    = (known after apply)
+2025-07-27T21:09:07.4871046Z       + description            = "Managed by Terraform"
+2025-07-27T21:09:07.4871140Z       + egress                 = [
+2025-07-27T21:09:07.4871216Z           + {
+2025-07-27T21:09:07.4871302Z               + cidr_blocks      = [
+2025-07-27T21:09:07.4871389Z                   + "0.0.0.0/0",
+2025-07-27T21:09:07.4871464Z                 ]
+2025-07-27T21:09:07.4871586Z               + description      = "All outbound traffic"
+2025-07-27T21:09:07.4871668Z               + from_port        = 0
+2025-07-27T21:09:07.4871760Z               + ipv6_cidr_blocks = []
+2025-07-27T21:09:07.4871845Z               + prefix_list_ids  = []
+2025-07-27T21:09:07.4871938Z               + protocol         = "-1"
+2025-07-27T21:09:07.4872030Z               + security_groups  = []
+2025-07-27T21:09:07.4872114Z               + self             = false
+2025-07-27T21:09:07.4872198Z               + to_port          = 0
+2025-07-27T21:09:07.4872268Z             },
+2025-07-27T21:09:07.4872341Z         ]
+2025-07-27T21:09:07.4872440Z       + id                     = (known after apply)
+2025-07-27T21:09:07.4872531Z       + ingress                = [
+2025-07-27T21:09:07.4872601Z           + {
+2025-07-27T21:09:07.4872689Z               + cidr_blocks      = [
+2025-07-27T21:09:07.4872770Z                   + "10.0.0.0/16",
+2025-07-27T21:09:07.4872846Z                 ]
+2025-07-27T21:09:07.4872957Z               + description      = "HTTPS from VPC"
+2025-07-27T21:09:07.4873042Z               + from_port        = 443
+2025-07-27T21:09:07.4873135Z               + ipv6_cidr_blocks = []
+2025-07-27T21:09:07.4873220Z               + prefix_list_ids  = []
+2025-07-27T21:09:07.4873314Z               + protocol         = "tcp"
+2025-07-27T21:09:07.4873401Z               + security_groups  = []
+2025-07-27T21:09:07.4873490Z               + self             = false
+2025-07-27T21:09:07.4873577Z               + to_port          = 443
+2025-07-27T21:09:07.4873647Z             },
+2025-07-27T21:09:07.4873726Z         ]
+2025-07-27T21:09:07.4873824Z       + name                   = (known after apply)
+2025-07-27T21:09:07.4873965Z       + name_prefix            = "tasky-dev-vpc-endpoints-"
+2025-07-27T21:09:07.4874189Z       + owner_id               = (known after apply)
+2025-07-27T21:09:07.4874287Z       + revoke_rules_on_delete = false
+2025-07-27T21:09:07.4874386Z       + tags                   = (known after apply)
+2025-07-27T21:09:07.4874488Z       + tags_all               = (known after apply)
+2025-07-27T21:09:07.4874590Z       + vpc_id                 = (known after apply)
+2025-07-27T21:09:07.4874658Z     }
+2025-07-27T21:09:07.4874662Z 
+2025-07-27T21:09:07.4874785Z   # module.vpc.aws_subnet.private[0] will be created
+2025-07-27T21:09:07.4874875Z   + resource "aws_subnet" "private" {
+2025-07-27T21:09:07.4874993Z       + arn                                            = (known after apply)
+2025-07-27T21:09:07.4875127Z       + assign_ipv6_address_on_creation                = false
+2025-07-27T21:09:07.4875276Z       + availability_zone                              = "us-east-1a"
+2025-07-27T21:09:07.4875434Z       + availability_zone_id                           = (known after apply)
+2025-07-27T21:09:07.4875557Z       + cidr_block                                     = "10.0.3.0/24"
+2025-07-27T21:09:07.4875676Z       + enable_dns64                                   = false
+2025-07-27T21:09:07.4875881Z       + enable_resource_name_dns_a_record_on_launch    = false
+2025-07-27T21:09:07.4876019Z       + enable_resource_name_dns_aaaa_record_on_launch = false
+2025-07-27T21:09:07.4876123Z       + id                                             = (known after apply)
+2025-07-27T21:09:07.4876287Z       + ipv6_cidr_block_association_id                 = (known after apply)
+2025-07-27T21:09:07.4876398Z       + ipv6_native                                    = false
+2025-07-27T21:09:07.4876512Z       + map_public_ip_on_launch                        = false
+2025-07-27T21:09:07.4876636Z       + owner_id                                       = (known after apply)
+2025-07-27T21:09:07.4876797Z       + private_dns_hostname_type_on_launch            = (known after apply)
+2025-07-27T21:09:07.4876915Z       + tags                                           = (known after apply)
+2025-07-27T21:09:07.4877031Z       + tags_all                                       = (known after apply)
+2025-07-27T21:09:07.4877150Z       + vpc_id                                         = (known after apply)
+2025-07-27T21:09:07.4877223Z     }
+2025-07-27T21:09:07.4877227Z 
+2025-07-27T21:09:07.4877344Z   # module.vpc.aws_subnet.private[1] will be created
+2025-07-27T21:09:07.4877442Z   + resource "aws_subnet" "private" {
+2025-07-27T21:09:07.4877548Z       + arn                                            = (known after apply)
+2025-07-27T21:09:07.4877678Z       + assign_ipv6_address_on_creation                = false
+2025-07-27T21:09:07.4877815Z       + availability_zone                              = "us-east-1b"
+2025-07-27T21:09:07.4877969Z       + availability_zone_id                           = (known after apply)
+2025-07-27T21:09:07.4878189Z       + cidr_block                                     = "10.0.4.0/24"
+2025-07-27T21:09:07.4878305Z       + enable_dns64                                   = false
+2025-07-27T21:09:07.4878439Z       + enable_resource_name_dns_a_record_on_launch    = false
+2025-07-27T21:09:07.4878571Z       + enable_resource_name_dns_aaaa_record_on_launch = false
+2025-07-27T21:09:07.4878678Z       + id                                             = (known after apply)
+2025-07-27T21:09:07.4878837Z       + ipv6_cidr_block_association_id                 = (known after apply)
+2025-07-27T21:09:07.4878952Z       + ipv6_native                                    = false
+2025-07-27T21:09:07.4879076Z       + map_public_ip_on_launch                        = false
+2025-07-27T21:09:07.4879192Z       + owner_id                                       = (known after apply)
+2025-07-27T21:09:07.4879363Z       + private_dns_hostname_type_on_launch            = (known after apply)
+2025-07-27T21:09:07.4879470Z       + tags                                           = (known after apply)
+2025-07-27T21:09:07.4879726Z       + tags_all                                       = (known after apply)
+2025-07-27T21:09:07.4879835Z       + vpc_id                                         = (known after apply)
+2025-07-27T21:09:07.4879906Z     }
+2025-07-27T21:09:07.4879914Z 
+2025-07-27T21:09:07.4880033Z   # module.vpc.aws_subnet.private[2] will be created
+2025-07-27T21:09:07.4880125Z   + resource "aws_subnet" "private" {
+2025-07-27T21:09:07.4880235Z       + arn                                            = (known after apply)
+2025-07-27T21:09:07.4880355Z       + assign_ipv6_address_on_creation                = false
+2025-07-27T21:09:07.4880494Z       + availability_zone                              = "us-east-1c"
+2025-07-27T21:09:07.4880640Z       + availability_zone_id                           = (known after apply)
+2025-07-27T21:09:07.4880761Z       + cidr_block                                     = "10.0.5.0/24"
+2025-07-27T21:09:07.4880875Z       + enable_dns64                                   = false
+2025-07-27T21:09:07.4881004Z       + enable_resource_name_dns_a_record_on_launch    = false
+2025-07-27T21:09:07.4881138Z       + enable_resource_name_dns_aaaa_record_on_launch = false
+2025-07-27T21:09:07.4881380Z       + id                                             = (known after apply)
+2025-07-27T21:09:07.4881547Z       + ipv6_cidr_block_association_id                 = (known after apply)
+2025-07-27T21:09:07.4881653Z       + ipv6_native                                    = false
+2025-07-27T21:09:07.4881773Z       + map_public_ip_on_launch                        = false
+2025-07-27T21:09:07.4881894Z       + owner_id                                       = (known after apply)
+2025-07-27T21:09:07.4882057Z       + private_dns_hostname_type_on_launch            = (known after apply)
+2025-07-27T21:09:07.4882169Z       + tags                                           = (known after apply)
+2025-07-27T21:09:07.4882283Z       + tags_all                                       = (known after apply)
+2025-07-27T21:09:07.4882397Z       + vpc_id                                         = (known after apply)
+2025-07-27T21:09:07.4882469Z     }
+2025-07-27T21:09:07.4882472Z 
+2025-07-27T21:09:07.4882590Z   # module.vpc.aws_subnet.public[0] will be created
+2025-07-27T21:09:07.4882690Z   + resource "aws_subnet" "public" {
+2025-07-27T21:09:07.4882793Z       + arn                                            = (known after apply)
+2025-07-27T21:09:07.4882920Z       + assign_ipv6_address_on_creation                = false
+2025-07-27T21:09:07.4883055Z       + availability_zone                              = "us-east-1a"
+2025-07-27T21:09:07.4883207Z       + availability_zone_id                           = (known after apply)
+2025-07-27T21:09:07.4883321Z       + cidr_block                                     = "10.0.0.0/24"
+2025-07-27T21:09:07.4883437Z       + enable_dns64                                   = false
+2025-07-27T21:09:07.4883576Z       + enable_resource_name_dns_a_record_on_launch    = false
+2025-07-27T21:09:07.4883704Z       + enable_resource_name_dns_aaaa_record_on_launch = false
+2025-07-27T21:09:07.4883815Z       + id                                             = (known after apply)
+2025-07-27T21:09:07.4883975Z       + ipv6_cidr_block_association_id                 = (known after apply)
+2025-07-27T21:09:07.4884092Z       + ipv6_native                                    = false
+2025-07-27T21:09:07.4884211Z       + map_public_ip_on_launch                        = true
+2025-07-27T21:09:07.4884335Z       + owner_id                                       = (known after apply)
+2025-07-27T21:09:07.4884503Z       + private_dns_hostname_type_on_launch            = (known after apply)
+2025-07-27T21:09:07.4884612Z       + tags                                           = (known after apply)
+2025-07-27T21:09:07.4884735Z       + tags_all                                       = (known after apply)
+2025-07-27T21:09:07.4884844Z       + vpc_id                                         = (known after apply)
+2025-07-27T21:09:07.4884916Z     }
+2025-07-27T21:09:07.4884921Z 
+2025-07-27T21:09:07.4885122Z   # module.vpc.aws_subnet.public[1] will be created
+2025-07-27T21:09:07.4885217Z   + resource "aws_subnet" "public" {
+2025-07-27T21:09:07.4885324Z       + arn                                            = (known after apply)
+2025-07-27T21:09:07.4885454Z       + assign_ipv6_address_on_creation                = false
+2025-07-27T21:09:07.4885599Z       + availability_zone                              = "us-east-1b"
+2025-07-27T21:09:07.4885745Z       + availability_zone_id                           = (known after apply)
+2025-07-27T21:09:07.4885863Z       + cidr_block                                     = "10.0.1.0/24"
+2025-07-27T21:09:07.4885971Z       + enable_dns64                                   = false
+2025-07-27T21:09:07.4886102Z       + enable_resource_name_dns_a_record_on_launch    = false
+2025-07-27T21:09:07.4886231Z       + enable_resource_name_dns_aaaa_record_on_launch = false
+2025-07-27T21:09:07.4886335Z       + id                                             = (known after apply)
+2025-07-27T21:09:07.4886499Z       + ipv6_cidr_block_association_id                 = (known after apply)
+2025-07-27T21:09:07.4886604Z       + ipv6_native                                    = false
+2025-07-27T21:09:07.4886800Z       + map_public_ip_on_launch                        = true
+2025-07-27T21:09:07.4886922Z       + owner_id                                       = (known after apply)
+2025-07-27T21:09:07.4887089Z       + private_dns_hostname_type_on_launch            = (known after apply)
+2025-07-27T21:09:07.4887194Z       + tags                                           = (known after apply)
+2025-07-27T21:09:07.4887314Z       + tags_all                                       = (known after apply)
+2025-07-27T21:09:07.4887429Z       + vpc_id                                         = (known after apply)
+2025-07-27T21:09:07.4887496Z     }
+2025-07-27T21:09:07.4887500Z 
+2025-07-27T21:09:07.4887622Z   # module.vpc.aws_subnet.public[2] will be created
+2025-07-27T21:09:07.4887710Z   + resource "aws_subnet" "public" {
+2025-07-27T21:09:07.4887825Z       + arn                                            = (known after apply)
+2025-07-27T21:09:07.4887946Z       + assign_ipv6_address_on_creation                = false
+2025-07-27T21:09:07.4888187Z       + availability_zone                              = "us-east-1c"
+2025-07-27T21:09:07.4888342Z       + availability_zone_id                           = (known after apply)
+2025-07-27T21:09:07.4888457Z       + cidr_block                                     = "10.0.2.0/24"
+2025-07-27T21:09:07.4888574Z       + enable_dns64                                   = false
+2025-07-27T21:09:07.4888700Z       + enable_resource_name_dns_a_record_on_launch    = false
+2025-07-27T21:09:07.4888833Z       + enable_resource_name_dns_aaaa_record_on_launch = false
+2025-07-27T21:09:07.4888934Z       + id                                             = (known after apply)
+2025-07-27T21:09:07.4889094Z       + ipv6_cidr_block_association_id                 = (known after apply)
+2025-07-27T21:09:07.4889210Z       + ipv6_native                                    = false
+2025-07-27T21:09:07.4889324Z       + map_public_ip_on_launch                        = true
+2025-07-27T21:09:07.4889450Z       + owner_id                                       = (known after apply)
+2025-07-27T21:09:07.4889614Z       + private_dns_hostname_type_on_launch            = (known after apply)
+2025-07-27T21:09:07.4889728Z       + tags                                           = (known after apply)
+2025-07-27T21:09:07.4889842Z       + tags_all                                       = (known after apply)
+2025-07-27T21:09:07.4889955Z       + vpc_id                                         = (known after apply)
+2025-07-27T21:09:07.4890025Z     }
+2025-07-27T21:09:07.4890029Z 
+2025-07-27T21:09:07.4890129Z   # module.vpc.aws_vpc.main will be created
+2025-07-27T21:09:07.4890223Z   + resource "aws_vpc" "main" {
+2025-07-27T21:09:07.4890332Z       + arn                                  = (known after apply)
+2025-07-27T21:09:07.4890443Z       + cidr_block                           = "10.0.0.0/16"
+2025-07-27T21:09:07.4890707Z       + default_network_acl_id               = (known after apply)
+2025-07-27T21:09:07.4890838Z       + default_route_table_id               = (known after apply)
+2025-07-27T21:09:07.4890981Z       + default_security_group_id            = (known after apply)
+2025-07-27T21:09:07.4891110Z       + dhcp_options_id                      = (known after apply)
+2025-07-27T21:09:07.4891206Z       + enable_dns_hostnames                 = true
+2025-07-27T21:09:07.4891305Z       + enable_dns_support                   = true
+2025-07-27T21:09:07.4891443Z       + enable_network_address_usage_metrics = (known after apply)
+2025-07-27T21:09:07.4891547Z       + id                                   = (known after apply)
+2025-07-27T21:09:07.4891658Z       + instance_tenancy                     = "default"
+2025-07-27T21:09:07.4891794Z       + ipv6_association_id                  = (known after apply)
+2025-07-27T21:09:07.4891922Z       + ipv6_cidr_block                      = (known after apply)
+2025-07-27T21:09:07.4892061Z       + ipv6_cidr_block_network_border_group = (known after apply)
+2025-07-27T21:09:07.4892189Z       + main_route_table_id                  = (known after apply)
+2025-07-27T21:09:07.4892403Z       + owner_id                             = (known after apply)
+2025-07-27T21:09:07.4892514Z       + tags                                 = (known after apply)
+2025-07-27T21:09:07.4892624Z       + tags_all                             = (known after apply)
+2025-07-27T21:09:07.4892696Z     }
+2025-07-27T21:09:07.4892700Z 
+2025-07-27T21:09:07.4892817Z   # module.vpc.aws_vpc_endpoint.ec2 will be created
+2025-07-27T21:09:07.4892910Z   + resource "aws_vpc_endpoint" "ec2" {
+2025-07-27T21:09:07.4893005Z       + arn                   = (known after apply)
+2025-07-27T21:09:07.4893098Z       + cidr_blocks           = (known after apply)
+2025-07-27T21:09:07.4893209Z       + dns_entry             = (known after apply)
+2025-07-27T21:09:07.4893305Z       + id                    = (known after apply)
+2025-07-27T21:09:07.4893411Z       + ip_address_type       = (known after apply)
+2025-07-27T21:09:07.4893514Z       + network_interface_ids = (known after apply)
+2025-07-27T21:09:07.4893611Z       + owner_id              = (known after apply)
+2025-07-27T21:09:07.4893716Z       + policy                = (known after apply)
+2025-07-27T21:09:07.4893819Z       + prefix_list_id        = (known after apply)
+2025-07-27T21:09:07.4893907Z       + private_dns_enabled   = true
+2025-07-27T21:09:07.4894009Z       + requester_managed     = (known after apply)
+2025-07-27T21:09:07.4894109Z       + route_table_ids       = (known after apply)
+2025-07-27T21:09:07.4894207Z       + security_group_ids    = (known after apply)
+2025-07-27T21:09:07.4894344Z       + service_name          = "com.amazonaws.us-east-1.ec2"
+2025-07-27T21:09:07.4894440Z       + service_region        = (known after apply)
+2025-07-27T21:09:07.4894536Z       + state                 = (known after apply)
+2025-07-27T21:09:07.4894632Z       + subnet_ids            = (known after apply)
+2025-07-27T21:09:07.4894729Z       + tags                  = (known after apply)
+2025-07-27T21:09:07.4894821Z       + tags_all              = (known after apply)
+2025-07-27T21:09:07.4894926Z       + vpc_endpoint_type     = "Interface"
+2025-07-27T21:09:07.4895024Z       + vpc_id                = (known after apply)
+2025-07-27T21:09:07.4895091Z     }
+2025-07-27T21:09:07.4895095Z 
+2025-07-27T21:09:07.4895212Z   # module.vpc.aws_vpc_endpoint.s3 will be created
+2025-07-27T21:09:07.4895306Z   + resource "aws_vpc_endpoint" "s3" {
+2025-07-27T21:09:07.4895401Z       + arn                   = (known after apply)
+2025-07-27T21:09:07.4895494Z       + cidr_blocks           = (known after apply)
+2025-07-27T21:09:07.4895591Z       + dns_entry             = (known after apply)
+2025-07-27T21:09:07.4895682Z       + id                    = (known after apply)
+2025-07-27T21:09:07.4895777Z       + ip_address_type       = (known after apply)
+2025-07-27T21:09:07.4895964Z       + network_interface_ids = (known after apply)
+2025-07-27T21:09:07.4896057Z       + owner_id              = (known after apply)
+2025-07-27T21:09:07.4896153Z       + policy                = (known after apply)
+2025-07-27T21:09:07.4896249Z       + prefix_list_id        = (known after apply)
+2025-07-27T21:09:07.4896354Z       + private_dns_enabled   = (known after apply)
+2025-07-27T21:09:07.4896450Z       + requester_managed     = (known after apply)
+2025-07-27T21:09:07.4896550Z       + route_table_ids       = (known after apply)
+2025-07-27T21:09:07.4896652Z       + security_group_ids    = (known after apply)
+2025-07-27T21:09:07.4896782Z       + service_name          = "com.amazonaws.us-east-1.s3"
+2025-07-27T21:09:07.4896883Z       + service_region        = (known after apply)
+2025-07-27T21:09:07.4896973Z       + state                 = (known after apply)
+2025-07-27T21:09:07.4897071Z       + subnet_ids            = (known after apply)
+2025-07-27T21:09:07.4897160Z       + tags                  = (known after apply)
+2025-07-27T21:09:07.4897258Z       + tags_all              = (known after apply)
+2025-07-27T21:09:07.4897356Z       + vpc_endpoint_type     = "Gateway"
+2025-07-27T21:09:07.4897448Z       + vpc_id                = (known after apply)
+2025-07-27T21:09:07.4897594Z     }
+2025-07-27T21:09:07.4897599Z 
+2025-07-27T21:09:07.4897699Z Plan: 58 to add, 0 to change, 0 to destroy.
+2025-07-27T21:09:07.4897703Z 
+2025-07-27T21:09:07.4897789Z Changes to Outputs:
+2025-07-27T21:09:07.4897934Z   + application_access_instructions           = <<-EOT
+2025-07-27T21:09:07.4898035Z         To access the Tasky application:
+2025-07-27T21:09:07.4898230Z             
+2025-07-27T21:09:07.4898322Z         1. Configure kubectl:
+2025-07-27T21:09:07.4898548Z            aws eks update-kubeconfig --region us-east-1 --name tasky-dev-v15-eks-cluster
+2025-07-27T21:09:07.4898617Z             
+2025-07-27T21:09:07.4898715Z         2. Get the application URL:
+2025-07-27T21:09:07.4898829Z            kubectl get ingress tasky-ingress -n tasky
+2025-07-27T21:09:07.4898932Z                
+2025-07-27T21:09:07.4899013Z         3. Or get direct URL:
+2025-07-27T21:09:07.4899366Z            echo "http://$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')"
+2025-07-27T21:09:07.4899436Z                
+2025-07-27T21:09:07.4899535Z         4. Custom domain (if configured):
+2025-07-27T21:09:07.4899643Z            http://ideatasky.ryanmcvey.me
+2025-07-27T21:09:07.4899712Z                
+2025-07-27T21:09:07.4899958Z         Note: The ALB is managed by Kubernetes AWS Load Balancer Controller, not Terraform directly.
+2025-07-27T21:09:07.4900027Z     EOT
+2025-07-27T21:09:07.4900392Z   + application_url_command                   = "kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'"
+2025-07-27T21:09:07.4900510Z   + aws_region                                = "us-east-1"
+2025-07-27T21:09:07.4900673Z   + eks_aws_load_balancer_controller_role_arn = (known after apply)
+2025-07-27T21:09:07.4900823Z   + eks_cluster_endpoint                      = (known after apply)
+2025-07-27T21:09:07.4900975Z   + eks_cluster_name                          = "tasky-dev-v15-eks-cluster"
+2025-07-27T21:09:07.4901126Z   + eks_cluster_security_group_id             = (known after apply)
+2025-07-27T21:09:07.4901268Z   + eks_node_group_security_group_id          = (known after apply)
+2025-07-27T21:09:07.4901395Z   + jwt_secret                                = (sensitive value)
+2025-07-27T21:09:07.4901686Z   + kubectl_config_command                    = "aws eks update-kubeconfig --region us-east-1 --name tasky-dev-v15-eks-cluster"
+2025-07-27T21:09:07.4901865Z   + mongodb_cloudwatch_logs                   = "/aws/ec2/tasky-dev-v15/mongodb"
+2025-07-27T21:09:07.4902014Z   + mongodb_connection_string                 = (sensitive value)
+2025-07-27T21:09:07.4902142Z   + mongodb_database_name                     = "go-mongodb"
+2025-07-27T21:09:07.4902284Z   + mongodb_instance_id                       = (known after apply)
+2025-07-27T21:09:07.4902534Z   + mongodb_password                          = (sensitive value)
+2025-07-27T21:09:07.4902677Z   + mongodb_private_ip                        = (known after apply)
+2025-07-27T21:09:07.4902823Z   + mongodb_security_group_id                 = (known after apply)
+2025-07-27T21:09:07.4902937Z   + mongodb_troubleshooting                   = {
+2025-07-27T21:09:07.4903042Z       + ssm_connect        = (known after apply)
+2025-07-27T21:09:07.4903262Z       + status_check       = "Run '/opt/mongodb-backup/status-check.sh' on the instance via SSM"
+2025-07-27T21:09:07.4903364Z       + tail_mongodb_log   = (known after apply)
+2025-07-27T21:09:07.4903460Z       + tail_mongodb_setup = (known after apply)
+2025-07-27T21:09:07.4903556Z       + tail_user_data     = (known after apply)
+2025-07-27T21:09:07.4903648Z       + view_cloud_init    = (known after apply)
+2025-07-27T21:09:07.4903911Z       + view_logs          = "aws logs describe-log-streams --log-group-name '/aws/ec2/tasky-dev-v15/mongodb'"
+2025-07-27T21:09:07.4903987Z     }
+2025-07-27T21:09:07.4904123Z   + mongodb_username                          = (sensitive value)
+2025-07-27T21:09:07.4904265Z   + s3_backup_bucket_name                     = (known after apply)
+2025-07-27T21:09:07.4904502Z   + s3_backup_public_url                      = (known after apply)
+2025-07-27T21:09:07.4904650Z   + s3_backup_public_url_latest_db            = (known after apply)
+2025-07-27T21:09:07.4904757Z   + vpc_id                                    = (known after apply)
+2025-07-27T21:09:07.4904761Z 
+2025-07-27T21:09:07.4905143Z ─────────────────────────────────────────────────────────────────────────────
+2025-07-27T21:09:07.4905148Z 
+2025-07-27T21:09:07.4905244Z Saved the plan to: tfplan
+2025-07-27T21:09:07.4905249Z 
+2025-07-27T21:09:07.4905427Z To perform exactly these actions, run the following command to apply:
+2025-07-27T21:09:07.4905523Z     terraform apply "tfplan"
+2025-07-27T21:09:07.5850771Z ##[group]Run echo "cost_estimate=Estimated monthly cost: ~$50-75 USD (EKS: ~$30, EC2: ~$15, S3/ALB: ~$10)" >> $GITHUB_OUTPUT
+2025-07-27T21:09:07.5851536Z [36;1mecho "cost_estimate=Estimated monthly cost: ~$50-75 USD (EKS: ~$30, EC2: ~$15, S3/ALB: ~$10)" >> $GITHUB_OUTPUT[0m
+2025-07-27T21:09:07.5878722Z shell: /usr/bin/bash -e {0}
+2025-07-27T21:09:07.5878971Z env:
+2025-07-27T21:09:07.5879158Z   TF_VERSION: 1.7.5
+2025-07-27T21:09:07.5879368Z   AWS_REGION: us-east-1
+2025-07-27T21:09:07.5879584Z   PROJECT_NAME: tasky
+2025-07-27T21:09:07.5879793Z   ENVIRONMENT: dev
+2025-07-27T21:09:07.5879990Z   STACK_VERSION: v15
+2025-07-27T21:09:07.5880203Z   AWS_DEFAULT_REGION: us-east-1
+2025-07-27T21:09:07.5880530Z   AWS_ACCESS_KEY_ID: ***
+2025-07-27T21:09:07.5880851Z   AWS_SECRET_ACCESS_KEY: ***
+2025-07-27T21:09:07.5886012Z   AWS_SESSION_TOKEN: ***
+2025-07-27T21:09:07.5886372Z   TERRAFORM_CLI_PATH: /home/runner/work/_temp/682a2dc3-cbf7-4562-b769-5f8063a5c3f9
+2025-07-27T21:09:07.5886782Z ##[endgroup]
+2025-07-27T21:09:07.5954551Z ##[group]Run echo "🔍 Security validation:" >> security_report.md
+2025-07-27T21:09:07.5955024Z [36;1mecho "🔍 Security validation:" >> security_report.md[0m
+2025-07-27T21:09:07.5955468Z [36;1mecho "- ✅ Non-root user configured in containers" >> security_report.md[0m
+2025-07-27T21:09:07.5955978Z [36;1mecho "- ✅ RBAC cluster-admin permissions configured" >> security_report.md[0m
+2025-07-27T21:09:07.5956462Z [36;1mecho "- ✅ MongoDB authentication enabled" >> security_report.md[0m
+2025-07-27T21:09:07.5956921Z [36;1mecho "- ✅ S3 public read access configured for backups" >> security_report.md[0m
+2025-07-27T21:09:07.5957406Z [36;1mecho "- ✅ VPC with private/public subnet separation" >> security_report.md[0m
+2025-07-27T21:09:07.5957816Z [36;1mecho "security_report<<EOF" >> $GITHUB_OUTPUT[0m
+2025-07-27T21:09:07.5958367Z [36;1mcat security_report.md >> $GITHUB_OUTPUT[0m
+2025-07-27T21:09:07.5958666Z [36;1mecho "EOF" >> $GITHUB_OUTPUT[0m
+2025-07-27T21:09:07.5983823Z shell: /usr/bin/bash -e {0}
+2025-07-27T21:09:07.5984070Z env:
+2025-07-27T21:09:07.5984428Z   TF_VERSION: 1.7.5
+2025-07-27T21:09:07.5984640Z   AWS_REGION: us-east-1
+2025-07-27T21:09:07.5984859Z   PROJECT_NAME: tasky
+2025-07-27T21:09:07.5985076Z   ENVIRONMENT: dev
+2025-07-27T21:09:07.5985274Z   STACK_VERSION: v15
+2025-07-27T21:09:07.5985487Z   AWS_DEFAULT_REGION: us-east-1
+2025-07-27T21:09:07.5985811Z   AWS_ACCESS_KEY_ID: ***
+2025-07-27T21:09:07.5986145Z   AWS_SECRET_ACCESS_KEY: ***
+2025-07-27T21:09:07.5991499Z   AWS_SESSION_TOKEN: ***
+2025-07-27T21:09:07.5991860Z   TERRAFORM_CLI_PATH: /home/runner/work/_temp/682a2dc3-cbf7-4562-b769-5f8063a5c3f9
+2025-07-27T21:09:07.5992237Z ##[endgroup]
+2025-07-27T21:09:07.6147999Z Post job cleanup.
+2025-07-27T21:09:07.7364169Z Post job cleanup.
+2025-07-27T21:09:07.8360453Z [command]/usr/bin/git version
+2025-07-27T21:09:07.8401635Z git version 2.50.1
+2025-07-27T21:09:07.8446648Z Temporarily overriding HOME='/home/runner/work/_temp/2b5bfa52-70ea-4fa6-83aa-48457573404d' before making global git config changes
+2025-07-27T21:09:07.8447961Z Adding repository directory to the temporary git global config as a safe directory
+2025-07-27T21:09:07.8461684Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/tasky-pivot-for-insight/tasky-pivot-for-insight
+2025-07-27T21:09:07.8498345Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-07-27T21:09:07.8531806Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-07-27T21:09:07.8758498Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-07-27T21:09:07.8778838Z http.https://github.com/.extraheader
+2025-07-27T21:09:07.8791291Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2025-07-27T21:09:07.8820914Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-07-27T21:09:07.9159909Z Cleaning up orphan processes

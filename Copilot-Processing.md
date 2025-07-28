@@ -84,7 +84,119 @@ JWT_SECRET:
 - `terraform output -raw mongodb_password` → `terraform output -json mongodb_password | jq -r .`  
 - `terraform output -raw jwt_secret` → `terraform output -json jwt_secret | jq -r .`
 
-**Status:** Ready for end-to-end testing. The sensitive output handling is now fixed and should properly pass all credentials to the deploy-application job.
+**Status:** ✅ COMPLETE - ALB polling implementation and ingress class fixes applied
+
+## Latest Updates: ALB Polling and Ingress Class Configuration ✅
+
+### Issue: GitHub Actions Workflow Hanging on ALB Detection
+**Problem**: The deploy-application job was hanging during application readiness checks, specifically when waiting for ALB URL detection. The workflow would timeout without providing useful debugging information.
+
+**Root Cause Analysis:**
+1. **Workflow Hanging**: Original readiness checks were blocking workflow execution indefinitely
+2. **Missing ALB URL**: ALB DNS name not appearing in kubectl get ingress output
+3. **Inadequate Diagnostics**: No comprehensive troubleshooting information provided
+4. **Ingress Class Issue**: ALB showing "CLASS <none>" instead of "alb" after 13 polling attempts
+
+### Solutions Implemented:
+
+#### Fix #1: Intelligent ALB Polling System ✅
+**Implementation**: Replaced blocking readiness checks with intelligent 20-attempt polling (30-second intervals)
+```yaml
+# Enhanced ALB detection with comprehensive diagnostics
+- name: Get ALB URL for Output
+  run: |
+    echo "🔍 Checking for ALB URL (up to 20 attempts, 30 seconds apart)..."
+    echo "⏱️  Maximum wait time: 10 minutes"
+    
+    ALB_DNS=""
+    for i in {1..20}; do
+      echo "🔄 Attempt $i/20: Checking ALB ingress status..."
+      
+      ALB_DNS=$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || echo "")
+      
+      if [ -n "$ALB_DNS" ]; then
+        echo "✅ ALB DNS found: $ALB_DNS"
+        echo "🌐 Application URL: http://$ALB_DNS"
+        break
+      else
+        echo "⏳ ALB not ready yet..."
+        sleep 30
+      fi
+    done
+```
+
+#### Fix #2: Comprehensive ALB Diagnostics ✅
+**Enhancement**: Added detailed troubleshooting and status reporting
+- **AWS Load Balancer Controller Status**: Pod status checks in kube-system namespace
+- **Ingress Class Validation**: Automatic detection and validation of ingress class configuration
+- **Detailed Ingress Information**: kubectl describe output for troubleshooting
+- **Automatic Reapplication**: Detects missing ingress class and reapplies configuration
+- **Final Diagnostic Summary**: Complete status report if ALB fails to provision
+
+#### Fix #3: ALB Ingress Class Configuration Issue ✅
+**Critical Discovery**: ALB showing "CLASS <none>" preventing proper provisioning
+**Root Cause**: Using deprecated `kubernetes.io/ingress.class: alb` annotation instead of modern `ingressClassName: alb` specification
+
+**Before (Deprecated)**:
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: alb  # DEPRECATED
+```
+
+**After (Modern)**:
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tasky-ingress
+spec:
+  ingressClassName: alb  # MODERN SPECIFICATION
+```
+
+**Impact**: Fixed ALB recognition by AWS Load Balancer Controller, enabling proper ALB provisioning
+
+#### Fix #4: Enhanced Workflow Logic ✅
+**Improvements**:
+- **Non-blocking Execution**: Workflow continues even if ALB not immediately available
+- **Graceful Degradation**: Provides manual check commands if ALB not ready after 10 minutes
+- **ELB Endpoint Focus**: Prioritizes actual ELB DNS name over custom domain for testing
+- **Comprehensive Output**: Both successful and pending states handled with appropriate guidance
+
+### Technical Benefits Achieved:
+
+#### Workflow Reliability ✅
+- **No More Hanging**: Workflow completes in all scenarios (success or timeout)
+- **Predictable Timing**: Maximum 10-minute wait with 30-second intervals
+- **Clear Progress**: Step-by-step status updates with emojis for visibility
+- **Graceful Failure**: Informative output even when ALB not immediately ready
+
+#### Debugging Capabilities ✅
+- **Real-time Diagnostics**: Live status of ALB controller, ingress class, and provisioning
+- **Manual Commands**: Provides kubectl commands for manual troubleshooting
+- **Log Access**: Controller logs available for advanced debugging
+- **Status Validation**: Automatic detection of common configuration issues
+
+#### Modern Kubernetes Compliance ✅
+- **Updated Specification**: Uses modern `ingressClassName` instead of deprecated annotations
+- **Controller Compatibility**: Ensures proper recognition by AWS Load Balancer Controller
+- **Future-proof**: Aligns with current Kubernetes ingress best practices
+- **Automatic Correction**: Detects and fixes ingress class issues automatically
+
+### Files Modified:
+1. **`.github/workflows/terraform-apply.yml`**: Enhanced ALB polling logic and diagnostics
+2. **`k8s/ingress.yaml`**: Fixed from deprecated annotation to modern ingressClassName specification
+
+### Testing Strategy:
+**Validation Approach**: The enhanced workflow now provides comprehensive ALB status information regardless of timing, enabling proper validation of:
+- ALB provisioning success with actual ELB endpoint
+- Ingress class configuration validation
+- AWS Load Balancer Controller operational status
+- Manual troubleshooting guidance when needed
+
+**Status:** ✅ COMPLETE - ALB polling implementation and ingress class fixes applied. Workflow now reliably detects ALB status and provides proper ELB endpoint for testing instead of custom DNS.
 
 ## Previous Analysis (Archived)
 Terraform plan was successful with 58 resources planned for creation. Backend configuration with S3 remote state is working correctly. STACK_VERSION updated consistently across both workflows (v15). Infrastructure includes EKS cluster, MongoDB EC2, S3 backup, and networking components. Estimated cost: $50-75/month.

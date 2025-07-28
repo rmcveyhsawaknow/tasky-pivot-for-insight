@@ -320,11 +320,25 @@ jobs:
           echo "⏱️  Maximum wait time: 10 minutes"
           echo ""
           
+          # First, let's check if AWS Load Balancer Controller is running
+          echo "🔧 Checking AWS Load Balancer Controller status..."
+          kubectl get pods -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controller
+          echo ""
+          
+          # Check if the alb ingress class exists
+          echo "🔧 Checking ingress classes..."
+          kubectl get ingressclass
+          echo ""
+          
           ALB_DNS=""
           for i in {1..20}; do
             echo "🔄 Attempt $i/20: Checking ALB ingress status..."
             
-            # Try to get ALB DNS name
+            # Check the ingress with more details
+            echo "📊 Current ingress status:"
+            kubectl get ingress tasky-ingress -n tasky -o wide 2>/dev/null || echo "   Ingress not found"
+            
+            # Try to get ALB DNS name from the ADDRESS field
             ALB_DNS=$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || echo "")
             
             if [ -n "$ALB_DNS" ]; then
@@ -338,9 +352,21 @@ jobs:
             else
               echo "⏳ ALB not ready yet..."
               
-              # Show ingress status for debugging
-              echo "📊 Current ingress status:"
-              kubectl get ingress tasky-ingress -n tasky -o wide 2>/dev/null || echo "   Ingress not found or not ready"
+              # Show more detailed ingress information for debugging
+              echo "� Detailed ingress information:"
+              kubectl describe ingress tasky-ingress -n tasky 2>/dev/null | head -20 || echo "   Could not get ingress details"
+              echo ""
+              
+              # Check if ingress class is properly set
+              INGRESS_CLASS=$(kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.spec.ingressClassName}' 2>/dev/null || echo "")
+              if [ -z "$INGRESS_CLASS" ]; then
+                echo "⚠️  Warning: Ingress class not set properly"
+                echo "📝 Attempting to apply updated ingress configuration..."
+                kubectl apply -f k8s/ingress.yaml
+                echo ""
+              else
+                echo "✅ Ingress class is set to: $INGRESS_CLASS"
+              fi
               
               if [ $i -lt 20 ]; then
                 echo "⏱️  Waiting 30 seconds before next check..."
@@ -353,13 +379,23 @@ jobs:
           # Final check and summary
           if [ -z "$ALB_DNS" ]; then
             echo "⚠️ ALB DNS not available after 10 minutes of checking"
+            echo ""
+            echo "� Final diagnostic information:"
+            echo "�📋 Ingress status:"
+            kubectl get ingress tasky-ingress -n tasky -o yaml 2>/dev/null | grep -A 10 -B 5 "status:" || echo "   No status available"
+            echo ""
+            echo "📋 AWS Load Balancer Controller logs (last 10 lines):"
+            kubectl logs -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controller --tail=10 2>/dev/null || echo "   Could not get controller logs"
+            echo ""
             echo "📋 Manual check commands:"
             echo "   kubectl get ingress tasky-ingress -n tasky"
+            echo "   kubectl describe ingress tasky-ingress -n tasky"
             echo "   kubectl get ingress tasky-ingress -n tasky -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'"
             echo "APPLICATION_URL=pending" >> $GITHUB_ENV
             echo "ALB_DNS_NAME=pending" >> $GITHUB_ENV
           else
             echo "✅ Final ALB URL: http://$ALB_DNS"
+            echo "🔗 You can test the application at the ELB endpoint: http://$ALB_DNS"
           fi
 
       - name: Deployment Summary

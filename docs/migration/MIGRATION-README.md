@@ -2,8 +2,6 @@
 post_title: "AWS to Azure PaaS Migration - Tasky Application"
 author1: "Platform Engineering"
 post_slug: "aws-to-azure-paas-migration"
-microsoft_alias: "N/A"
-featured_image: "N/A"
 categories: "Cloud Migration"
 tags: "azure, aws, terraform, migration, paas, iac, github-actions"
 ai_note: "AI-assisted migration planning"

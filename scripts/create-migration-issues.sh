@@ -118,7 +118,7 @@ create_issue() {
 
   # Add to project if we have a project ID
   if [ -n "$PROJECT_ID" ]; then
-    ISSUE_NODE_ID=$(gh api "$(echo "$ISSUE_URL" | sed 's|https://github.com/|repos/|;s|/issues/|/issues/|')" --jq '.node_id' 2>/dev/null || echo "")
+    ISSUE_NODE_ID=$(gh api "$(echo "$ISSUE_URL" | sed 's|https://github.com/|repos/|')" --jq '.node_id' 2>/dev/null || echo "")
 
     if [ -n "$ISSUE_NODE_ID" ]; then
       gh api graphql -f query='

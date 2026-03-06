@@ -86,7 +86,7 @@ terraform/
 | variables.tf | Full ALB configuration variables |
 | outputs.tf | `alb_dns_name`, `alb_hosted_zone_id`, `target_group_arn`, `application_url`, `custom_domain_url` |
 
-**Note:** ALB module is commented out in root `main.tf` — ALB is now managed by Kubernetes AWS Load Balancer Controller via `k8s/ingress.yaml`.
+**Note:** ALB module is commented out in root `main.tf` — ALB is now managed by Kubernetes AWS Load Balancer Controller via `k8s/ingress.yaml`. The module files remain in the codebase as a reference implementation. For the Azure migration, this module will not be ported; the equivalent functionality will be provided by an Azure Application Gateway Ingress Controller (AGIC) or nginx-ingress on AKS.
 
 #### Inter-Module Dependencies
 

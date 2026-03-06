@@ -125,8 +125,8 @@ Document current GitHub Actions workflows: build-and-publish.yml (Docker image C
 
 ##### Job 3: `deploy-application` (needs terraform-apply)
 - AWS OIDC authentication
-- Installs kubectl v1.28.0 (`azure/setup-kubectl@v3`)
-- Installs Helm v3.12.0 (`azure/setup-helm@v3`)
+| Install kubectl | `azure/setup-kubectl@v3` | Install kubectl v1.28.0 (note: `azure/setup-kubectl` is cloud-agnostic despite its namespace) |
+| Install Helm | `azure/setup-helm@v3` | Install Helm v3.12.0 (note: `azure/setup-helm` is cloud-agnostic despite its namespace) |
 - Configures kubectl: `aws eks update-kubeconfig --region $REGION --name $CLUSTER`
 - Downloads credentials artifact
 - Runs `scripts/setup-alb-controller.sh` (ALB Controller + app deployment)

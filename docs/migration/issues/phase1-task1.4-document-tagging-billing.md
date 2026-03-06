@@ -96,7 +96,7 @@ Example: `tasky-dev-v15-eks-cluster`, `tasky-dev-v15-mongodb`
 | `StackVersion` | *Remove* | Not needed with Azure resource groups per environment |
 | `ManagedBy` = "terraform" | `managed_by` = "terraform" | Snake_case convention |
 | `Owner` | `system_owner` | Align with IS requirement |
-| `CreatedDate` | *Remove or make static* | Causes Terraform drift |
+| `CreatedDate` | *Remove* | Causes Terraform drift — `timestamp()` changes on every apply, triggering unnecessary resource updates. Replace with a static variable or omit entirely. |
 | *NEW* | `billing_code` | Required for cost allocation |
 | *NEW* | `cost_center` | Required for organizational chargeback |
 | *NEW* | `information_system_id` | Required for FISMA/IS tracking |

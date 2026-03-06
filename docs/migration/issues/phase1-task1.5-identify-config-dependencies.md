@@ -48,7 +48,7 @@ func OpenCollection(client *mongo.Client, collectionName string) *mongo.Collecti
 }
 ```
 
-This means the connection string database and the actual database used are different — the app always uses `go-mongodb`.
+This is a **known discrepancy** — the connection string's database parameter is not used by the driver when `Database()` is called directly. The app always operates against the `go-mongodb` database regardless of the URI path. During Azure migration to Cosmos DB, the Cosmos DB database should be named `go-mongodb` to match the application code, and the connection string's database path should also be aligned.
 
 #### Kubernetes Manifests Inventory
 

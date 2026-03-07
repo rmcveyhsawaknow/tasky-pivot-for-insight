@@ -1,0 +1,139 @@
+name: "Migration Research & Task"
+description: "Research and define migration tasks for AWS to Azure PaaS port"
+title: "[Migration] "
+labels: ["migration:aws-to-azure"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## AWS to Azure PaaS Migration Task
+
+        Use this template to define research and implementation tasks for porting
+        infrastructure from AWS to Azure PaaS services. Each issue should map to
+        a row in `docs/migration/aws-to-azure-migration-backlog.csv`.
+
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Migration Phase
+      description: Select the migration phase this task belongs to
+      options:
+        - "1 - Assessment"
+        - "2 - Service Mapping"
+        - "3 - IaC Development"
+        - "4 - CI/CD Updates"
+        - "5 - Validation"
+    validations:
+      required: true
+
+  - type: input
+    id: task_id
+    attributes:
+      label: Backlog Task ID
+      description: "Task ID from the migration backlog CSV (e.g., 1.1, 2.3, 3.5)"
+      placeholder: "e.g., 2.3"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Task Category
+      description: Select the category of work
+      options:
+        - "Assessment"
+        - "Service Mapping"
+        - "IaC Development"
+        - "CI/CD Updates"
+        - "Validation"
+    validations:
+      required: true
+
+  - type: input
+    id: aws_source
+    attributes:
+      label: AWS Source Service
+      description: "The current AWS service or component being migrated"
+      placeholder: "e.g., Amazon EKS, S3, EC2 + MongoDB"
+    validations:
+      required: false
+
+  - type: input
+    id: azure_target
+    attributes:
+      label: Azure Target Service
+      description: "The target Azure PaaS service"
+      placeholder: "e.g., Azure AKS, Blob Storage, Cosmos DB for MongoDB API"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: Task priority level
+      options:
+        - "High"
+        - "Medium"
+        - "Low"
+    validations:
+      required: true
+
+  - type: input
+    id: estimated_effort
+    attributes:
+      label: Estimated Effort
+      description: "Estimated time to complete this task"
+      placeholder: "e.g., 2 days"
+    validations:
+      required: false
+
+  - type: input
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: "Task IDs that must be completed before this task (comma-separated)"
+      placeholder: "e.g., 1.1, 1.2"
+    validations:
+      required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Task Description
+      description: "Detailed description of the research or implementation task"
+      placeholder: "Describe what needs to be researched, designed, or implemented..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: "Define what 'done' looks like for this task"
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+        - [ ] Criterion 3
+    validations:
+      required: true
+
+  - type: textarea
+    id: research_notes
+    attributes:
+      label: Research Notes
+      description: "Space for agent or contributor to capture research findings"
+      placeholder: "Research findings, links, and technical notes..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: "Links to documentation, Azure docs, or related issues"
+      placeholder: |
+        - [Azure AKS Documentation](https://learn.microsoft.com/en-us/azure/aks/)
+        - Related issue: #XX
+    validations:
+      required: false
